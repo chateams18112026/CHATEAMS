@@ -43,8 +43,8 @@ if (fs.existsSync(androidRes) && fs.existsSync(customRes)) {
 const gradleFile = path.join(__dirname, 'android', 'app', 'build.gradle');
 if (fs.existsSync(gradleFile)) {
   let gradle = fs.readFileSync(gradleFile, 'utf8');
-  gradle = gradle.replace(/versionCode\s+\d+/, 'versionCode 230');
-  gradle = gradle.replace(/versionName\s+"[^"]*"/, 'versionName "2.3.0"');
+  gradle = gradle.replace(/versionCode\s+\d+/, 'versionCode 240');
+  gradle = gradle.replace(/versionName\s+"[^"]*"/, 'versionName "2.4.0"');
   fs.writeFileSync(gradleFile, gradle, 'utf8');
-  console.log('[CHATEAMS] Updated versionCode 230 & versionName 2.0.0 in build.gradle');
+  console.log('[CHATEAMS] Updated versionCode 240 & versionName 2.0.0 in build.gradle');
 }

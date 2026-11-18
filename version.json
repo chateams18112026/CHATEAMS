@@ -1,7 +1,7 @@
 {
-  "version": "2.3.0",
-  "build": 2300,
+  "version": "2.4.0",
+  "build": 2400,
   "releasedAt": "2026-11-18",
   "channel": "production",
-  "notes": "CHATEAMS v2.3 \u2014 Direct Sign in / Sign up with Google (No Email/Password Box), Google Account Chooser & Firebase GoogleAuthProvider OAuth."
+  "notes": "CHATEAMS v2.4 \u2014 Pre-connected Google Cloud / Firebase Config (chateams1811) for instant Google Sign-In, Live Messaging & Calls."
 }
