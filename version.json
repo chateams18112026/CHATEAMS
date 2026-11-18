@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "build": 2001,
+  "releasedAt": "2026-11-18",
+  "channel": "production",
+  "notes": "CHATEAMS v2.0 Production \u2014 Outer App Logo, Clean 3-Icon Chat Header, Google Cloud Account Sync (Uninstall-Safe), Live WebRTC Calling & OTA Update Checker."
+}

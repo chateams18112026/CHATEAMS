@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.0.0" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.0.0" />
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <meta name="theme-color" content="#4f46e5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="manifest" href="./manifest.json" />
+  <link rel="manifest" href="./manifest.json?v=2.0.0" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <title>CHATEAMS — Groups, Broadcast &amp; Status</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -169,7 +170,7 @@
               PS
             </div>
             <div>
-              <p id="viewer-name" class="text-sm font-bold leading-tight">Priya Sundaram</p>
+              <p id="viewer-name" class="text-sm font-bold leading-tight">Contact</p>
               <p id="viewer-time" class="text-[11px] text-white/80">10 mins ago</p>
             </div>
           </div>
@@ -208,7 +209,7 @@
       <span id="incoming-call-type" class="text-[11px] font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 animate-pulse">
         Incoming Voice Call
       </span>
-      <h3 id="incoming-call-name" class="text-2xl font-bold tracking-tight mt-3">Priya Sundaram</h3>
+      <h3 id="incoming-call-name" class="text-2xl font-bold tracking-tight mt-3">Incoming Caller</h3>
       <p class="text-xs text-slate-300 mt-1">CHATEAMS · End-to-End Encrypted</p>
     </div>
 
@@ -257,7 +258,7 @@
           Sharing Screen
         </span>
       </div>
-      <h3 id="call-peer-name" class="text-2xl font-bold tracking-tight">Priya Sundaram</h3>
+      <h3 id="call-peer-name" class="text-2xl font-bold tracking-tight">Caller</h3>
       <p id="call-timer" class="text-sm text-emerald-400 mt-1 font-bold">Connected · 00:00</p>
     </div>
 
@@ -266,7 +267,9 @@
 
     <!-- Center Stage: Half-Screen Profile Picture (Voice) or Full-Screen Video Frame (Video) -->
     <div class="flex-1 w-full flex flex-col items-center justify-center px-4 min-h-0">
+      <audio id="remote-call-audio" autoplay playsinline class="hidden"></audio>
       <div id="call-video-frame" class="hidden w-full h-full flex-1 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden p-4">
+        <video id="remote-call-video" autoplay playsinline class="hidden w-full h-full object-cover rounded-2xl"></video>
         <video id="screen-share-video" autoplay playsinline muted class="hidden w-full h-full object-contain rounded-2xl"></video>
         <div id="call-video-placeholder" class="flex flex-col items-center gap-3">
           <div class="text-6xl">🎥</div>
@@ -500,7 +503,7 @@
         <input
           id="share-contact-name"
           type="text"
-          placeholder="e.g. Priya Sundaram"
+          placeholder="Contact Name"
           autocomplete="off"
           class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
@@ -510,7 +513,7 @@
         <input
           id="share-contact-email"
           type="email"
-          placeholder="priya@gmail.com"
+          placeholder="friend@gmail.com"
           autocomplete="off"
           class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
@@ -580,23 +583,40 @@
     </form>
   </div>
 
-  <!-- Settings, Security, Storage & Firebase Modal (Categorized Pro Menu) -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  <!-- Settings, Security, Storage, Cloud Sync & OTA Update Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+    <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
       <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ CHATEAMS Settings</h3>
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ CHATEAMS Settings</h3>
+          <span id="settings-cloud-pill" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">🟢 Cloud Active</span>
+        </div>
         <button id="close-settings-btn" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-lg leading-none cursor-pointer">✕</button>
+      </div>
+
+      <!-- OTA Update Banner inside Settings (Shown automatically when an update is available) -->
+      <div id="settings-update-alert" class="hidden mx-4 mt-3 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 flex items-center justify-between gap-2 shrink-0">
+        <div class="min-w-0">
+          <p class="text-[11px] font-bold text-amber-900 dark:text-amber-200">🚀 New App Update Available!</p>
+          <p id="settings-update-alert-sub" class="text-[10px] text-amber-700 dark:text-amber-300 truncate">Tap Update Now to apply the latest GitHub build.</p>
+        </div>
+        <button id="banner-apply-update-btn" type="button" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-bold shrink-0 cursor-pointer">Update Now</button>
       </div>
 
       <!-- Profile Summary Card -->
       <div class="px-4 pt-3 pb-2 shrink-0">
-        <div class="p-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center gap-3 shadow-sm">
-          <div id="settings-profile-avatar" class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center font-bold text-base shrink-0">AK</div>
-          <div class="min-w-0 flex-1">
-            <p id="settings-profile-name" class="text-sm font-bold truncate">Arjun Kumar</p>
-            <p id="settings-profile-bio" class="text-[11px] text-indigo-100 truncate">Available on CHATEAMS</p>
+        <div class="p-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white flex items-center gap-3 shadow-sm">
+          <div class="relative shrink-0">
+            <div id="settings-profile-avatar" class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center font-bold text-base overflow-hidden border-2 border-white/40">ME</div>
+            <button id="change-avatar-btn" type="button" class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white text-indigo-700 text-[10px] font-bold flex items-center justify-center shadow cursor-pointer" title="Change Profile Photo">📷</button>
+            <input id="profile-avatar-input" type="file" accept="image/*" class="hidden" />
           </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 shrink-0">v1.0 MIT</span>
+          <div class="min-w-0 flex-1">
+            <p id="settings-profile-name" class="text-sm font-bold truncate">My Profile</p>
+            <p id="settings-profile-email" class="text-[11px] text-indigo-100 truncate">Signed in with Google</p>
+            <p id="settings-profile-bio" class="text-[10px] text-indigo-200 truncate">Available on CHATEAMS</p>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 shrink-0">v2.0</span>
         </div>
       </div>
 
@@ -606,14 +626,18 @@
         <button type="button" data-stab="chats" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">💬 Chats</button>
         <button type="button" data-stab="calls" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">📞 Calls &amp; Tones</button>
         <button type="button" data-stab="privacy" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">🔒 Privacy</button>
+        <button type="button" data-stab="update" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">🔄 Update</button>
         <button id="dev-tab-btn" type="button" data-stab="network" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-amber-600 dark:text-amber-400 cursor-pointer shrink-0">🛠️ Developer</button>
       </div>
 
       <div class="p-4 pt-2 space-y-3 overflow-y-auto flex-1 text-xs">
-        <!-- TAB: ACCOUNT -->
+        <!-- TAB: ACCOUNT & GOOGLE CLOUD SYNC -->
         <div id="stab-account" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-            <label for="settings-bio-input" class="block font-bold text-slate-800 dark:text-slate-100">✏️ About / Status Bio</label>
+            <label for="settings-name-input" class="block font-bold text-slate-800 dark:text-slate-100">🪪 Display Name &amp; Status Bio</label>
+            <div class="flex gap-2">
+              <input id="settings-name-input" type="text" placeholder="Your Name" class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
+            </div>
             <div class="flex gap-2">
               <input id="settings-bio-input" type="text" placeholder="Available on CHATEAMS" class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
               <button id="save-bio-btn" type="button" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">Save</button>
@@ -632,64 +656,94 @@
             </div>
           </div>
 
+          <!-- GOOGLE CLOUD SERVICE (LIVE SYNC & GMAIL ACCOUNT RECOVERY) -->
+          <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-900 dark:text-white">☁️ Google Cloud Service &amp; Account Sync</span>
+              <span id="firebase-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Live Relay Active</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+              Messages &amp; calls sync live via your Gmail ID. Connect your Google Firebase Cloud below (or paste a 1-click Cloud Code) so all chats stay saved in your Gmail account even if you uninstall &amp; reinstall the app.
+            </p>
+            <textarea id="fb-quick-paste" rows="2" placeholder="Paste full Firebase Config JSON, Database URL, or Friends Cloud Sync Code here..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-2.5 py-1.5 text-[11px] font-mono"></textarea>
+            <div class="grid grid-cols-1 gap-1.5">
+              <input id="fb-api-key" type="text" placeholder="Firebase apiKey (or auto-filled from above)" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5 text-[11px]" />
+              <div class="grid grid-cols-2 gap-1.5">
+                <input id="fb-project-id" type="text" placeholder="projectId" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-2.5 py-1.5 text-[11px]" />
+                <input id="fb-auth-domain" type="text" placeholder="databaseURL / authDomain" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-2.5 py-1.5 text-[11px]" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+              <button id="save-firebase-btn" type="button" class="py-2 px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">☁️ Connect Google Cloud</button>
+              <button id="sync-cloud-account-btn" type="button" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">🔄 Restore Gmail Chats</button>
+            </div>
+            <button id="copy-cloud-code-btn" type="button" class="w-full py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 font-bold cursor-pointer">📤 Copy Cloud Sync Code for Friends</button>
+          </div>
+
+          <!-- ACTIVE DEVICE & LINKED WEB SESSIONS (Fixed: No fake Desktop Browser shown!) -->
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">💻 Linked Devices (CHATEAMS Web)</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Active</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">📱 This Device &amp; Linked Sessions</span>
+              <span id="device-mode-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Mobile App</span>
             </div>
-            <div id="linked-devices-list" class="space-y-1 text-[11px] text-slate-600 dark:text-slate-300">
+            <div id="linked-devices-list" class="space-y-1.5 text-[11px] text-slate-600 dark:text-slate-300">
               <div class="flex items-center justify-between bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                <span>🌐 Desktop Browser (Current Session)</span>
-                <span class="text-emerald-500 font-bold">Online</span>
+                <span id="current-device-label">📱 Android / Mobile Device (Primary)</span>
+                <span class="text-emerald-500 font-bold">Active</span>
+              </div>
+              <div id="web-linked-status-row" class="flex items-center justify-between bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400">
+                <span id="web-linked-status-text">💻 Linked Web Browsers: None</span>
+                <button id="unlink-web-btn" type="button" class="hidden text-rose-500 font-bold hover:underline cursor-pointer">Disconnect</button>
               </div>
             </div>
           </div>
-
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">🔥 Firebase Live Sync</span>
-              <span id="firebase-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Local Mode</span>
-            </div>
-            <input id="fb-api-key" type="text" placeholder="Firebase apiKey" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
-            <input id="fb-auth-domain" type="text" placeholder="authDomain (e.g. chateams.firebaseapp.com)" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
-            <input id="fb-project-id" type="text" placeholder="projectId" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
-            <button id="save-firebase-btn" type="button" class="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold cursor-pointer">Save Firebase Config</button>
-          </div>
         </div>
 
-        <!-- TAB: CHATS & MEDIA -->
+        <!-- TAB: CHATS, APPEARANCE & MEDIA -->
         <div id="stab-chats" class="hidden space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
+            <p class="font-bold text-slate-800 dark:text-slate-100">🎨 Chat Appearance &amp; Controls</p>
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">⏳ Disappearing Messages</span>
-              <select id="disappearing-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-2 py-1 font-bold">
-                <option value="0">Off</option>
-                <option value="24h">24 Hours</option>
-                <option value="7d">7 Days</option>
-                <option value="30d">30 Days</option>
+              <span class="text-slate-700 dark:text-slate-200 font-bold">🌗 Theme Mode</span>
+              <select id="theme-mode-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-2 py-1 font-bold">
+                <option value="auto">Auto (Night after 6 PM)</option>
+                <option value="light">Light Mode Always</option>
+                <option value="dark">Dark Mode (AMOLED Black)</option>
               </select>
             </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700 dark:text-slate-200 font-bold">🔤 Chat Font Size</span>
+              <select id="chat-fontsize-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-2 py-1 font-bold">
+                <option value="sm">Small</option>
+                <option value="md">Medium (Default)</option>
+                <option value="lg">Large</option>
+              </select>
+            </div>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-bold text-slate-800 dark:text-slate-100">⏎ Send Message on Enter Key</span>
+              <input id="enter-send-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            </label>
             <label class="flex items-center justify-between cursor-pointer">
               <span class="font-bold text-slate-800 dark:text-slate-100">🗜️ Storage Saver (Compress Media)</span>
               <input id="storage-saver-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
             </label>
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-bold text-slate-800 dark:text-slate-100">📥 Auto-Download Media on 2G</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">📥 Auto-Download Media on Mobile Data</span>
               <input id="auto-download-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
             </label>
           </div>
 
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">☁️ Own-Device &amp; Google Drive Backup</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Zero Server</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">☁️ Google Drive &amp; Local Backup</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Account Safe</span>
             </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">All chats &amp; Takeaways are saved on your own device (IndexedDB). Export to Google Drive and restore anytime.</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Export your chats &amp; Takeaways to Google Drive or restore a backup file anytime.</p>
             <div class="grid grid-cols-2 gap-2">
               <button id="export-backup-btn" type="button" class="py-2 px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">💾 Export Backup (.json)</button>
               <button id="import-backup-btn" type="button" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">📥 Restore Backup</button>
             </div>
-            <button id="clear-media-cache-btn" type="button" class="w-full py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold cursor-pointer">🧹 Free Space</button>
+            <button id="clear-media-cache-btn" type="button" class="w-full py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold cursor-pointer">🧹 Free Media Cache</button>
             <input id="import-backup-input" type="file" accept=".json,application/json" class="hidden" />
           </div>
         </div>
@@ -698,12 +752,20 @@
         <div id="stab-calls" class="hidden space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">🎵 CHATEAMS Tones &amp; Ringtones</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">7 Themes Each</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">🎵 CHATEAMS Call &amp; Audio Settings</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">WebRTC Live</span>
             </div>
             <label class="flex items-center justify-between cursor-pointer">
               <span class="text-slate-700 dark:text-slate-200 font-bold">🔴 Auto-Record All Calls</span>
               <input id="auto-record-toggle" type="checkbox" checked class="w-4 h-4 accent-rose-600 cursor-pointer" />
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-slate-700 dark:text-slate-200 font-bold">🎙️ AI Noise Suppression &amp; Echo Cancel</span>
+              <input id="noise-suppress-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-slate-700 dark:text-slate-200 font-bold">📳 Vibrate on Incoming Calls &amp; Messages</span>
+              <input id="vibrate-toggle" type="checkbox" checked class="w-4 h-4 accent-emerald-600 cursor-pointer" />
             </label>
             <div class="flex items-center gap-2">
               <label for="msg-tone-select" class="text-[11px] text-slate-600 dark:text-slate-300 w-24 shrink-0">Msg / SMS Tone</label>
@@ -745,30 +807,18 @@
 
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">🔔 Closed-App &amp; Call Notifications</span>
-              <button id="enable-push-btn" type="button" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold cursor-pointer">Enable</button>
-            </div>
-            <div class="rounded-xl bg-slate-900 text-white p-2.5 border border-slate-700 space-y-1.5">
-              <div class="flex items-center justify-between text-[10px] text-slate-400">
-                <span class="font-bold text-indigo-300">CHATEAMS · Lock Screen Preview</span>
-                <span>now</span>
-              </div>
-              <p class="text-xs font-bold">Priya Sundaram</p>
-              <p class="text-[11px] text-slate-300">Sent 100 photos · Tap to view</p>
-              <div class="flex gap-2 pt-1">
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-indigo-300">↩ Reply</span>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-emerald-300">✓ Mark Read</span>
-              </div>
+              <span class="font-bold text-slate-800 dark:text-slate-100">🔔 Background &amp; Call Notifications</span>
+              <button id="enable-push-btn" type="button" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold cursor-pointer">Enable Alerts</button>
             </div>
             <div class="grid grid-cols-3 gap-1.5">
-              <button id="test-msg-notif-btn" type="button" class="py-1.5 px-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-white text-[10px] font-bold cursor-pointer">💬 Test Msg</button>
-              <button id="test-voice-ring-btn" type="button" class="py-1.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold cursor-pointer">📞 Voice Call</button>
-              <button id="test-video-ring-btn" type="button" class="py-1.5 px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold cursor-pointer">📹 Video Call</button>
+              <button id="test-msg-notif-btn" type="button" class="py-1.5 px-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-800 dark:text-white text-[10px] font-bold cursor-pointer">💬 Test Alert</button>
+              <button id="test-voice-ring-btn" type="button" class="py-1.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold cursor-pointer">📞 Ring Test</button>
+              <button id="test-video-ring-btn" type="button" class="py-1.5 px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold cursor-pointer">📹 Video Test</button>
             </div>
           </div>
         </div>
 
-        <!-- TAB: PRIVACY & SECURITY -->
+        <!-- TAB: PRIVACY & SECURITY (Read Receipts & Online Status moved to Developer Options!) -->
         <div id="stab-privacy" class="hidden space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
             <div class="flex items-center justify-between">
@@ -780,45 +830,118 @@
               <button id="save-pin-btn" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">Enable</button>
               <button id="lock-now-btn" type="button" class="hidden px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold cursor-pointer">Lock</button>
             </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-slate-700 dark:text-slate-200 font-bold">⏱️ Auto-Lock Timer</span>
+              <select id="autolock-timer-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-2 py-1 font-bold">
+                <option value="0">On App Launch</option>
+                <option value="1">After 1 Minute</option>
+                <option value="5">After 5 Minutes</option>
+                <option value="15">After 15 Minutes</option>
+              </select>
+            </div>
+            <label class="flex items-center justify-between pt-1 cursor-pointer">
+              <span class="font-bold text-slate-800 dark:text-slate-100">🛡️ Screen Privacy (Hide in App Switcher)</span>
+              <input id="screen-privacy-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            </label>
           </div>
 
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <span class="font-bold text-slate-800 dark:text-slate-100">🚫 Blocked Gmail Contacts</span>
+            <div class="flex gap-2">
+              <input id="block-email-input" type="email" placeholder="block.person@gmail.com" class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5" />
+              <button id="add-block-email-btn" type="button" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold cursor-pointer">Block</button>
+            </div>
+            <div id="blocked-emails-list" class="space-y-1 text-[11px] text-slate-500"></div>
+          </div>
+        </div>
+
+        <!-- TAB: APP UPDATE & GITHUB OTA CHECKER -->
+        <div id="stab-update" class="hidden space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
-            <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-bold text-slate-800 dark:text-slate-100">✓✓ Read Receipts</span>
-              <input id="read-receipts-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
-            </label>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800 dark:text-slate-100">🔄 App Version &amp; GitHub Update</span>
+              <span id="update-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Up to Date (v2.0.0)</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-1">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Installed Version:</span>
+                <span id="installed-version-label" class="font-bold text-slate-900 dark:text-white">v2.0.0 · Build 2001</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Latest Available:</span>
+                <span id="remote-version-label" class="font-bold text-indigo-600 dark:text-indigo-400">v2.0.0 · Build 2001</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Last Checked:</span>
+                <span id="update-last-checked" class="text-slate-600 dark:text-slate-300">Just now</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label for="github-repo-input" class="block text-[11px] font-bold text-slate-700 dark:text-slate-200">📦 GitHub Repository (for APK &amp; Web Auto-Update)</label>
+              <input id="github-repo-input" type="text" placeholder="e.g. your-username/CHATEAMS" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-xl px-3 py-1.5 text-[11px]" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="check-update-now-btn" type="button" class="py-2 px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔍 Check for Update</button>
+              <button id="force-apply-update-btn" type="button" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">⚡ Update App Now</button>
+            </div>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              Updating refreshes the app code &amp; cache to the latest GitHub commit while keeping 100% of your Gmail account chats and Takeaways safe.
+            </p>
+          </div>
+        </div>
+
+        <!-- TAB: DEVELOPER OPTIONS (7-Tap Build Number + PIN) -->
+        <div id="stab-network" class="hidden space-y-3">
+          <div class="p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-900 dark:text-white">🛠️ Developer Controls (PIN Protected)</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">Developer Mode</span>
+            </div>
             <label class="flex items-center justify-between cursor-pointer">
               <span class="font-bold text-slate-800 dark:text-slate-100">🟢 Show Online Status</span>
               <input id="online-status-toggle" type="checkbox" checked class="w-4 h-4 accent-emerald-600 cursor-pointer" />
             </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-bold text-slate-800 dark:text-slate-100">✓✓ Read Receipts (Blue Ticks)</span>
+              <input id="read-receipts-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            </label>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800 dark:text-slate-100">⏳ Disappearing Messages</span>
+              <select id="disappearing-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-lg px-2 py-1 font-bold">
+                <option value="0">Off</option>
+                <option value="24h">24 Hours</option>
+                <option value="7d">7 Days</option>
+                <option value="30d">30 Days</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <!-- TAB: NETWORK & BACKGROUND SYNC -->
-        <div id="stab-network" class="hidden space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-slate-800 dark:text-slate-100">📶 Background Sync &amp; Low-Network</span>
+              <span class="font-bold text-slate-800 dark:text-slate-100">📶 Network &amp; Signaling Diagnostics</span>
               <span id="bg-sync-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Active</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">Live Engine Status:</span>
+              <span id="network-status-pill" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">🟢 Cloud Active</span>
             </div>
             <label class="flex items-center justify-between cursor-pointer">
               <span class="text-slate-700 dark:text-slate-200">Ultra-Low Data Mode (2G / Weak Signal)</span>
               <input id="low-network-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
             </label>
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="text-slate-700 dark:text-slate-200">Simulate Offline Outbox Queue (Test)</span>
+              <span class="text-slate-700 dark:text-slate-200">Offline Outbox Queue Test</span>
               <input id="offline-sim-toggle" type="checkbox" class="w-4 h-4 accent-amber-600 cursor-pointer" />
             </label>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Queues messages offline and auto-delivers via Service Worker when signal returns; keeps calls active on low bitrate.</p>
           </div>
         </div>
       </div>
 
       <!-- Build Number Footer (Tap 7 times + PIN to unlock Developer Options) -->
       <div class="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
-        <span>CHATEAMS Open Source</span>
+        <span>CHATEAMS Production</span>
         <button id="build-number-btn" type="button" class="font-bold text-slate-500 dark:text-slate-300 hover:text-indigo-500 cursor-pointer">
-          v1.0 · Build 1042
+          v2.0 · Build 2001
         </button>
       </div>
     </div>
@@ -1122,14 +1245,14 @@
       <input
         id="demo-email-input"
         type="email"
-        value="arjun.kumar@gmail.com"
+        value=""
         placeholder="you@gmail.com"
         class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
       <input
         id="demo-name-input"
         type="text"
-        value="Arjun Kumar"
+        value=""
         placeholder="Google Profile Name"
         class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
@@ -1181,7 +1304,7 @@
             </div>
             <div>
               <h2 class="font-bold text-white text-sm leading-tight">CHATEAMS</h2>
-              <p class="text-[10px] text-emerald-400">Trial Version</p>
+              <p id="sidebar-sub-label" class="text-[10px] text-indigo-400 font-semibold">Cloud Messenger</p>
             </div>
           </div>
           <button id="close-sidebar-btn" type="button" class="md:hidden text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer" aria-label="Close menu">
@@ -1252,7 +1375,7 @@
               A
             </div>
             <div class="min-w-0">
-              <p id="user-name" class="text-xs font-bold text-white truncate">Arjun Kumar</p>
+              <p id="user-name" class="text-xs font-bold text-white truncate">My Account</p>
               <p class="text-[10px] text-emerald-400 truncate">Google Connected</p>
             </div>
           </div>
@@ -1269,77 +1392,45 @@
       <!-- Right Main Content Area -->
       <div class="flex-1 flex flex-col min-w-0 bg-white dark:bg-black transition-colors">
 
-        <!-- Top Header -->
-        <header class="safe-top bg-white dark:bg-black border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-1.5 sm:gap-2 shrink-0 transition-colors">
-          <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-            <button id="open-sidebar-btn" type="button" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer" aria-label="Open menu">
+        <!-- Top Header (Clean Layout: Full Chat Name + Only Call, Video Call & Options Menu when Chat is open) -->
+        <header class="safe-top bg-white dark:bg-black border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 shrink-0 transition-colors relative">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <button id="open-sidebar-btn" type="button" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer shrink-0" aria-label="Open menu">
               ☰
             </button>
-            <button id="back-to-chats-btn" type="button" class="hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-bold cursor-pointer" aria-label="Back to Chat History">
+            <button id="back-to-chats-btn" type="button" class="hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-bold cursor-pointer shrink-0" aria-label="Back to Chat History">
               ←
             </button>
             <div id="room-avatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-              👥
+              💬
             </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <h2 id="room-title" class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Team Hangout</h2>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 min-w-0">
+                <h2 id="room-title" class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Chats</h2>
                 <span id="typing-indicator" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-full shrink-0">
                   typing...
                 </span>
               </div>
               <div class="flex items-center gap-1.5 min-w-0">
-                <p id="room-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Group · 4 members</p>
-                <span id="network-status-pill" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 shrink-0">🟢 Sync</span>
+                <p id="room-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Cloud Synced</p>
               </div>
             </div>
           </div>
 
+          <!-- Right Action Bar -->
           <div class="flex items-center gap-1.5 shrink-0">
-            <button
-              id="vanish-mode-btn"
-              type="button"
-              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
-              title="Vanish Mode (Messages disappear on exit)"
-            >
-              👻
-            </button>
-            <button
-              id="chat-head-pin-btn"
-              type="button"
-              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
-              title="Minimize to Floating Chat Head"
-            >
-              🫧
-            </button>
-            <button
-              id="wallpaper-btn"
-              type="button"
-              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
-              title="Change This Chat Background / Photo"
-            >
-              🎨
-            </button>
-            <button
-              id="mute-room-btn"
-              type="button"
-              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
-              title="Mute / Unmute Notifications"
-            >
-              🔔
-            </button>
-            <button
-              id="manage-members-btn"
-              type="button"
-              class="hidden px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-indigo-50 dark:bg-slate-900 hover:bg-indigo-100 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition cursor-pointer items-center gap-1"
-              title="Add / Manage 250+ Members"
-            >
-              👥+
-            </button>
+            <!-- Hidden proxy action buttons triggered from inside the ⋮ Options menu -->
+            <button id="vanish-mode-btn" type="button" class="hidden" title="Vanish Mode">👻</button>
+            <button id="chat-head-pin-btn" type="button" class="hidden" title="Floating Chat Head">🫧</button>
+            <button id="wallpaper-btn" type="button" class="hidden" title="Chat Wallpaper">🎨</button>
+            <button id="mute-room-btn" type="button" class="hidden" title="Mute / Unmute">🔔</button>
+            <button id="manage-members-btn" type="button" class="hidden" title="Manage Members">👥+</button>
+
+            <!-- Shown ONLY when a Chat Thread is Open: Voice Call, Video Call, and Options (⋮) -->
             <button
               id="voice-call-btn"
               type="button"
-              class="pro-icon-btn p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-emerald-50 dark:bg-slate-900 hover:bg-emerald-100 dark:hover:bg-slate-800 text-emerald-600 dark:text-emerald-400 transition cursor-pointer flex items-center justify-center"
+              class="hidden pro-icon-btn p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-emerald-50 dark:bg-slate-900 hover:bg-emerald-100 dark:hover:bg-slate-800 text-emerald-600 dark:text-emerald-400 transition cursor-pointer flex items-center justify-center"
               title="Voice Call"
               aria-label="Voice Call"
             >
@@ -1350,7 +1441,7 @@
             <button
               id="video-call-btn"
               type="button"
-              class="pro-icon-btn p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-indigo-50 dark:bg-slate-900 hover:bg-indigo-100 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 transition cursor-pointer flex items-center justify-center"
+              class="hidden pro-icon-btn p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-indigo-50 dark:bg-slate-900 hover:bg-indigo-100 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 transition cursor-pointer flex items-center justify-center"
               title="Video Call"
               aria-label="Video Call"
             >
@@ -1360,10 +1451,29 @@
               </svg>
             </button>
             <button
+              id="mobile-chat-more-btn"
+              type="button"
+              class="hidden px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold cursor-pointer"
+              title="Chat Options"
+              aria-label="Chat Options"
+            >
+              ⋮
+            </button>
+
+            <!-- Shown ONLY on Main Screen (when no individual chat is open) -->
+            <button
+              id="mobile-search-toggle-btn"
+              type="button"
+              class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs cursor-pointer"
+              title="Search"
+            >
+              🔍
+            </button>
+            <button
               id="theme-toggle-btn"
               type="button"
               class="text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition cursor-pointer"
-              title="Day / Night Mode (Auto after 6:00 PM)"
+              title="Day / Night Mode"
             >
               ☀️
             </button>
@@ -1371,37 +1481,70 @@
               id="open-settings-btn"
               type="button"
               class="text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition cursor-pointer"
-              title="Settings, App Lock, Backup & Firebase"
+              title="Settings, Cloud Sync & Updates"
             >
               ⚙️
             </button>
-            <button id="mobile-chat-more-btn" type="button" class="hidden md:hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer" title="Chat Options">⋮</button>
-            <button id="mobile-search-toggle-btn" type="button" class="sm:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs cursor-pointer" title="Search">🔍</button>
-            <div id="search-box-wrap" class="hidden sm:block relative w-28 sm:w-36">
-              <input
-                id="search-input"
-                type="text"
-                placeholder="Search..."
-                autocomplete="off"
-                class="w-full bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs rounded-xl pl-2.5 pr-6 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-              />
-              <button
-                id="clear-search-btn"
-                type="button"
-                class="hidden absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white text-xs px-1 cursor-pointer"
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            </div>
           </div>
         </header>
-        <div id="mobile-chat-more-menu" class="hidden md:hidden absolute top-14 right-3 z-40 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-1.5 space-y-1 text-xs font-bold text-slate-700 dark:text-slate-200">
-          <button type="button" data-proxy-click="wallpaper-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🎨 Chat Wallpaper</button>
-          <button type="button" data-proxy-click="mute-room-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🔔 Mute / Unmute</button>
-          <button type="button" data-proxy-click="vanish-mode-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">👻 Vanish Mode</button>
-          <button type="button" data-proxy-click="chat-head-pin-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🫧 Floating Chat Head</button>
-          <button type="button" data-proxy-click="manage-members-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">👥+ Manage Members</button>
+
+        <!-- Slide-Down Search Bar (Toggled from Search button or Chat Options ⋮ -> Search) -->
+        <div id="search-box-wrap" class="hidden bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-3 py-2 flex items-center gap-2 shrink-0">
+          <span class="text-xs text-slate-400">🔍</span>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search messages or chats..."
+            autocomplete="off"
+            class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+          />
+          <button
+            id="clear-search-btn"
+            type="button"
+            class="hidden text-slate-400 hover:text-slate-700 dark:hover:text-white text-xs px-2 py-1 cursor-pointer font-bold"
+            aria-label="Clear search"
+          >
+            Clear
+          </button>
+          <button
+            id="close-search-bar-btn"
+            type="button"
+            class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-xs px-2 py-1 cursor-pointer font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Unified Chat Options Dropdown Menu (⋮) containing Mute, Search, Wallpaper, Vanish, Chat Head, Members, Theme & Settings -->
+        <div id="mobile-chat-more-menu" class="hidden absolute top-14 right-3 z-40 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-0.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+          <button id="menu-search-chat-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>🔍 Search in Chat</span>
+          </button>
+          <button type="button" data-proxy-click="mute-room-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span id="menu-mute-label">🔔 Mute Notifications</span>
+          </button>
+          <button type="button" data-proxy-click="wallpaper-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>🎨 Wallpaper &amp; Theme</span>
+          </button>
+          <button type="button" data-proxy-click="vanish-mode-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span id="menu-vanish-label">👻 Vanish Mode</span>
+          </button>
+          <button type="button" data-proxy-click="chat-head-pin-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>🫧 Floating Chat Head</span>
+          </button>
+          <button id="menu-manage-members-item" type="button" data-proxy-click="manage-members-btn" class="hidden w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>👥+ Manage Members</span>
+          </button>
+          <div class="border-t border-slate-200 dark:border-slate-800 my-1"></div>
+          <button type="button" data-proxy-click="theme-toggle-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>🌗 Dark / Light Mode</span>
+          </button>
+          <button type="button" data-proxy-click="open-settings-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer">
+            <span>⚙️ Settings &amp; Cloud Sync</span>
+          </button>
+          <button id="menu-clear-chat-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-between cursor-pointer">
+            <span>🗑️ Clear Chat Messages</span>
+          </button>
         </div>
 
         <!-- TAB 1: CHAT VIEW (History List first, tap to open thread) -->
@@ -1678,7 +1821,19 @@
   <!-- 3. JavaScript Logic -->
   <script>
     const quickEmojis = ['👍', '❤️', '😂', '🎉'];
-    const STORAGE_KEY = 'chateams_trial_v10_state';
+    const APP_VERSION = '2.0.0';
+    const APP_BUILD = 2001;
+    const STORAGE_KEY = 'chateams_prod_v2_state';
+    const LEGACY_DEMO_IDS = new Set(['team-hangout', 'dev-group', 'office-broadcast', 'priya', 'karthik']);
+    const LEGACY_DEMO_EMAILS = new Set([
+      'priya.dev@gmail.com', 'karthik.k@gmail.com', 'divya.nair@gmail.com',
+      'vikram.s@gmail.com', 'meera.krish@gmail.com', 'arun.b@gmail.com',
+      'ananya.sharma@gmail.com', 'suresh.babu@gmail.com', 'kavya.m@gmail.com',
+      'rohan.verma@gmail.com', 'arjun.kumar@gmail.com'
+    ]);
+
+    // Wipe legacy trial storage keys on launch
+    try { localStorage.removeItem('chateams_trial_v10_state'); } catch (e) {}
 
     const noteColorStyles = {
       white: 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800',
@@ -1688,178 +1843,11 @@
       rose: 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800'
     };
 
-    const googleDirectory = {
-      'priya.dev@gmail.com': { name: 'Priya Sundaram', color: 'from-pink-500 to-rose-500', avatar: 'PS' },
-      'karthik.k@gmail.com': { name: 'Karthik Raja', color: 'from-sky-500 to-indigo-600', avatar: 'KR' },
-      'divya.nair@gmail.com': { name: 'Divya Nair', color: 'from-emerald-500 to-teal-600', avatar: 'DN' },
-      'vikram.s@gmail.com': { name: 'Vikram Selvam', color: 'from-amber-500 to-orange-600', avatar: 'VS' },
-      'meera.krish@gmail.com': { name: 'Meera Krishnan', color: 'from-violet-500 to-purple-600', avatar: 'MK' },
-      'arun.b@gmail.com': { name: 'Arun Balaji', color: 'from-cyan-500 to-blue-600', avatar: 'AB' },
-      'ananya.sharma@gmail.com': { name: 'Ananya Sharma', color: 'from-rose-500 to-pink-600', avatar: 'AS' },
-      'suresh.babu@gmail.com': { name: 'Suresh Babu', color: 'from-teal-500 to-emerald-600', avatar: 'SB' },
-      'kavya.m@gmail.com': { name: 'Kavya Menon', color: 'from-fuchsia-500 to-purple-600', avatar: 'KM' },
-      'rohan.verma@gmail.com': { name: 'Rohan Verma', color: 'from-orange-500 to-red-500', avatar: 'RV' }
-    };
-
-    const defaultRooms = [
-      {
-        id: 'team-hangout',
-        type: 'group',
-        name: 'Team Hangout',
-        subtitle: 'Group · 4 members',
-        avatar: '👥',
-        color: 'from-indigo-500 to-purple-600',
-        unread: 0,
-        messages: [
-          {
-            id: 1,
-            sender: 'Priya Sundaram',
-            text: 'Vanakkam! Now we have Groups, Broadcasts (📢), and WhatsApp/Instagram-style Statuses at the top!',
-            time: '9:30 AM',
-            isMe: false,
-            reactions: { '👍': { count: 1, byMe: false } }
-          }
-        ]
-      },
-      {
-        id: 'dev-group',
-        type: 'group',
-        name: 'Dev Squad',
-        subtitle: 'Group · 3 members',
-        avatar: '💻',
-        color: 'from-blue-500 to-cyan-500',
-        unread: 1,
-        messages: [
-          {
-            id: 2,
-            sender: 'Karthik Raja',
-            text: 'Tap + next to Groups or Broadcast to create a new one anytime.',
-            time: '9:35 AM',
-            isMe: false,
-            reactions: {}
-          }
-        ]
-      },
-      {
-        id: 'office-broadcast',
-        type: 'broadcast',
-        name: 'Weekend Updates',
-        subtitle: 'Broadcast · 3 recipients',
-        avatar: '📢',
-        color: 'from-amber-500 to-orange-600',
-        unread: 0,
-        messages: [
-          {
-            id: 3,
-            sender: 'You',
-            text: '📢 Broadcast: Saturday team meetup at 5 PM!',
-            time: '9:40 AM',
-            isMe: true,
-            reactions: {}
-          }
-        ]
-      },
-      {
-        id: 'priya',
-        type: 'dm',
-        name: 'Priya Sundaram',
-        email: 'priya.dev@gmail.com',
-        subtitle: 'Online',
-        avatar: 'PS',
-        color: 'from-pink-500 to-rose-500',
-        unread: 1,
-        messages: [
-          {
-            id: 4,
-            sender: 'Priya Sundaram',
-            text: 'Hey! Check out my Status at the top of the Chat screen.',
-            time: '9:42 AM',
-            isMe: false,
-            reactions: {}
-          }
-        ]
-      },
-      {
-        id: 'karthik',
-        type: 'dm',
-        name: 'Karthik Raja',
-        email: 'karthik.k@gmail.com',
-        subtitle: 'Online',
-        avatar: 'KR',
-        color: 'from-sky-500 to-indigo-600',
-        unread: 0,
-        messages: [
-          {
-            id: 5,
-            sender: 'Karthik Raja',
-            text: 'Tap 📞 or 📹 above to test calling + Screen Sharing!',
-            time: '9:44 AM',
-            isMe: false,
-            reactions: {}
-          }
-        ]
-      }
-    ];
-
-    const defaultStatuses = [
-      {
-        id: 1,
-        name: 'Priya Sundaram',
-        avatar: 'PS',
-        color: 'from-pink-500 to-rose-500',
-        bg: 'from-pink-500 to-rose-600',
-        text: 'Filter coffee morning in Chennai! ☕✨',
-        image: '',
-        time: '15m ago',
-        viewed: false
-      },
-      {
-        id: 2,
-        name: 'Karthik Raja',
-        avatar: 'KR',
-        color: 'from-sky-500 to-indigo-600',
-        bg: 'from-indigo-600 to-cyan-600',
-        text: 'Building CHATEAMS Trial v10 🚀',
-        image: '',
-        time: '42m ago',
-        viewed: false
-      },
-      {
-        id: 3,
-        name: 'Divya Nair',
-        avatar: 'DN',
-        color: 'from-emerald-500 to-teal-600',
-        bg: 'from-emerald-500 to-teal-600',
-        text: 'Weekend trip mode ON 🌴',
-        image: '',
-        time: '1h ago',
-        viewed: true
-      }
-    ];
-
-    const defaultNotes = [
-      {
-        id: 1,
-        title: 'CHATEAMS Trial Checklist 💡',
-        body: 'Groups, Broadcasts, Statuses, Bottom Tabs, and Auto Dark Mode after 6:00 PM!',
-        color: 'amber',
-        pinned: true,
-        time: '9:30 AM'
-      },
-      {
-        id: 2,
-        title: 'Tea Break',
-        body: 'Grab masala chai at 4:00 PM with the team.',
-        color: 'emerald',
-        pinned: false,
-        time: '9:40 AM'
-      }
-    ];
-
-    const defaultCallHistory = [
-      { id: 1, name: 'Priya Sundaram', color: 'from-pink-500 to-rose-500', avatar: 'PS', mode: 'video', duration: '04:12', time: 'Yesterday' },
-      { id: 2, name: 'Karthik Raja', color: 'from-sky-500 to-indigo-600', avatar: 'KR', mode: 'voice', duration: '01:45', time: 'Today, 9:15 AM' }
-    ];
+    const googleDirectory = {};
+    const defaultRooms = [];
+    const defaultStatuses = [];
+    const defaultNotes = [];
+    const defaultCallHistory = [];
 
     function shouldBeNightNow() {
       const h = new Date().getHours();
@@ -1868,37 +1856,94 @@
 
     let isNightMode = shouldBeNightNow();
     let currentUser = null;
-    let rooms = defaultRooms;
-    let statuses = defaultStatuses;
-    let notes = defaultNotes;
-    let callHistory = defaultCallHistory;
+    let rooms = [];
+    let statuses = [];
+    let notes = [];
+    let callHistory = [];
     let nextId = 100;
+
+    function stripLegacyDemoData() {
+      if (Array.isArray(rooms)) {
+        rooms = rooms.filter(r => r && !LEGACY_DEMO_IDS.has(r.id) && !LEGACY_DEMO_EMAILS.has(String(r.email || '').toLowerCase()));
+        rooms.forEach(r => {
+          if (Array.isArray(r.messages)) {
+            r.messages = r.messages.filter(m =>
+              m &&
+              m.text !== 'Super clean in CHATEAMS! ⚡' &&
+              m.text !== 'Nice! Tap 📝 on this message to save it to Keep Notes.' &&
+              m.text !== 'Hi! Connected via Google Account.' &&
+              !String(m.text || '').endsWith('looks great. 👍')
+            );
+          }
+        });
+      }
+      if (Array.isArray(statuses)) {
+        statuses = statuses.filter(s => s && s.name !== 'Priya Sundaram' && s.name !== 'Karthik Raja' && s.name !== 'Divya Nair');
+      }
+      if (Array.isArray(notes)) {
+        notes = notes.filter(n => n && n.title !== 'CHATEAMS Trial Checklist 💡' && n.title !== 'Tea Break');
+      }
+      if (Array.isArray(callHistory)) {
+        callHistory = callHistory.filter(c => c && c.name !== 'Priya Sundaram' && c.name !== 'Karthik Raja');
+      }
+    }
+
+    function getAccountStorageKey(email) {
+      const clean = String(email || (currentUser && currentUser.email) || '').trim().toLowerCase();
+      return clean ? `chateams_acct_v2_${clean}` : STORAGE_KEY;
+    }
+
+    function loadAccountStateForEmail(email) {
+      const acctKey = getAccountStorageKey(email);
+      try {
+        const raw = localStorage.getItem(acctKey) || localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.rooms)) rooms = parsed.rooms;
+          if (Array.isArray(parsed.statuses)) statuses = parsed.statuses;
+          if (Array.isArray(parsed.notes)) notes = parsed.notes;
+          if (Array.isArray(parsed.callHistory)) callHistory = parsed.callHistory;
+          if (typeof parsed.nextId === 'number') nextId = parsed.nextId;
+        }
+      } catch (e) {}
+      stripLegacyDemoData();
+    }
 
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.currentUser) currentUser = parsed.currentUser;
-        if (Array.isArray(parsed.rooms) && parsed.rooms.length > 0) rooms = parsed.rooms;
+        if (parsed.currentUser && parsed.currentUser.email && !LEGACY_DEMO_EMAILS.has(parsed.currentUser.email.toLowerCase())) {
+          currentUser = parsed.currentUser;
+        }
+        if (Array.isArray(parsed.rooms)) rooms = parsed.rooms;
         if (Array.isArray(parsed.statuses)) statuses = parsed.statuses;
         if (Array.isArray(parsed.notes)) notes = parsed.notes;
         if (Array.isArray(parsed.callHistory)) callHistory = parsed.callHistory;
         if (typeof parsed.nextId === 'number') nextId = parsed.nextId;
+        if (currentUser && currentUser.email) {
+          loadAccountStateForEmail(currentUser.email);
+        }
       }
-    } catch (e) {
-      // Ignore storage errors
-    }
+    } catch (e) {}
+    stripLegacyDemoData();
 
     function saveState() {
+      stripLegacyDemoData();
+      const payload = { currentUser, rooms, statuses, notes, callHistory, nextId, updatedAt: Date.now() };
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentUser, rooms, statuses, notes, callHistory, nextId }));
-      } catch (e) {
-        // Ignore storage errors
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        if (currentUser && currentUser.email) {
+          localStorage.setItem(getAccountStorageKey(currentUser.email), JSON.stringify(payload));
+        }
+      } catch (e) {}
+      if (typeof window.syncAccountToGoogleCloud === 'function') {
+        window.syncAccountToGoogleCloud(payload);
       }
     }
 
     let activeView = 'chat';
-    let activeRoomId = 'team-hangout';
+    let activeRoomId = '';
     let isChatThreadOpen = false;
     let replyToMsg = null;
     let scheduledMessages = [];
@@ -2272,7 +2317,7 @@
       newChannelNameInput.value = '';
       newChannelDescInput.value = '';
       groupBulkEmailInput.value = '';
-      selectedGroupEmails = new Set(['priya.dev@gmail.com', 'karthik.k@gmail.com']);
+      selectedGroupEmails = new Set();
       renderChecklist(groupMembersChecklist, selectedGroupEmails, groupMemberCountLabel, 'selected');
       channelModal.classList.remove('hidden');
       newChannelNameInput.focus();
@@ -2282,7 +2327,7 @@
     function openBroadcastModal() {
       newBroadcastNameInput.value = '';
       broadcastBulkEmailInput.value = '';
-      selectedBroadcastEmails = new Set(['priya.dev@gmail.com', 'karthik.k@gmail.com']);
+      selectedBroadcastEmails = new Set();
       renderChecklist(broadcastMembersChecklist, selectedBroadcastEmails, broadcastMemberCountLabel, 'selected');
       broadcastModal.classList.remove('hidden');
       newBroadcastNameInput.focus();
@@ -2601,11 +2646,42 @@
       strip.classList.remove('hidden');
     }
 
-    function startCall(mode, targetRoom) {
+    function onRemoteCallAnswered() {
+      stopOutgoingRingback();
+      callTimer.textContent = 'Connected · 00:00';
+      if (callTimerId) clearInterval(callTimerId);
+      callSeconds = 0;
+      callTimerId = setInterval(() => {
+        callSeconds += 1;
+        callTimer.textContent = `Connected · ${formatDuration(callSeconds)}`;
+      }, 1000);
+    }
+
+    function onRemoteCallDeclined(reasonText) {
+      stopOutgoingRingback();
+      if (callTimerId) { clearInterval(callTimerId); callTimerId = null; }
+      callTimer.textContent = reasonText || 'Call Declined';
+      showToast(reasonText || 'Call was declined');
+      setTimeout(() => {
+        if (!callModal.classList.contains('hidden') && callSeconds === 0) {
+          callModal.classList.add('hidden');
+          if (callMediaStream) {
+            callMediaStream.getTracks().forEach(t => t.stop());
+            callMediaStream = null;
+          }
+        }
+      }, 1600);
+    }
+
+    function startCall(mode, targetRoom, isAnsweringIncoming = false) {
       const room = targetRoom || getActiveRoom();
+      if (!room) {
+        showToast('Select or add a contact first to start a call');
+        return;
+      }
       activeCallRoomId = room.id;
       currentCallMode = mode;
-      callParticipants = [{ name: room.name, avatar: room.avatar, color: room.color || 'from-indigo-500 to-purple-600' }];
+      callParticipants = [{ name: room.name, avatar: room.avatar, color: room.color || 'from-indigo-500 to-purple-600', email: room.email || '' }];
       beginCallRecording(mode);
       callSeconds = 0;
       isMuted = false;
@@ -2620,11 +2696,10 @@
       callPeerName.textContent = room.name;
       callAvatar.textContent = room.avatar;
       callAvatar.className = `w-[min(46vh,82vw)] h-[min(46vh,82vw)] rounded-3xl flex items-center justify-center text-7xl font-bold shadow-2xl ring-4 ring-indigo-500/40 overflow-hidden bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'}`;
-      callTimer.textContent = 'Ringing...';
       callMuteBtn.textContent = '🎤';
       callCamBtn.textContent = '📷';
       callCamStatus.textContent = 'Camera On';
-      callVideoLabel.textContent = 'Camera Active';
+      callVideoLabel.textContent = mode === 'video' ? 'Waiting for remote video...' : 'Voice Call Active';
 
       if (mode === 'video') {
         callVideoFrame.classList.remove('hidden');
@@ -2639,18 +2714,38 @@
       renderCallParticipantsUI();
       callModal.classList.remove('hidden');
 
-      if (callTimerId) clearInterval(callTimerId);
+      if (callTimerId) { clearInterval(callTimerId); callTimerId = null; }
       stopOutgoingRingback();
+
+      if (isAnsweringIncoming) {
+        // Receiver just tapped Answer on an incoming call
+        onRemoteCallAnswered();
+        return;
+      }
+
+      // Outgoing call: ring the opposite person and wait for their real Answer / Decline!
+      callTimer.textContent = room.email ? `Calling ${room.name} (Ringing...)` : 'Ringing...';
       playOutgoingRingbackTone();
-      outgoingRingbackTimer = setInterval(playOutgoingRingbackTone, 1600);
+      outgoingRingbackTimer = setInterval(playOutgoingRingbackTone, 2000);
+
+      if (typeof window.initiateLiveNetworkCall === 'function') {
+        window.initiateLiveNetworkCall(room, mode);
+      }
+
+      // 45-second unanswered ring timeout (NEVER auto-connects without remote answer!)
       outgoingConnectTimeout = setTimeout(() => {
-        stopOutgoingRingback();
-        callTimer.textContent = 'Connected · 00:00';
-        callTimerId = setInterval(() => {
-          callSeconds += 1;
-          callTimer.textContent = `Connected · ${formatDuration(callSeconds)}`;
-        }, 1000);
-      }, 2800);
+        if (callSeconds === 0 && !callModal.classList.contains('hidden')) {
+          stopOutgoingRingback();
+          callTimer.textContent = 'No Answer';
+          if (typeof window.sendCallSignal === 'function' && room.email) {
+            window.sendCallSignal(room.email, { type: 'chateams_call_end', reason: 'missed', mode });
+          }
+          showToast(`No answer from ${room.name}`);
+          setTimeout(() => {
+            if (callSeconds === 0) endCall();
+          }, 1500);
+        }
+      }, 45000);
     }
 
     async function beginScreenShare(shareScope) {
@@ -2681,6 +2776,12 @@
     }
 
     function finalizeCallMessage(room, mode, durationStr, secs, recordingUrl, isVideoRecording) {
+      if (!room) return;
+      if (!secs || secs <= 0) {
+        saveState();
+        renderApp();
+        return;
+      }
       const icon = mode === 'video' ? '📹' : '📞';
       const label = mode === 'video' ? 'Video call' : 'Voice call';
 
@@ -2715,8 +2816,15 @@
       showToast(`${label} recording saved in chat! 🔴`);
     }
 
-    function endCall() {
+    function endCall(fromRemote = false) {
       stopOutgoingRingback();
+      const callRoom = rooms.find(r => r.id === activeCallRoomId) || getActiveRoom();
+      if (!fromRemote && callRoom && callRoom.email && typeof window.sendCallSignal === 'function') {
+        window.sendCallSignal(callRoom.email, { type: 'chateams_call_end', mode: currentCallMode });
+      }
+      if (typeof window.closeActiveMediaCall === 'function') {
+        window.closeActiveMediaCall();
+      }
       if (callTimerId) {
         clearInterval(callTimerId);
         callTimerId = null;
@@ -2798,18 +2906,23 @@
 
     function sendAttachmentMessage(attachment, text) {
       const room = getActiveRoom();
-      room.messages.push({
+      if (!room) return;
+      const msgObj = {
         id: nextId++,
         sender: currentUser ? currentUser.name : 'You',
         text: text || '',
         attachment: attachment,
         time: getCurrentTime(),
         isMe: true,
+        status: isEffectiveOnline() ? 'sent' : 'queued',
         reactions: {}
-      });
+      };
+      room.messages.push(msgObj);
+      if (isEffectiveOnline() && typeof window.sendChateamsNetworkMessage === 'function') {
+        window.sendChateamsNetworkMessage(room, msgObj);
+      }
       saveState();
       renderApp();
-      triggerAutoReply(room.id, attachment.title);
     }
 
     // --- Render Sidebar ---
@@ -3042,8 +3155,37 @@
 
       if (visibleRooms.length === 0) {
         const empty = document.createElement('div');
-        empty.className = 'text-center text-xs text-slate-400 py-12';
-        empty.textContent = q ? `No chats matching "${searchQuery}"` : 'No chat history yet. Tap + in the menu to start a chat!';
+        empty.className = 'max-w-sm mx-auto my-8 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-4 shadow-sm';
+        if (q) {
+          empty.innerHTML = `<p class="text-xs text-slate-500 dark:text-slate-400">No chats matching "${searchQuery}"</p>`;
+        } else {
+          empty.innerHTML = `
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl">💬</div>
+            <div class="space-y-1">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Start Your First Conversation</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Enter any friend's Gmail ID to message or call them live, or restore your existing Gmail account chats from Google Cloud.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-2 pt-1">
+              <button id="empty-new-dm-btn" type="button" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs cursor-pointer">➕ New Chat (Enter Gmail ID)</button>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="empty-new-group-btn" type="button" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer">👥 New Group</button>
+                <button id="empty-sync-cloud-btn" type="button" class="py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold cursor-pointer">☁️ Sync Account</button>
+              </div>
+            </div>
+          `;
+          setTimeout(() => {
+            document.getElementById('empty-new-dm-btn')?.addEventListener('click', openDmModal);
+            document.getElementById('empty-new-group-btn')?.addEventListener('click', openChannelModal);
+            document.getElementById('empty-sync-cloud-btn')?.addEventListener('click', () => {
+              if (typeof window.pullAccountFromGoogleCloud === 'function') {
+                window.pullAccountFromGoogleCloud(true);
+              } else {
+                syncSettingsUI();
+                settingsModal.classList.remove('hidden');
+              }
+            });
+          }, 0);
+        }
         chatHistoryView.appendChild(empty);
         return;
       }
@@ -3163,10 +3305,15 @@
     // --- Render Chat View ---
     function renderMessages() {
       const room = getActiveRoom();
+      if (!room) {
+        isChatThreadOpen = false;
+        renderChatHistory();
+        return;
+      }
       roomAvatar.textContent = room.avatar;
       roomAvatar.className = `w-9 h-9 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm`;
       roomTitle.textContent = room.name;
-      roomSubtitle.textContent = room.type === 'dm' ? 'Online · Google Profile' : room.subtitle;
+      roomSubtitle.textContent = room.type === 'dm' ? (room.email || 'Direct Chat') : room.subtitle;
       searchInput.placeholder = 'Search chat...';
       messageInput.placeholder = room.type === 'broadcast'
         ? `Broadcast to ${room.name}...`
@@ -3734,102 +3881,86 @@
       callsView.classList.add('hidden');
       notesView.classList.add('hidden');
 
-      if (activeView === 'status') {
-        statusView.classList.remove('hidden');
-        renderStatusStrip();
-      } else if (activeView === 'calls') {
-        callsView.classList.remove('hidden');
-        renderCallsTab();
-      } else if (activeView === 'notes') {
-        notesView.classList.remove('hidden');
-        renderNotes();
-      } else {
-        chatView.classList.remove('hidden');
-        if (isChatThreadOpen) {
-          chatHistoryView.classList.add('hidden');
-          chatThreadView.classList.remove('hidden');
-          backToChatsBtn.classList.remove('hidden');
-          document.getElementById('mobile-chat-more-btn')?.classList.remove('hidden');
-          voiceCallBtn.classList.remove('hidden');
-          videoCallBtn.classList.remove('hidden');
-          const muteBtn = document.getElementById('mute-room-btn');
-          const curRoom = getActiveRoom();
-          muteBtn.classList.remove('hidden');
-          document.getElementById('wallpaper-btn').classList.remove('hidden');
-          document.getElementById('vanish-mode-btn').classList.remove('hidden');
-          document.getElementById('chat-head-pin-btn').classList.remove('hidden');
-          muteBtn.textContent = curRoom && curRoom.muted ? '🔕' : '🔔';
-          if (curRoom && (curRoom.type === 'group' || curRoom.type === 'broadcast')) {
-            manageMembersBtn.classList.remove('hidden');
-            manageMembersBtn.classList.add('flex');
+      const moreBtn = document.getElementById('mobile-chat-more-btn');
+      const moreMenu = document.getElementById('mobile-chat-more-menu');
+      const searchToggleBtn = document.getElementById('mobile-search-toggle-btn');
+      const curRoom = getActiveRoom();
+
+      // Always keep proxy buttons hidden so they never crowd the top header!
+      document.getElementById('mute-room-btn')?.classList.add('hidden');
+      document.getElementById('wallpaper-btn')?.classList.add('hidden');
+      document.getElementById('vanish-mode-btn')?.classList.add('hidden');
+      document.getElementById('chat-head-pin-btn')?.classList.add('hidden');
+      manageMembersBtn?.classList.add('hidden');
+      manageMembersBtn?.classList.remove('flex');
+
+      if (activeView === 'chat' && isChatThreadOpen && curRoom) {
+        // CHAT THREAD OPEN: Show ONLY Voice Call, Video Call, and ⋮ Options Menu on right!
+        openSidebarBtn.classList.add('hidden');
+        backToChatsBtn.classList.remove('hidden');
+        voiceCallBtn.classList.remove('hidden');
+        videoCallBtn.classList.remove('hidden');
+        moreBtn?.classList.remove('hidden');
+
+        // Hide main-screen icons so chat name has 100% space
+        searchToggleBtn?.classList.add('hidden');
+        themeToggleBtn.classList.add('hidden');
+        document.getElementById('open-settings-btn')?.classList.add('hidden');
+
+        // Update labels inside ⋮ Options dropdown
+        const muteLbl = document.getElementById('menu-mute-label');
+        if (muteLbl) muteLbl.textContent = curRoom.muted ? '🔕 Unmute Notifications' : '🔔 Mute Notifications';
+        const vanishLbl = document.getElementById('menu-vanish-label');
+        if (vanishLbl) vanishLbl.textContent = curRoom.vanishMode ? '👻 Vanish Mode: ON' : '👻 Vanish Mode: OFF';
+        const manageItem = document.getElementById('menu-manage-members-item');
+        if (manageItem) {
+          if (curRoom.type === 'group' || curRoom.type === 'broadcast') {
+            manageItem.classList.remove('hidden');
           } else {
-            manageMembersBtn.classList.add('hidden');
-            manageMembersBtn.classList.remove('flex');
+            manageItem.classList.add('hidden');
           }
-          renderMessages();
+        }
+
+        chatView.classList.remove('hidden');
+        chatHistoryView.classList.add('hidden');
+        chatThreadView.classList.remove('hidden');
+        renderMessages();
+      } else {
+        // MAIN SCREEN (Chats List, Status, Calls, or Takeaways)
+        openSidebarBtn.classList.remove('hidden');
+        backToChatsBtn.classList.add('hidden');
+        voiceCallBtn.classList.add('hidden');
+        videoCallBtn.classList.add('hidden');
+        moreBtn?.classList.add('hidden');
+        moreMenu?.classList.add('hidden');
+
+        searchToggleBtn?.classList.remove('hidden');
+        themeToggleBtn.classList.remove('hidden');
+        document.getElementById('open-settings-btn')?.classList.remove('hidden');
+
+        if (activeView === 'status') {
+          statusView.classList.remove('hidden');
+          roomAvatar.textContent = '⭕';
+          roomTitle.textContent = 'Status';
+          roomSubtitle.textContent = '24-Hour Updates';
+          renderStatusStrip();
+        } else if (activeView === 'calls') {
+          callsView.classList.remove('hidden');
+          renderCallsTab();
+        } else if (activeView === 'notes') {
+          notesView.classList.remove('hidden');
+          renderNotes();
         } else {
+          chatView.classList.remove('hidden');
           chatThreadView.classList.add('hidden');
           chatHistoryView.classList.remove('hidden');
-          backToChatsBtn.classList.add('hidden');
-          document.getElementById('mobile-chat-more-btn')?.classList.add('hidden');
-          document.getElementById('mobile-chat-more-menu')?.classList.add('hidden');
-          voiceCallBtn.classList.add('hidden');
-          videoCallBtn.classList.add('hidden');
-          document.getElementById('mute-room-btn').classList.add('hidden');
-          document.getElementById('wallpaper-btn').classList.add('hidden');
-          document.getElementById('vanish-mode-btn').classList.add('hidden');
-          document.getElementById('chat-head-pin-btn').classList.add('hidden');
-          manageMembersBtn.classList.add('hidden');
-          manageMembersBtn.classList.remove('flex');
           renderChatHistory();
         }
       }
     }
 
-    // --- Simulated Reply Logic ---
-    function triggerAutoReply(targetRoomId, userText) {
-      const room = rooms.find(r => r.id === targetRoomId);
-      if (!room || room.type === 'broadcast') return;
-
-      const responder = room.type === 'dm'
-        ? room.name
-        : (room.id === 'dev-group' ? 'Karthik Raja' : 'Priya Sundaram');
-
-      if (activeView === 'chat' && activeRoomId === targetRoomId) {
-        typingIndicator.textContent = `${responder} is typing...`;
-        typingIndicator.classList.remove('hidden');
-      }
-
-      if (replyTimeoutId) clearTimeout(replyTimeoutId);
-
-      replyTimeoutId = setTimeout(() => {
-        typingIndicator.classList.add('hidden');
-
-        const replies = [
-          `Got it, ${currentUser ? currentUser.name : 'friend'}! "${userText}" looks great. 👍`,
-          `Nice! Tap 📝 on this message to save it to Keep Notes.`,
-          `Super clean in CHATEAMS! ⚡`
-        ];
-        const replyText = replies[Math.floor(Math.random() * replies.length)];
-
-        room.messages.push({
-          id: nextId++,
-          sender: responder,
-          text: replyText,
-          time: getCurrentTime(),
-          isMe: false,
-          reactions: {}
-        });
-        if (!room.muted) playMessageTone();
-
-        if (activeView !== 'chat' || activeRoomId !== targetRoomId) {
-          room.unread += 1;
-        }
-
-        saveState();
-        renderApp();
-      }, 900);
-    }
+    // No simulated auto-reply or demo hints!
+    function triggerAutoReply() {}
 
     // --- Event Listeners ---
     authThemeToggleBtn.addEventListener('click', toggleTheme);
@@ -4639,6 +4770,7 @@
       if (existing) {
         activeView = 'chat';
         activeRoomId = existing.id;
+        isChatThreadOpen = true;
         closeDmModal();
         closeSidebar();
         renderApp();
@@ -4647,31 +4779,28 @@
       }
 
       const profile = resolveGoogleProfile(email);
+      googleDirectory[email] = profile;
       const id = `dm-${nextId++}`;
-      rooms.push({
+      const newRoom = {
         id,
         type: 'dm',
         name: profile.name,
         email: email,
-        subtitle: 'Online',
+        subtitle: email,
         avatar: profile.avatar,
         color: profile.color,
         unread: 0,
-        messages: [
-          {
-            id: nextId++,
-            sender: profile.name,
-            text: `Hi! Connected via Google Account.`,
-            time: getCurrentTime(),
-            isMe: false,
-            reactions: {}
-          }
-        ]
-      });
+        messages: []
+      };
+      rooms.push(newRoom);
 
       activeView = 'chat';
       activeRoomId = id;
+      isChatThreadOpen = true;
       closeDmModal();
+      if (typeof window.requestPeerHistorySync === 'function') {
+        window.requestPeerHistorySync(email);
+      }
       closeSidebar();
       saveState();
       renderApp();
@@ -4688,13 +4817,17 @@
       authError.classList.add('hidden');
       const profile = resolveGoogleProfile(email);
       const name = demoNameInput.value.trim() || profile.name;
+      loadAccountStateForEmail(email);
       currentUser = {
         name,
         email,
-        avatar: name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+        avatar: (appSettings && appSettings.avatarDataUrl) ? appSettings.avatarDataUrl : name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
       };
       saveState();
       renderApp();
+      if (typeof window.pullAccountFromGoogleCloud === 'function') {
+        window.pullAccountFromGoogleCloud(false);
+      }
     });
 
     signOutBtn.addEventListener('click', () => {
@@ -4966,7 +5099,7 @@
           ? 'px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white cursor-pointer shrink-0'
           : 'px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0';
       });
-      ['account', 'chats', 'calls', 'privacy', 'network'].forEach(k => {
+      ['account', 'chats', 'calls', 'privacy', 'update', 'network'].forEach(k => {
         const el = document.getElementById(`stab-${k}`);
         if (el) el.classList.toggle('hidden', k !== tabKey);
       });
@@ -5335,7 +5468,7 @@
       if (pendingIncomingCall) {
         const { mode, room } = pendingIncomingCall;
         pendingIncomingCall = null;
-        startCall(mode, room);
+        startCall(mode, room, true);
       }
     });
 
@@ -5353,13 +5486,13 @@
       settingsModal.classList.add('hidden');
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
-          new Notification('Priya Sundaram · CHATEAMS', {
-            body: 'Sent 100 photos · Tap to reply',
+          new Notification('CHATEAMS Cloud Alert', {
+            body: 'Background notifications are active and working!',
             icon: './icon.svg'
           });
         } catch (e) {}
       }
-      showToast('🔔 Priya Sundaram: Sent 100 photos');
+      showToast('🔔 Background notification test sent!');
     });
 
     document.getElementById('test-voice-ring-btn').addEventListener('click', () => {
@@ -5463,12 +5596,15 @@
     }, 5000);
 
 
-    // --- Mobile Header More Menu & Compact Search ---
-    (function initMobileHeaderControls() {
+    // --- Unified Chat Options Menu (⋮), Collapsible Search & Extra Settings Controls ---
+    (function initHeaderAndSettingsExtensions() {
       const moreBtn = document.getElementById('mobile-chat-more-btn');
       const moreMenu = document.getElementById('mobile-chat-more-menu');
       const searchToggleBtn = document.getElementById('mobile-search-toggle-btn');
       const searchBoxWrap = document.getElementById('search-box-wrap');
+      const closeSearchBarBtn = document.getElementById('close-search-bar-btn');
+      const menuSearchChatBtn = document.getElementById('menu-search-chat-btn');
+      const menuClearChatBtn = document.getElementById('menu-clear-chat-btn');
 
       if (moreBtn && moreMenu) {
         moreBtn.addEventListener('click', (e) => {
@@ -5485,29 +5621,240 @@
         document.addEventListener('click', () => moreMenu.classList.add('hidden'));
       }
 
-      if (searchToggleBtn && searchBoxWrap) {
-        searchToggleBtn.addEventListener('click', () => {
-          searchBoxWrap.classList.toggle('hidden');
-          if (!searchBoxWrap.classList.contains('hidden')) {
-            searchInput.focus();
-          }
+      function toggleSearchBar(forceOpen) {
+        if (!searchBoxWrap) return;
+        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : searchBoxWrap.classList.contains('hidden');
+        searchBoxWrap.classList.toggle('hidden', !willOpen);
+        if (willOpen) {
+          searchInput.focus();
+        } else {
+          searchQuery = '';
+          searchInput.value = '';
+          clearSearchBtn.classList.add('hidden');
+          renderApp();
+        }
+      }
+
+      searchToggleBtn?.addEventListener('click', () => toggleSearchBar());
+      closeSearchBarBtn?.addEventListener('click', () => toggleSearchBar(false));
+      menuSearchChatBtn?.addEventListener('click', () => {
+        moreMenu?.classList.add('hidden');
+        toggleSearchBar(true);
+      });
+
+      menuClearChatBtn?.addEventListener('click', () => {
+        moreMenu?.classList.add('hidden');
+        const room = getActiveRoom();
+        if (!room) return;
+        room.messages = [];
+        saveState();
+        renderMessages();
+        showToast(`Cleared messages in ${room.name}`);
+      });
+
+      // Device Detection (Mobile App vs Web Browser - No fake Linked Web Browser!)
+      function updateDeviceManagerUI() {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
+        const badge = document.getElementById('device-mode-badge');
+        const currentLbl = document.getElementById('current-device-label');
+        const webText = document.getElementById('web-linked-status-text');
+        const unlinkBtn = document.getElementById('unlink-web-btn');
+
+        if (badge) badge.textContent = isMobile ? 'Mobile App' : 'Web Session';
+        if (currentLbl) {
+          currentLbl.textContent = isMobile
+            ? '📱 Android / Mobile Device (Primary)'
+            : '💻 Current Browser Session (Primary)';
+        }
+        if (appSettings.webLinkedSession) {
+          if (webText) webText.textContent = `💻 Linked Web: ${appSettings.webLinkedSession}`;
+          unlinkBtn?.classList.remove('hidden');
+        } else {
+          if (webText) webText.textContent = '💻 Linked Web Browsers: None';
+          unlinkBtn?.classList.add('hidden');
+        }
+      }
+      window.updateDeviceManagerUI = updateDeviceManagerUI;
+      updateDeviceManagerUI();
+
+      document.getElementById('unlink-web-btn')?.addEventListener('click', () => {
+        appSettings.webLinkedSession = '';
+        saveSettings();
+        updateDeviceManagerUI();
+        showToast('Disconnected linked web session');
+      });
+
+      // Profile Photo Upload & Display Name Edit
+      const changeAvatarBtn = document.getElementById('change-avatar-btn');
+      const avatarInput = document.getElementById('profile-avatar-input');
+      changeAvatarBtn?.addEventListener('click', () => avatarInput?.click());
+      avatarInput?.addEventListener('change', () => {
+        const file = avatarInput.files && avatarInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          appSettings.avatarDataUrl = reader.result;
+          if (currentUser) currentUser.avatarPhoto = reader.result;
+          saveSettings();
+          saveState();
+          syncSettingsUI();
+          renderSidebar();
+          showToast('Profile photo updated! 📷');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Extra Chat & Privacy Settings Listeners
+      document.getElementById('theme-mode-select')?.addEventListener('change', (e) => {
+        appSettings.themeMode = e.target.value;
+        if (e.target.value === 'dark') isNightMode = true;
+        else if (e.target.value === 'light') isNightMode = false;
+        else isNightMode = shouldBeNightNow();
+        saveSettings();
+        applyTheme();
+        showToast(`Theme mode: ${e.target.options[e.target.selectedIndex].text}`);
+      });
+
+      document.getElementById('chat-fontsize-select')?.addEventListener('change', (e) => {
+        appSettings.fontSize = e.target.value;
+        saveSettings();
+        messagesContainer.style.fontSize = e.target.value === 'sm' ? '12px' : (e.target.value === 'lg' ? '16px' : '14px');
+        showToast('Chat font size updated');
+      });
+
+      document.getElementById('enter-send-toggle')?.addEventListener('change', (e) => {
+        appSettings.enterToSend = e.target.checked;
+        saveSettings();
+      });
+
+      document.getElementById('noise-suppress-toggle')?.addEventListener('change', (e) => {
+        appSettings.noiseSuppress = e.target.checked;
+        saveSettings();
+        showToast(e.target.checked ? '🎙️ AI Noise Suppression ON' : 'Noise Suppression OFF');
+      });
+
+      document.getElementById('vibrate-toggle')?.addEventListener('change', (e) => {
+        appSettings.vibrate = e.target.checked;
+        saveSettings();
+      });
+
+      document.getElementById('autolock-timer-select')?.addEventListener('change', (e) => {
+        appSettings.autoLockMinutes = e.target.value;
+        saveSettings();
+        showToast('Auto-lock timer saved');
+      });
+
+      document.getElementById('screen-privacy-toggle')?.addEventListener('change', (e) => {
+        appSettings.screenPrivacy = e.target.checked;
+        saveSettings();
+        showToast(e.target.checked ? '🛡️ Screen Privacy Shield enabled' : 'Screen Privacy Shield off');
+      });
+
+      function renderBlockedEmails() {
+        const list = document.getElementById('blocked-emails-list');
+        if (!list) return;
+        list.innerHTML = '';
+        const blocked = Array.isArray(appSettings.blockedEmails) ? appSettings.blockedEmails : [];
+        if (blocked.length === 0) {
+          list.innerHTML = '<p class="text-[11px] text-slate-400">No blocked contacts</p>';
+          return;
+        }
+        blocked.forEach((em) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between bg-white dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700';
+          const sp = document.createElement('span');
+          sp.textContent = em;
+          const ub = document.createElement('button');
+          ub.type = 'button';
+          ub.className = 'text-emerald-600 font-bold hover:underline cursor-pointer';
+          ub.textContent = 'Unblock';
+          ub.addEventListener('click', () => {
+            appSettings.blockedEmails = (appSettings.blockedEmails || []).filter(x => x !== em);
+            saveSettings();
+            renderBlockedEmails();
+            showToast(`Unblocked ${em}`);
+          });
+          row.appendChild(sp);
+          row.appendChild(ub);
+          list.appendChild(row);
         });
       }
+      window.renderBlockedEmails = renderBlockedEmails;
+
+      document.getElementById('add-block-email-btn')?.addEventListener('click', () => {
+        const inp = document.getElementById('block-email-input');
+        const em = (inp?.value || '').trim().toLowerCase();
+        if (!isValidEmail(em)) { showToast('Enter a valid Gmail ID'); return; }
+        if (!Array.isArray(appSettings.blockedEmails)) appSettings.blockedEmails = [];
+        if (!appSettings.blockedEmails.includes(em)) appSettings.blockedEmails.push(em);
+        inp.value = '';
+        saveSettings();
+        renderBlockedEmails();
+        showToast(`Blocked ${em} 🚫`);
+      });
+
+      const origSyncSettingsUI = syncSettingsUI;
+      syncSettingsUI = function () {
+        origSyncSettingsUI();
+        if (currentUser) {
+          const nameInp = document.getElementById('settings-name-input');
+          if (nameInp) nameInp.value = currentUser.name || '';
+          const emEl = document.getElementById('settings-profile-email');
+          if (emEl) emEl.textContent = currentUser.email || 'Signed in with Google';
+          const avEl = document.getElementById('settings-profile-avatar');
+          if (avEl && (appSettings.avatarDataUrl || currentUser.avatarPhoto)) {
+            avEl.innerHTML = `<img src="${appSettings.avatarDataUrl || currentUser.avatarPhoto}" alt="Avatar" class="w-full h-full object-cover" />`;
+          }
+        }
+        updateDeviceManagerUI();
+        renderBlockedEmails();
+        const repoInp = document.getElementById('github-repo-input');
+        if (repoInp) repoInp.value = appSettings.githubRepo || '';
+      };
+
+      document.getElementById('save-bio-btn')?.addEventListener('click', () => {
+        const newName = (document.getElementById('settings-name-input')?.value || '').trim();
+        if (newName && currentUser) {
+          currentUser.name = newName;
+          currentUser.avatar = newName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+          saveState();
+          renderSidebar();
+        }
+      });
     })();
 
-    // --- Real Cross-Device Email-ID Messaging (PeerJS WebRTC P2P + Firebase Firestore) ---
-    (function initChateamsLiveSync() {
-      const P2P_QUEUE_KEY = 'chateams_p2p_pending_v1';
+    // --- Real Cross-Device Gmail Messaging, Google Cloud Account Backup & Live WebRTC Calling ---
+    (function initChateamsCloudAndCalling() {
+      const P2P_QUEUE_KEY = 'chateams_p2p_pending_v2';
       let peerInstance = null;
       let peerReady = false;
       let firestoreDb = null;
+      let realtimeDb = null;
       let firestoreUnsub = null;
+      let firestoreCallUnsub = null;
+      let rtdbRef = null;
       let lastSignedEmail = '';
+      let activeMediaCall = null;
+      let incomingMediaCall = null;
+      const openPeerConns = new Map();
       let p2pPending = [];
       try { p2pPending = JSON.parse(localStorage.getItem(P2P_QUEUE_KEY) || '[]'); } catch (e) { p2pPending = []; }
 
+      // Check URL for shared ?cloud= config code so friends auto-connect in 1 tap
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cloudParam = urlParams.get('cloud');
+        if (cloudParam) {
+          const decoded = JSON.parse(atob(cloudParam));
+          if (decoded && (decoded.apiKey || decoded.databaseURL || decoded.projectId)) {
+            appSettings.firebase = decoded;
+            saveSettings();
+          }
+        }
+      } catch (e) {}
+
       function saveP2PPending() {
-        try { localStorage.setItem(P2P_QUEUE_KEY, JSON.stringify(p2pPending.slice(-200))); } catch (e) {}
+        try { localStorage.setItem(P2P_QUEUE_KEY, JSON.stringify(p2pPending.slice(-250))); } catch (e) {}
       }
 
       function emailToPeerId(email) {
@@ -5517,55 +5864,72 @@
           hash = ((hash << 5) - hash + clean.charCodeAt(i)) | 0;
         }
         const slug = clean.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 32);
-        return `chateams-v1-${slug}-${Math.abs(hash).toString(36)}`;
+        return `chateams-v2-${slug}-${Math.abs(hash).toString(36)}`;
       }
 
-      function updateNetworkPill(label, tone) {
+      function emailToCloudKey(email) {
+        return String(email || '').trim().toLowerCase().replace(/[.#$\[\]\/]/g, '_');
+      }
+
+      function setCloudStatusUI(label, isCloudConnected) {
         const pill = document.getElementById('network-status-pill');
-        if (!pill) return;
-        pill.classList.remove('hidden', 'bg-emerald-100', 'dark:bg-emerald-950', 'text-emerald-700', 'dark:text-emerald-300', 'bg-amber-100', 'dark:bg-amber-950', 'text-amber-700', 'dark:text-amber-300', 'bg-rose-100', 'dark:bg-rose-950', 'text-rose-700', 'dark:text-rose-300');
-        if (tone === 'ok') {
-          pill.classList.add('bg-emerald-100', 'dark:bg-emerald-950', 'text-emerald-700', 'dark:text-emerald-300');
-        } else if (tone === 'warn') {
-          pill.classList.add('bg-amber-100', 'dark:bg-amber-950', 'text-amber-700', 'dark:text-amber-300');
-        } else {
-          pill.classList.add('bg-rose-100', 'dark:bg-rose-950', 'text-rose-700', 'dark:text-rose-300');
+        const settingsPill = document.getElementById('settings-cloud-pill');
+        const fbBadge = document.getElementById('firebase-status-badge');
+        const sidebarSub = document.getElementById('sidebar-sub-label');
+        if (pill) pill.textContent = label;
+        if (settingsPill) settingsPill.textContent = label;
+        if (fbBadge) {
+          fbBadge.textContent = isCloudConnected ? '🟢 Google Cloud Connected' : '🟢 Live Cloud Relay';
+          fbBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
         }
-        pill.textContent = label;
+        if (sidebarSub) {
+          sidebarSub.textContent = isCloudConnected ? 'Google Cloud Live' : 'Cloud Messenger';
+        }
+      }
+
+      function findOrCreateDmRoom(peerEmail, peerName) {
+        const cleanEmail = String(peerEmail || '').trim().toLowerCase();
+        let room = rooms.find(r => r.type === 'dm' && String(r.email || '').toLowerCase() === cleanEmail);
+        if (!room) {
+          const prof = resolveGoogleProfile(cleanEmail);
+          const dispName = peerName || prof.name;
+          room = {
+            id: `dm-${nextId++}`,
+            type: 'dm',
+            name: dispName,
+            email: cleanEmail,
+            subtitle: cleanEmail,
+            avatar: dispName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U',
+            color: prof.color || 'from-indigo-500 to-purple-600',
+            unread: 0,
+            messages: []
+          };
+          rooms.push(room);
+        } else if (peerName && room.name !== peerName) {
+          room.name = peerName;
+        }
+        return room;
       }
 
       function handleIncomingNetworkData(packet) {
         if (!packet || !currentUser) return;
+        const fromEmail = String(packet.fromEmail || '').trim().toLowerCase();
+        if (!fromEmail || fromEmail === currentUser.email.toLowerCase()) return;
+
+        // Check blocked list
+        if (Array.isArray(appSettings.blockedEmails) && appSettings.blockedEmails.includes(fromEmail)) return;
+
         if (packet.type === 'chateams_msg') {
-          const fromEmail = String(packet.fromEmail || '').trim().toLowerCase();
-          if (!fromEmail || fromEmail === currentUser.email.toLowerCase()) return;
-
-          // Find or create DM room for sender
-          let targetRoom = rooms.find(r => r.type === 'dm' && (r.email || '').toLowerCase() === fromEmail);
-          if (!targetRoom) {
-            const prof = resolveGoogleProfile(fromEmail);
-            targetRoom = {
-              id: `dm-${nextId++}`,
-              type: 'dm',
-              name: packet.fromName || prof.name,
-              email: fromEmail,
-              subtitle: fromEmail,
-              avatar: (packet.fromName || prof.name).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U',
-              color: prof.color || 'from-indigo-500 to-purple-600',
-              messages: []
-            };
-            rooms.push(targetRoom);
-          }
-
-          // Deduplicate by remoteId
+          const targetRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
           if (targetRoom.messages.some(m => m.remoteId && m.remoteId === packet.remoteId)) return;
 
           const incomingMsg = {
             id: nextId++,
             remoteId: packet.remoteId,
-            sender: packet.fromName || fromEmail,
-            text: packet.text,
-            replyTo: packet.replyTo,
+            sender: packet.fromName || targetRoom.name,
+            text: packet.text || '',
+            attachment: packet.attachment || undefined,
+            replyTo: packet.replyTo || undefined,
             silent: !!packet.silent,
             vanish: !!packet.vanish,
             invisibleInk: !!packet.invisibleInk,
@@ -5574,28 +5938,45 @@
             reactions: {}
           };
           targetRoom.messages.push(incomingMsg);
-          saveState();
-          renderSidebar();
-          if (activeView === 'chat') {
-            if (isChatThreadOpen && activeRoomId === targetRoom.id) {
-              renderMessages();
-            } else {
-              renderChatHistory();
-            }
+
+          const isViewingNow = (activeView === 'chat' && isChatThreadOpen && activeRoomId === targetRoom.id);
+          if (!isViewingNow) {
+            targetRoom.unread = (targetRoom.unread || 0) + 1;
           }
+
+          saveState();
+          renderApp();
+
           if (!packet.silent) {
-            try { playMsgTone(); } catch (e) {}
-            showToast(`📩 ${targetRoom.name}: ${String(packet.text || '').slice(0, 36)}`);
+            try { playMessageTone(); } catch (e) {}
+            if (appSettings.vibrate !== false && navigator.vibrate) {
+              try { navigator.vibrate([120, 60, 120]); } catch (e) {}
+            }
+            showToast(`📩 ${targetRoom.name}: ${String(packet.text || 'Attachment').slice(0, 40)}`);
+          }
+
+          // Auto-reply if Busy / Driving mode is enabled
+          if (appSettings.busyMode && !packet.isAutoReply) {
+            const autoPacket = {
+              type: 'chateams_msg',
+              remoteId: `auto_${Date.now()}`,
+              fromEmail: currentUser.email.toLowerCase(),
+              fromName: currentUser.name,
+              toEmail: fromEmail,
+              text: '🚗 Automated Reply: I am currently busy/driving and will reply soon.',
+              isAutoReply: true,
+              time: getCurrentTime()
+            };
+            sendPacketToEmail(fromEmail, autoPacket);
           }
 
           // Send delivery / seen acknowledgment back
-          const isViewingNow = (activeView === 'chat' && isChatThreadOpen && activeRoomId === targetRoom.id);
-          sendRawPeerPacket(fromEmail, {
+          sendPacketToEmail(fromEmail, {
             type: 'chateams_ack',
             remoteId: packet.remoteId,
-            status: isViewingNow ? 'seen' : 'delivered',
-            seenAt: isViewingNow ? getCurrentTime() : null,
-            fromEmail: currentUser.email
+            status: isViewingNow && appSettings.readReceipts !== false ? 'seen' : 'delivered',
+            seenAt: isViewingNow && appSettings.readReceipts !== false ? getCurrentTime() : null,
+            fromEmail: currentUser.email.toLowerCase()
           });
         } else if (packet.type === 'chateams_ack') {
           for (const r of rooms) {
@@ -5612,6 +5993,62 @@
               break;
             }
           }
+        } else if (packet.type === 'chateams_sync_req') {
+          // Peer re-installed or opened chat: send shared DM history back so no messages are ever lost!
+          const dmRoom = rooms.find(r => r.type === 'dm' && String(r.email || '').toLowerCase() === fromEmail);
+          if (dmRoom && Array.isArray(dmRoom.messages) && dmRoom.messages.length > 0) {
+            const historySlice = dmRoom.messages.slice(-100).map(m => ({
+              remoteId: m.remoteId || `${m.id}_${m.time}`,
+              senderEmail: m.isMe ? currentUser.email.toLowerCase() : fromEmail,
+              senderName: m.isMe ? currentUser.name : dmRoom.name,
+              text: m.text || '',
+              time: m.time
+            }));
+            sendRawPeerPacket(fromEmail, {
+              type: 'chateams_sync_res',
+              fromEmail: currentUser.email.toLowerCase(),
+              fromName: currentUser.name,
+              history: historySlice
+            });
+          }
+        } else if (packet.type === 'chateams_sync_res' && Array.isArray(packet.history)) {
+          const dmRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
+          let addedCount = 0;
+          packet.history.forEach(h => {
+            if (!dmRoom.messages.some(m => (m.remoteId && m.remoteId === h.remoteId) || (m.text === h.text && m.time === h.time))) {
+              const mine = String(h.senderEmail || '').toLowerCase() === currentUser.email.toLowerCase();
+              dmRoom.messages.push({
+                id: nextId++,
+                remoteId: h.remoteId,
+                sender: mine ? currentUser.name : (h.senderName || dmRoom.name),
+                text: h.text,
+                time: h.time,
+                isMe: mine,
+                status: 'seen',
+                reactions: {}
+              });
+              addedCount++;
+            }
+          });
+          if (addedCount > 0) {
+            saveState();
+            renderApp();
+          }
+        } else if (packet.type === 'chateams_call_offer') {
+          const callerRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
+          saveState();
+          renderSidebar();
+          triggerIncomingCall(packet.mode || 'voice', callerRoom);
+        } else if (packet.type === 'chateams_call_accept') {
+          onRemoteCallAnswered();
+        } else if (packet.type === 'chateams_call_decline') {
+          onRemoteCallDeclined('Call Declined by recipient');
+        } else if (packet.type === 'chateams_call_end') {
+          stopIncomingRingtone();
+          document.getElementById('incoming-call-modal')?.classList.add('hidden');
+          if (!callModal.classList.contains('hidden')) {
+            endCall(true);
+          }
         }
       }
 
@@ -5622,22 +6059,37 @@
             return;
           }
           const targetPeerId = emailToPeerId(toEmail);
+          const existingConn = openPeerConns.get(targetPeerId);
+          if (existingConn && existingConn.open) {
+            try {
+              existingConn.send(packet);
+              resolve(true);
+              return;
+            } catch (e) {
+              openPeerConns.delete(targetPeerId);
+            }
+          }
+
           let settled = false;
           const timer = setTimeout(() => {
             if (!settled) { settled = true; resolve(false); }
-          }, 4500);
+          }, 5000);
+
           try {
-            const conn = peerInstance.connect(targetPeerId, { reliable: true });
+            const conn = peerInstance.connect(targetPeerId, { reliable: true, serialization: 'json' });
             conn.on('open', () => {
+              openPeerConns.set(targetPeerId, conn);
+              conn.on('data', (d) => handleIncomingNetworkData(d));
               try {
                 conn.send(packet);
                 if (!settled) { settled = true; clearTimeout(timer); resolve(true); }
-                setTimeout(() => { try { conn.close(); } catch (e) {} }, 1500);
               } catch (e) {
                 if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
               }
             });
+            conn.on('close', () => openPeerConns.delete(targetPeerId));
             conn.on('error', () => {
+              openPeerConns.delete(targetPeerId);
               if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
             });
           } catch (e) {
@@ -5646,46 +6098,375 @@
         });
       }
 
-      async function sendViaFirestore(toEmail, packet) {
-        if (!firestoreDb || !toEmail) return false;
-        try {
-          await firestoreDb.collection('chateams_messages').add({
-            ...packet,
-            toEmail: toEmail.toLowerCase(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          return true;
-        } catch (e) {
-          return false;
+      async function sendViaGoogleCloud(toEmail, packet) {
+        let sentCloud = false;
+        const cleanTo = String(toEmail || '').trim().toLowerCase();
+        if (!cleanTo) return false;
+
+        if (firestoreDb) {
+          try {
+            await firestoreDb.collection('chateams_messages').add({
+              ...packet,
+              toEmail: cleanTo,
+              participants: [currentUser.email.toLowerCase(), cleanTo],
+              createdAtMs: Date.now()
+            });
+            sentCloud = true;
+          } catch (e) {}
         }
+
+        if (realtimeDb) {
+          try {
+            const inboxKey = emailToCloudKey(cleanTo);
+            await realtimeDb.ref(`chateams_inbox/${inboxKey}`).push({
+              ...packet,
+              toEmail: cleanTo,
+              createdAtMs: Date.now()
+            });
+            sentCloud = true;
+          } catch (e) {}
+        }
+        return sentCloud;
+      }
+
+      async function sendPacketToEmail(toEmail, packet) {
+        const cloudOk = await sendViaGoogleCloud(toEmail, packet);
+        const p2pOk = await sendRawPeerPacket(toEmail, packet);
+        return { cloudOk, p2pOk };
+      }
+
+      // Sync & Restore Entire Gmail Account State to/from Google Cloud (Uninstall / Reinstall Safe!)
+      let cloudSaveTimer = null;
+      window.syncAccountToGoogleCloud = function (payload) {
+        if (!currentUser || !currentUser.email) return;
+        if (!firestoreDb && !realtimeDb) return;
+        clearTimeout(cloudSaveTimer);
+        cloudSaveTimer = setTimeout(async () => {
+          const emailKey = emailToCloudKey(currentUser.email);
+          const safeState = {
+            email: currentUser.email.toLowerCase(),
+            name: currentUser.name,
+            rooms: (payload.rooms || []).map(r => ({
+              ...r,
+              messages: (r.messages || []).slice(-150).map(m => ({
+                ...m,
+                attachment: m.attachment && String(m.attachment.url || '').startsWith('blob:') ? undefined : m.attachment
+              }))
+            })),
+            statuses: (payload.statuses || []).slice(-30),
+            notes: payload.notes || [],
+            callHistory: (payload.callHistory || []).slice(-50),
+            updatedAt: Date.now()
+          };
+          if (firestoreDb) {
+            try {
+              await firestoreDb.collection('chateams_accounts').doc(emailKey).set(safeState, { merge: true });
+            } catch (e) {}
+          }
+          if (realtimeDb) {
+            try {
+              await realtimeDb.ref(`chateams_accounts/${emailKey}`).set(safeState);
+            } catch (e) {}
+          }
+        }, 1200);
+      };
+
+      window.pullAccountFromGoogleCloud = async function (showFeedback = false) {
+        if (!currentUser || !currentUser.email) return;
+        const myEmail = currentUser.email.toLowerCase();
+        const emailKey = emailToCloudKey(myEmail);
+        let restoredAny = false;
+
+        // 1. Pull full account snapshot from Firestore or Realtime DB
+        if (firestoreDb) {
+          try {
+            const doc = await firestoreDb.collection('chateams_accounts').doc(emailKey).get();
+            if (doc.exists) {
+              const data = doc.data();
+              mergeCloudAccountSnapshot(data);
+              restoredAny = true;
+            }
+            // Also query any messages sent to or from this Gmail ID
+            const snapTo = await firestoreDb.collection('chateams_messages').where('toEmail', '==', myEmail).get();
+            snapTo.forEach(d => handleIncomingNetworkData(d.data()));
+          } catch (e) {}
+        }
+
+        if (realtimeDb) {
+          try {
+            const snap = await realtimeDb.ref(`chateams_accounts/${emailKey}`).once('value');
+            if (snap.exists()) {
+              mergeCloudAccountSnapshot(snap.val());
+              restoredAny = true;
+            }
+          } catch (e) {}
+        }
+
+        // 2. Also request history sync from all known DM peers via P2P
+        rooms.forEach(r => {
+          if (r.type === 'dm' && r.email) {
+            sendRawPeerPacket(r.email, {
+              type: 'chateams_sync_req',
+              fromEmail: myEmail,
+              fromName: currentUser.name
+            });
+          }
+        });
+
+        if (showFeedback) {
+          if (restoredAny) {
+            showToast('☁️ Restored chats & Takeaways from your Gmail Cloud Account!');
+          } else if (firestoreDb || realtimeDb) {
+            showToast('☁️ Gmail Cloud Account is synced & up to date!');
+          } else {
+            showToast('🟢 Live Peer Sync active — add Firebase Config above for cloud storage backup');
+          }
+        }
+      };
+
+      function mergeCloudAccountSnapshot(data) {
+        if (!data) return;
+        if (Array.isArray(data.rooms)) {
+          data.rooms.forEach(cloudRoom => {
+            if (!cloudRoom || LEGACY_DEMO_IDS.has(cloudRoom.id)) return;
+            const localRoom = rooms.find(r => r.id === cloudRoom.id || (r.type === 'dm' && r.email && cloudRoom.email && r.email.toLowerCase() === cloudRoom.email.toLowerCase()));
+            if (!localRoom) {
+              rooms.push(cloudRoom);
+            } else if (Array.isArray(cloudRoom.messages)) {
+              cloudRoom.messages.forEach(cm => {
+                if (!localRoom.messages.some(lm => (lm.remoteId && lm.remoteId === cm.remoteId) || (lm.text === cm.text && lm.time === cm.time))) {
+                  localRoom.messages.push(cm);
+                }
+              });
+            }
+          });
+        }
+        if (Array.isArray(data.notes)) {
+          data.notes.forEach(cn => {
+            if (!notes.some(ln => ln.title === cn.title && ln.body === cn.body)) {
+              notes.push(cn);
+            }
+          });
+        }
+        saveState();
+        renderApp();
+      }
+
+      window.requestPeerHistorySync = function (peerEmail) {
+        if (!currentUser || !peerEmail) return;
+        sendRawPeerPacket(peerEmail, {
+          type: 'chateams_sync_req',
+          fromEmail: currentUser.email.toLowerCase(),
+          fromName: currentUser.name
+        });
+      };
+
+      function parseFirebaseInput() {
+        const quickRaw = (document.getElementById('fb-quick-paste')?.value || '').trim();
+        if (quickRaw) {
+          // Check if it's a base64 Cloud Sync Code
+          if (!quickRaw.includes('{') && !quickRaw.startsWith('http')) {
+            try {
+              const decoded = JSON.parse(atob(quickRaw));
+              if (decoded) return decoded;
+            } catch (e) {}
+          }
+          // Check if it's a single Firebase Realtime Database URL
+          if (quickRaw.startsWith('https://') && (quickRaw.includes('firebaseio.com') || quickRaw.includes('firebasedatabase.app'))) {
+            const urlClean = quickRaw.replace(/\/+$/, '');
+            const projGuess = urlClean.split('//')[1].split('.')[0].replace(/-default-rtdb$/, '');
+            return { apiKey: 'rtdb-direct', projectId: projGuess, databaseURL: urlClean, authDomain: `${projGuess}.firebaseapp.com` };
+          }
+          // Extract fields from pasted JS/JSON snippet
+          const apiKeyMatch = quickRaw.match(/apiKey\s*[:=]\s*["']([^"']+)["']/);
+          const projMatch = quickRaw.match(/projectId\s*[:=]\s*["']([^"']+)["']/);
+          const authMatch = quickRaw.match(/authDomain\s*[:=]\s*["']([^"']+)["']/);
+          const dbMatch = quickRaw.match(/databaseURL\s*[:=]\s*["']([^"']+)["']/);
+          if (apiKeyMatch || projMatch || dbMatch) {
+            return {
+              apiKey: apiKeyMatch ? apiKeyMatch[1] : '',
+              projectId: projMatch ? projMatch[1] : '',
+              authDomain: authMatch ? authMatch[1] : '',
+              databaseURL: dbMatch ? dbMatch[1] : ''
+            };
+          }
+        }
+        const ak = (document.getElementById('fb-api-key')?.value || '').trim();
+        const pid = (document.getElementById('fb-project-id')?.value || '').trim();
+        const ad = (document.getElementById('fb-auth-domain')?.value || '').trim();
+        const isDbUrl = ad.startsWith('https://');
+        return {
+          apiKey: ak,
+          projectId: pid,
+          authDomain: isDbUrl ? `${pid}.firebaseapp.com` : ad,
+          databaseURL: isDbUrl ? ad : (pid ? `https://${pid}-default-rtdb.firebaseio.com` : '')
+        };
       }
 
       function initFirebaseLive() {
         if (firestoreUnsub) { try { firestoreUnsub(); } catch (e) {} firestoreUnsub = null; }
+        if (rtdbRef) { try { rtdbRef.off(); } catch (e) {} rtdbRef = null; }
         firestoreDb = null;
+        realtimeDb = null;
+
         const fb = appSettings && appSettings.firebase;
-        if (!fb || !fb.apiKey || !fb.projectId || typeof firebase === 'undefined' || !currentUser) return;
+        if (!fb || (!fb.apiKey && !fb.databaseURL && !fb.projectId) || typeof firebase === 'undefined' || !currentUser) return;
+
         try {
+          const cfg = {
+            apiKey: fb.apiKey || 'AIzaSyDummyKeyForRTDB',
+            authDomain: fb.authDomain || `${fb.projectId || 'chateams'}.firebaseapp.com`,
+            projectId: fb.projectId || 'chateams',
+            databaseURL: fb.databaseURL || (fb.projectId ? `https://${fb.projectId}-default-rtdb.firebaseio.com` : undefined)
+          };
           if (!firebase.apps.length) {
-            firebase.initializeApp({
-              apiKey: fb.apiKey,
-              authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
-              projectId: fb.projectId
+            firebase.initializeApp(cfg);
+          }
+          if (fb.apiKey && fb.apiKey !== 'rtdb-direct' && fb.projectId && typeof firebase.firestore === 'function') {
+            firestoreDb = firebase.firestore();
+            firestoreUnsub = firestoreDb.collection('chateams_messages')
+              .where('toEmail', '==', currentUser.email.toLowerCase())
+              .onSnapshot((snap) => {
+                snap.docChanges().forEach((change) => {
+                  if (change.type === 'added') {
+                    handleIncomingNetworkData(change.doc.data());
+                  }
+                });
+              });
+          }
+          if (cfg.databaseURL && typeof firebase.database === 'function') {
+            realtimeDb = firebase.database();
+            const inboxKey = emailToCloudKey(currentUser.email);
+            rtdbRef = realtimeDb.ref(`chateams_inbox/${inboxKey}`);
+            rtdbRef.limitToLast(50).on('child_added', (snap) => {
+              if (snap && snap.val()) {
+                handleIncomingNetworkData(snap.val());
+              }
             });
           }
-          firestoreDb = firebase.firestore();
-          firestoreUnsub = firestoreDb.collection('chateams_messages')
-            .where('toEmail', '==', currentUser.email.toLowerCase())
-            .onSnapshot((snap) => {
-              snap.docChanges().forEach((change) => {
-                if (change.type === 'added') {
-                  handleIncomingNetworkData(change.doc.data());
-                }
-              });
-            });
-          updateNetworkPill('🔥 Firebase + P2P', 'ok');
+          setCloudStatusUI('🟢 Google Cloud Live', true);
+          window.pullAccountFromGoogleCloud(false);
         } catch (e) {}
       }
+
+      // Live WebRTC Media & Data Calling via PeerJS
+      function attachRemoteMediaStream(remoteStream, mode) {
+        const vidEl = document.getElementById('remote-call-video');
+        const audEl = document.getElementById('remote-call-audio');
+        if (mode === 'video' && vidEl) {
+          vidEl.srcObject = remoteStream;
+          vidEl.classList.remove('hidden');
+          callVideoPlaceholder?.classList.add('hidden');
+          vidEl.play().catch(() => {});
+        }
+        if (audEl) {
+          audEl.srcObject = remoteStream;
+          audEl.play().catch(() => {});
+        }
+      }
+
+      window.closeActiveMediaCall = function () {
+        if (activeMediaCall) {
+          try { activeMediaCall.close(); } catch (e) {}
+          activeMediaCall = null;
+        }
+        if (incomingMediaCall) {
+          try { incomingMediaCall.close(); } catch (e) {}
+          incomingMediaCall = null;
+        }
+        const vidEl = document.getElementById('remote-call-video');
+        if (vidEl) { vidEl.srcObject = null; vidEl.classList.add('hidden'); }
+        callVideoPlaceholder?.classList.remove('hidden');
+      };
+
+      window.sendCallSignal = function (toEmail, packet) {
+        if (!currentUser || !toEmail) return;
+        sendPacketToEmail(toEmail, {
+          ...packet,
+          fromEmail: currentUser.email.toLowerCase(),
+          fromName: currentUser.name,
+          remoteId: `call_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+        });
+      };
+
+      window.initiateLiveNetworkCall = async function (room, mode) {
+        if (!currentUser || !room || !room.email) return;
+        const targetEmail = room.email.toLowerCase();
+
+        // 1. Send instant signaling offer via DataChannel & Google Cloud
+        window.sendCallSignal(targetEmail, {
+          type: 'chateams_call_offer',
+          mode: mode
+        });
+
+        // 2. Open WebRTC media stream and call target Peer ID
+        if (peerInstance && peerReady && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: {
+                echoCancellation: appSettings.noiseSuppress !== false,
+                noiseSuppression: appSettings.noiseSuppress !== false
+              },
+              video: mode === 'video'
+            });
+            callMediaStream = stream;
+            const mCall = peerInstance.call(emailToPeerId(targetEmail), stream, {
+              metadata: {
+                fromEmail: currentUser.email.toLowerCase(),
+                fromName: currentUser.name,
+                mode: mode
+              }
+            });
+            if (mCall) {
+              activeMediaCall = mCall;
+              mCall.on('stream', (remoteStream) => {
+                onRemoteCallAnswered();
+                attachRemoteMediaStream(remoteStream, mode);
+              });
+              mCall.on('close', () => {
+                if (!callModal.classList.contains('hidden')) endCall(true);
+              });
+            }
+          } catch (e) {}
+        }
+      };
+
+      // Wire Answer / Decline buttons on Incoming Call Screen to notify the caller!
+      document.getElementById('accept-incoming-btn')?.addEventListener('click', async () => {
+        if (pendingIncomingCall && pendingIncomingCall.room && pendingIncomingCall.room.email) {
+          const callerEmail = pendingIncomingCall.room.email.toLowerCase();
+          const mode = pendingIncomingCall.mode || 'voice';
+          window.sendCallSignal(callerEmail, { type: 'chateams_call_accept', mode });
+          if (incomingMediaCall && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+              const myStream = await navigator.mediaDevices.getUserMedia({
+                audio: { echoCancellation: true, noiseSuppression: true },
+                video: mode === 'video'
+              });
+              callMediaStream = myStream;
+              incomingMediaCall.answer(myStream);
+              incomingMediaCall.on('stream', (remStream) => {
+                attachRemoteMediaStream(remStream, mode);
+              });
+            } catch (e) {
+              try { incomingMediaCall.answer(); } catch (err) {}
+            }
+          }
+        }
+      }, true);
+
+      document.getElementById('decline-incoming-btn')?.addEventListener('click', () => {
+        if (pendingIncomingCall && pendingIncomingCall.room && pendingIncomingCall.room.email) {
+          window.sendCallSignal(pendingIncomingCall.room.email.toLowerCase(), {
+            type: 'chateams_call_decline',
+            mode: pendingIncomingCall.mode || 'voice'
+          });
+        }
+        if (incomingMediaCall) {
+          try { incomingMediaCall.close(); } catch (e) {}
+          incomingMediaCall = null;
+        }
+      }, true);
 
       function initPeerLive() {
         if (!currentUser || !currentUser.email || typeof Peer === 'undefined') return;
@@ -5694,7 +6475,6 @@
         lastSignedEmail = myEmail;
         if (peerInstance) { try { peerInstance.destroy(); } catch (e) {} }
         peerReady = false;
-        updateNetworkPill('⏳ Connecting...', 'warn');
 
         const myPeerId = emailToPeerId(myEmail);
         peerInstance = new Peer(myPeerId, {
@@ -5702,30 +6482,55 @@
           config: {
             iceServers: [
               { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' }
+              { urls: 'stun:stun1.l.google.com:19302' },
+              { urls: 'stun:stun2.l.google.com:19302' }
             ]
           }
         });
 
         peerInstance.on('open', () => {
           peerReady = true;
-          updateNetworkPill(firestoreDb ? '🔥 Firebase + P2P' : '🟢 Live P2P', 'ok');
+          setCloudStatusUI((firestoreDb || realtimeDb) ? '🟢 Google Cloud Live' : '🟢 Cloud Active', !!(firestoreDb || realtimeDb));
           flushP2PPending();
+          // Request history sync from contacts on startup
+          rooms.forEach(r => {
+            if (r.type === 'dm' && r.email) {
+              sendRawPeerPacket(r.email, {
+                type: 'chateams_sync_req',
+                fromEmail: myEmail,
+                fromName: currentUser.name
+              });
+            }
+          });
         });
 
         peerInstance.on('connection', (conn) => {
+          conn.on('open', () => {
+            if (conn.peer) openPeerConns.set(conn.peer, conn);
+          });
           conn.on('data', (data) => handleIncomingNetworkData(data));
+        });
+
+        peerInstance.on('call', (mediaCall) => {
+          incomingMediaCall = mediaCall;
+          const meta = mediaCall.metadata || {};
+          if (meta.fromEmail) {
+            const callerRoom = findOrCreateDmRoom(meta.fromEmail, meta.fromName);
+            saveState();
+            renderSidebar();
+            if (document.getElementById('incoming-call-modal')?.classList.contains('hidden')) {
+              triggerIncomingCall(meta.mode || 'voice', callerRoom);
+            }
+          }
         });
 
         peerInstance.on('disconnected', () => {
           peerReady = false;
-          updateNetworkPill('⏳ Reconnecting...', 'warn');
           try { peerInstance.reconnect(); } catch (e) {}
         });
 
         peerInstance.on('error', () => {
           peerReady = false;
-          updateNetworkPill(firestoreDb ? '🔥 Firebase Live' : '🟡 Local / Retry', 'warn');
         });
       }
 
@@ -5733,8 +6538,8 @@
         if (!p2pPending.length || !currentUser) return;
         const remaining = [];
         for (const item of p2pPending) {
-          const ok = await sendRawPeerPacket(item.toEmail, item.packet);
-          if (!ok) remaining.push(item);
+          const { cloudOk, p2pOk } = await sendPacketToEmail(item.toEmail, item.packet);
+          if (!p2pOk && !cloudOk) remaining.push(item);
         }
         p2pPending = remaining;
         saveP2PPending();
@@ -5758,6 +6563,9 @@
         saveState();
 
         for (const toEmail of targets) {
+          const safeAtt = msgObj.attachment && !String(msgObj.attachment.url || '').startsWith('blob:')
+            ? msgObj.attachment
+            : undefined;
           const packet = {
             type: 'chateams_msg',
             remoteId,
@@ -5765,27 +6573,54 @@
             fromName: currentUser.name,
             toEmail,
             text: msgObj.text,
+            attachment: safeAtt,
             replyTo: msgObj.replyTo || null,
             silent: !!msgObj.silent,
             vanish: !!msgObj.vanish,
             invisibleInk: !!msgObj.invisibleInk,
             time: msgObj.time
           };
-          const fbOk = await sendViaFirestore(toEmail, packet);
-          const p2pOk = await sendRawPeerPacket(toEmail, packet);
-          if (!p2pOk && !fbOk) {
+          const { cloudOk, p2pOk } = await sendPacketToEmail(toEmail, packet);
+          if (!p2pOk && !cloudOk) {
             p2pPending.push({ toEmail, packet });
             saveP2PPending();
             msgObj.status = 'sent';
-            saveState();
-            if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
-          } else if (fbOk && !p2pOk) {
+          } else {
             msgObj.status = 'delivered';
-            saveState();
-            if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
           }
+          saveState();
+          if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
         }
       };
+
+      document.getElementById('save-firebase-btn')?.addEventListener('click', () => {
+        const parsed = parseFirebaseInput();
+        appSettings.firebase = parsed;
+        if (document.getElementById('fb-api-key')) document.getElementById('fb-api-key').value = parsed.apiKey || '';
+        if (document.getElementById('fb-project-id')) document.getElementById('fb-project-id').value = parsed.projectId || '';
+        if (document.getElementById('fb-auth-domain')) document.getElementById('fb-auth-domain').value = parsed.databaseURL || parsed.authDomain || '';
+        saveSettings();
+        syncSettingsUI();
+        initFirebaseLive();
+        showToast('☁️ Connected to Google Cloud Sync!');
+      });
+
+      document.getElementById('sync-cloud-account-btn')?.addEventListener('click', () => {
+        window.pullAccountFromGoogleCloud(true);
+      });
+
+      document.getElementById('copy-cloud-code-btn')?.addEventListener('click', () => {
+        const fb = appSettings && appSettings.firebase;
+        if (!fb || (!fb.apiKey && !fb.databaseURL && !fb.projectId)) {
+          showToast('Save your Firebase Config first to generate a Friends Cloud Code');
+          return;
+        }
+        const code = btoa(JSON.stringify(fb));
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).catch(() => {});
+        }
+        showToast('📤 Cloud Sync Code copied! Share with friends to paste in Settings');
+      });
 
       const origRenderAppSync = renderApp;
       renderApp = function () {
@@ -5796,11 +6631,7 @@
         }
       };
 
-      document.getElementById('save-firebase-btn')?.addEventListener('click', () => {
-        setTimeout(() => initFirebaseLive(), 150);
-      });
-
-      setInterval(flushP2PPending, 10000);
+      setInterval(flushP2PPending, 8000);
       window.addEventListener('online', flushP2PPending);
       window.addEventListener('focus', flushP2PPending);
 
@@ -5808,6 +6639,103 @@
         initFirebaseLive();
         initPeerLive();
       }
+    })();
+
+    // --- GitHub & Service Worker OTA Update Checker ---
+    (function initChateamsUpdateChecker() {
+      const statusBadge = document.getElementById('update-status-badge');
+      const remoteLbl = document.getElementById('remote-version-label');
+      const checkedLbl = document.getElementById('update-last-checked');
+      const alertBanner = document.getElementById('settings-update-alert');
+      const alertSub = document.getElementById('settings-update-alert-sub');
+      const repoInp = document.getElementById('github-repo-input');
+
+      async function checkForAppUpdate(manual = false) {
+        const repo = (repoInp?.value || appSettings.githubRepo || '').trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/+$/, '');
+        if (repo) {
+          appSettings.githubRepo = repo;
+          saveSettings();
+        }
+        if (checkedLbl) checkedLbl.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+        let remoteData = null;
+        // 1. Check GitHub repo raw version.json if configured
+        if (repo && repo.includes('/')) {
+          try {
+            const ghRes = await fetch(`https://raw.githubusercontent.com/${repo}/main/version.json?t=${Date.now()}`, { cache: 'no-store' });
+            if (ghRes.ok) remoteData = await ghRes.json();
+          } catch (e) {}
+        }
+        // 2. Also check local/hosted version.json
+        if (!remoteData) {
+          try {
+            const verTarget = new URL('version.json?t=' + Date.now(), window.location.href).href;
+            const locRes = await fetch(verTarget, { cache: 'no-store' });
+            if (locRes.ok) remoteData = await locRes.json();
+          } catch (e) {}
+        }
+
+        // 3. Trigger Service Worker update check
+        if ('serviceWorker' in navigator) {
+          try {
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (reg) await reg.update();
+          } catch (e) {}
+        }
+
+        if (remoteData && remoteData.build) {
+          if (remoteLbl) remoteLbl.textContent = `v${remoteData.version || '2.0.0'} · Build ${remoteData.build}`;
+          if (Number(remoteData.build) > APP_BUILD) {
+            if (statusBadge) {
+              statusBadge.textContent = `🚀 Update Available (v${remoteData.version})`;
+              statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
+            }
+            alertBanner?.classList.remove('hidden');
+            if (alertSub && remoteData.notes) alertSub.textContent = remoteData.notes;
+            showToast(`🚀 New Update v${remoteData.version} available in Settings!`);
+            return;
+          }
+        }
+
+        if (statusBadge) {
+          statusBadge.textContent = `✓ Up to Date (v${APP_VERSION})`;
+          statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+        }
+        if (manual) {
+          showToast(`✓ CHATEAMS v${APP_VERSION} (Build ${APP_BUILD}) is up to date!`);
+        }
+      }
+
+      async function applyUpdateAndReload() {
+        showToast('⚡ Updating CHATEAMS (keeping all your chats safe)...');
+        saveState();
+        if ('serviceWorker' in navigator) {
+          try {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (const r of regs) {
+              if (r.waiting) r.waiting.postMessage({ type: 'SKIP_WAITING' });
+              await r.unregister();
+            }
+          } catch (e) {}
+        }
+        if ('caches' in window) {
+          try {
+            const keys = await caches.keys();
+            await Promise.all(keys.filter(k => k !== 'chateams-share-target').map(k => caches.delete(k)));
+          } catch (e) {}
+        }
+        setTimeout(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('updated', Date.now());
+          window.location.replace(url.toString());
+        }, 500);
+      }
+
+      document.getElementById('check-update-now-btn')?.addEventListener('click', () => checkForAppUpdate(true));
+      document.getElementById('force-apply-update-btn')?.addEventListener('click', applyUpdateAndReload);
+      document.getElementById('banner-apply-update-btn')?.addEventListener('click', applyUpdateAndReload);
+
+      setTimeout(() => checkForAppUpdate(false), 2000);
     })();
 
     if ('serviceWorker' in navigator) {
@@ -5951,11 +6879,13 @@
     function openStatusViewersModal() {
       const listEl = document.getElementById('status-viewers-list');
       listEl.innerHTML = '';
-      const viewers = [
-        { name: 'Priya Sundaram', time: '4m ago' },
-        { name: 'Karthik Raja', time: '18m ago' },
-        { name: 'Divya Nair', time: '1h ago' }
-      ];
+      const viewers = Array.isArray(window.statusViewersList) ? window.statusViewersList : [];
+      if (viewers.length === 0) {
+        const emptyRow = document.createElement('p');
+        emptyRow.className = 'text-xs text-slate-400 text-center py-4';
+        emptyRow.textContent = 'No views yet in the last 24h';
+        listEl.appendChild(emptyRow);
+      }
       viewers.forEach(v => {
         const row = document.createElement('div');
         row.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800';
@@ -6253,8 +7183,8 @@
     });
 
     document.getElementById('simulate-qr-link-btn').addEventListener('click', () => {
-      const email = demoEmailInput.value.trim().toLowerCase() || 'arjun.kumar@gmail.com';
-      const name = demoNameInput.value.trim() || 'Arjun Kumar';
+      const email = demoEmailInput.value.trim().toLowerCase(); if (!isValidEmail(email)) { authGoogleBtn.click(); authError.classList.remove('hidden'); showToast('Enter your Gmail ID first'); return; }
+      const name = demoNameInput.value.trim() || resolveGoogleProfile(email).name;
       currentUser = {
         name,
         email,

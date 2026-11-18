@@ -1,8 +1,14 @@
 {
   "name": "chateams",
-  "version": "1.0.0",
-  "description": "CHATEAMS — Lightweight Chat, Calls, Status & Keep Notes",
+  "version": "2.0.0",
+  "description": "CHATEAMS \u2014 Cloud Chat, Voice/Video Calls, Status & Takeaways",
   "private": true,
+  "scripts": {
+    "capacitor:add:after": "node apply-icons.js",
+    "capacitor:sync:after": "node apply-icons.js",
+    "capacitor:copy:after": "node apply-icons.js",
+    "apply-icons": "node apply-icons.js"
+  },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
     "@capacitor/android": "^6.0.0"
