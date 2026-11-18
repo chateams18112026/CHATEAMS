@@ -1,0 +1,33 @@
+{
+  "name": "CHATEAMS — Chat & Keep Notes",
+  "short_name": "CHATEAMS",
+  "description": "Lightweight chat and Google Keep-style notes app for iOS, Android, and Web.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html?share_target=1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*", "video/*", "audio/*", "application/pdf", "*/*"]
+        }
+      ]
+    }
+  }
+}

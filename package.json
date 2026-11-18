@@ -1,0 +1,13 @@
+{
+  "name": "chateams",
+  "version": "1.0.0",
+  "description": "CHATEAMS — Lightweight Chat, Calls, Status & Keep Notes",
+  "private": true,
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/android": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}

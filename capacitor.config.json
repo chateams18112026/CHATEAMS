@@ -1,0 +1,8 @@
+{
+  "appId": "com.chateams.app",
+  "appName": "CHATEAMS",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
