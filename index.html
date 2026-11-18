@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <meta name="theme-color" content="#4f46e5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -91,9 +96,19 @@
     .anim-emoji-thumb { animation: animThumbBounce 1.8s ease-in-out infinite; }
     .anim-emoji-liquid { animation: animLiquidWobble 2.1s ease-in-out infinite; }
     .anim-emoji-face { animation: animFaceWiggle 2.2s ease-in-out infinite; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .safe-top { padding-top: max(env(safe-area-inset-top), 0.5rem); }
+    .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.375rem); }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-black min-h-screen flex items-center justify-center p-2 sm:p-4 transition-colors duration-200">
+<body class="bg-white dark:bg-black md:bg-slate-100 md:dark:bg-black h-[100dvh] w-screen overflow-hidden flex items-center justify-center p-0 md:p-4 transition-colors duration-200">
 
   <!-- Toast Notification -->
   <div id="toast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 dark:bg-white text-white dark:text-black text-xs font-bold px-4 py-2.5 rounded-full shadow-lg transition">
@@ -1041,7 +1056,7 @@
   <input id="hidden-file-input" type="file" multiple class="hidden" />
 
   <!-- SCREEN 1: Google Account Sign-In -->
-  <div id="auth-screen" class="relative w-full max-w-sm bg-white dark:bg-slate-950 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 flex flex-col items-center text-center space-y-6 transition-colors">
+  <div id="auth-screen" class="relative w-full h-[100dvh] md:h-auto md:max-w-sm bg-white dark:bg-slate-950 rounded-none md:rounded-3xl shadow-none md:shadow-xl border-0 md:border border-slate-200 dark:border-slate-800 p-6 sm:p-8 flex flex-col items-center justify-center text-center space-y-6 overflow-y-auto safe-top safe-bottom transition-colors">
     <button
       id="auth-theme-toggle-btn"
       type="button"
@@ -1143,7 +1158,7 @@
   </div>
 
   <!-- SCREEN 2: Main App Shell -->
-  <div id="app-shell" class="hidden relative w-full max-w-4xl bg-white dark:bg-black rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col h-[92vh] max-h-[760px] overflow-hidden transition-colors">
+  <div id="app-shell" class="hidden relative w-full h-[100dvh] max-w-none max-h-none md:max-w-5xl md:h-[92vh] md:max-h-[820px] bg-white dark:bg-black rounded-none md:rounded-2xl shadow-none md:shadow-lg border-0 md:border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden transition-colors">
 
     <div id="sidebar-backdrop" class="hidden fixed inset-0 bg-black/60 z-20 md:hidden"></div>
 
@@ -1255,7 +1270,7 @@
       <div class="flex-1 flex flex-col min-w-0 bg-white dark:bg-black transition-colors">
 
         <!-- Top Header -->
-        <header class="bg-white dark:bg-black border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 shrink-0 transition-colors">
+        <header class="safe-top bg-white dark:bg-black border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-1.5 sm:gap-2 shrink-0 transition-colors">
           <div class="flex items-center gap-2 sm:gap-3 min-w-0">
             <button id="open-sidebar-btn" type="button" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer" aria-label="Open menu">
               ☰
@@ -1275,7 +1290,7 @@
               </div>
               <div class="flex items-center gap-1.5 min-w-0">
                 <p id="room-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Group · 4 members</p>
-                <span id="network-status-pill" class="hidden text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 shrink-0">🟢 Sync</span>
+                <span id="network-status-pill" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 shrink-0">🟢 Sync</span>
               </div>
             </div>
           </div>
@@ -1284,7 +1299,7 @@
             <button
               id="vanish-mode-btn"
               type="button"
-              class="hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
+              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
               title="Vanish Mode (Messages disappear on exit)"
             >
               👻
@@ -1292,7 +1307,7 @@
             <button
               id="chat-head-pin-btn"
               type="button"
-              class="hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
+              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
               title="Minimize to Floating Chat Head"
             >
               🫧
@@ -1300,7 +1315,7 @@
             <button
               id="wallpaper-btn"
               type="button"
-              class="hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
+              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
               title="Change This Chat Background / Photo"
             >
               🎨
@@ -1308,7 +1323,7 @@
             <button
               id="mute-room-btn"
               type="button"
-              class="hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
+              class="hidden md:inline-flex px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer"
               title="Mute / Unmute Notifications"
             >
               🔔
@@ -1360,7 +1375,9 @@
             >
               ⚙️
             </button>
-            <div class="relative w-24 sm:w-36">
+            <button id="mobile-chat-more-btn" type="button" class="hidden md:hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer" title="Chat Options">⋮</button>
+            <button id="mobile-search-toggle-btn" type="button" class="sm:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs cursor-pointer" title="Search">🔍</button>
+            <div id="search-box-wrap" class="hidden sm:block relative w-28 sm:w-36">
               <input
                 id="search-input"
                 type="text"
@@ -1379,6 +1396,13 @@
             </div>
           </div>
         </header>
+        <div id="mobile-chat-more-menu" class="hidden md:hidden absolute top-14 right-3 z-40 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-1.5 space-y-1 text-xs font-bold text-slate-700 dark:text-slate-200">
+          <button type="button" data-proxy-click="wallpaper-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🎨 Chat Wallpaper</button>
+          <button type="button" data-proxy-click="mute-room-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🔔 Mute / Unmute</button>
+          <button type="button" data-proxy-click="vanish-mode-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">👻 Vanish Mode</button>
+          <button type="button" data-proxy-click="chat-head-pin-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">🫧 Floating Chat Head</button>
+          <button type="button" data-proxy-click="manage-members-btn" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2">👥+ Manage Members</button>
+        </div>
 
         <!-- TAB 1: CHAT VIEW (History List first, tap to open thread) -->
         <div id="chat-view" class="relative flex-1 flex flex-col min-h-0">
@@ -1618,7 +1642,7 @@
     </div>
 
     <!-- BOTTOM NAVIGATION TABS (1. Chat | 2. Status | 3. Calls | 4. Notes) -->
-    <nav id="bottom-nav" class="bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800 px-3 py-1.5 grid grid-cols-4 gap-1.5 shrink-0">
+    <nav id="bottom-nav" class="safe-bottom bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 grid grid-cols-4 gap-1.5 shrink-0">
       <button id="tab-chat-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-slate-900 font-bold transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
@@ -3725,6 +3749,7 @@
           chatHistoryView.classList.add('hidden');
           chatThreadView.classList.remove('hidden');
           backToChatsBtn.classList.remove('hidden');
+          document.getElementById('mobile-chat-more-btn')?.classList.remove('hidden');
           voiceCallBtn.classList.remove('hidden');
           videoCallBtn.classList.remove('hidden');
           const muteBtn = document.getElementById('mute-room-btn');
@@ -3746,6 +3771,8 @@
           chatThreadView.classList.add('hidden');
           chatHistoryView.classList.remove('hidden');
           backToChatsBtn.classList.add('hidden');
+          document.getElementById('mobile-chat-more-btn')?.classList.add('hidden');
+          document.getElementById('mobile-chat-more-menu')?.classList.add('hidden');
           voiceCallBtn.classList.add('hidden');
           videoCallBtn.classList.add('hidden');
           document.getElementById('mute-room-btn').classList.add('hidden');
@@ -4732,20 +4759,10 @@
       isSilentSendMode = false;
       document.getElementById('silent-send-btn').classList.remove('ring-2', 'ring-indigo-500');
       document.getElementById('effects-btn').classList.remove('ring-2', 'ring-purple-500');
-      if (!offlineNow) {
-        setTimeout(() => {
-          msgObj.status = 'delivered';
-          saveState();
-          if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
-        }, 600);
-        setTimeout(() => {
-          if (appSettings.readReceipts !== false) {
-            msgObj.status = 'seen';
-            msgObj.seenAt = getCurrentTime();
-            saveState();
-            if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
-          }
-        }, 1600);
+      if (!offlineNow && typeof window.sendChateamsNetworkMessage === 'function') {
+        window.sendChateamsNetworkMessage(room, msgObj);
+      } else if (!offlineNow) {
+        msgObj.status = 'sent';
       }
       room.messages.push(msgObj);
       if (offlineNow) {
@@ -5444,6 +5461,354 @@
     setInterval(() => {
       if (isEffectiveOnline() && outboxQueue.length > 0) flushOutboxQueue();
     }, 5000);
+
+
+    // --- Mobile Header More Menu & Compact Search ---
+    (function initMobileHeaderControls() {
+      const moreBtn = document.getElementById('mobile-chat-more-btn');
+      const moreMenu = document.getElementById('mobile-chat-more-menu');
+      const searchToggleBtn = document.getElementById('mobile-search-toggle-btn');
+      const searchBoxWrap = document.getElementById('search-box-wrap');
+
+      if (moreBtn && moreMenu) {
+        moreBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moreMenu.classList.toggle('hidden');
+        });
+        moreMenu.querySelectorAll('[data-proxy-click]').forEach((item) => {
+          item.addEventListener('click', () => {
+            const target = document.getElementById(item.getAttribute('data-proxy-click'));
+            moreMenu.classList.add('hidden');
+            if (target) target.click();
+          });
+        });
+        document.addEventListener('click', () => moreMenu.classList.add('hidden'));
+      }
+
+      if (searchToggleBtn && searchBoxWrap) {
+        searchToggleBtn.addEventListener('click', () => {
+          searchBoxWrap.classList.toggle('hidden');
+          if (!searchBoxWrap.classList.contains('hidden')) {
+            searchInput.focus();
+          }
+        });
+      }
+    })();
+
+    // --- Real Cross-Device Email-ID Messaging (PeerJS WebRTC P2P + Firebase Firestore) ---
+    (function initChateamsLiveSync() {
+      const P2P_QUEUE_KEY = 'chateams_p2p_pending_v1';
+      let peerInstance = null;
+      let peerReady = false;
+      let firestoreDb = null;
+      let firestoreUnsub = null;
+      let lastSignedEmail = '';
+      let p2pPending = [];
+      try { p2pPending = JSON.parse(localStorage.getItem(P2P_QUEUE_KEY) || '[]'); } catch (e) { p2pPending = []; }
+
+      function saveP2PPending() {
+        try { localStorage.setItem(P2P_QUEUE_KEY, JSON.stringify(p2pPending.slice(-200))); } catch (e) {}
+      }
+
+      function emailToPeerId(email) {
+        const clean = String(email || '').trim().toLowerCase();
+        let hash = 0;
+        for (let i = 0; i < clean.length; i++) {
+          hash = ((hash << 5) - hash + clean.charCodeAt(i)) | 0;
+        }
+        const slug = clean.replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 32);
+        return `chateams-v1-${slug}-${Math.abs(hash).toString(36)}`;
+      }
+
+      function updateNetworkPill(label, tone) {
+        const pill = document.getElementById('network-status-pill');
+        if (!pill) return;
+        pill.classList.remove('hidden', 'bg-emerald-100', 'dark:bg-emerald-950', 'text-emerald-700', 'dark:text-emerald-300', 'bg-amber-100', 'dark:bg-amber-950', 'text-amber-700', 'dark:text-amber-300', 'bg-rose-100', 'dark:bg-rose-950', 'text-rose-700', 'dark:text-rose-300');
+        if (tone === 'ok') {
+          pill.classList.add('bg-emerald-100', 'dark:bg-emerald-950', 'text-emerald-700', 'dark:text-emerald-300');
+        } else if (tone === 'warn') {
+          pill.classList.add('bg-amber-100', 'dark:bg-amber-950', 'text-amber-700', 'dark:text-amber-300');
+        } else {
+          pill.classList.add('bg-rose-100', 'dark:bg-rose-950', 'text-rose-700', 'dark:text-rose-300');
+        }
+        pill.textContent = label;
+      }
+
+      function handleIncomingNetworkData(packet) {
+        if (!packet || !currentUser) return;
+        if (packet.type === 'chateams_msg') {
+          const fromEmail = String(packet.fromEmail || '').trim().toLowerCase();
+          if (!fromEmail || fromEmail === currentUser.email.toLowerCase()) return;
+
+          // Find or create DM room for sender
+          let targetRoom = rooms.find(r => r.type === 'dm' && (r.email || '').toLowerCase() === fromEmail);
+          if (!targetRoom) {
+            const prof = resolveGoogleProfile(fromEmail);
+            targetRoom = {
+              id: `dm-${nextId++}`,
+              type: 'dm',
+              name: packet.fromName || prof.name,
+              email: fromEmail,
+              subtitle: fromEmail,
+              avatar: (packet.fromName || prof.name).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U',
+              color: prof.color || 'from-indigo-500 to-purple-600',
+              messages: []
+            };
+            rooms.push(targetRoom);
+          }
+
+          // Deduplicate by remoteId
+          if (targetRoom.messages.some(m => m.remoteId && m.remoteId === packet.remoteId)) return;
+
+          const incomingMsg = {
+            id: nextId++,
+            remoteId: packet.remoteId,
+            sender: packet.fromName || fromEmail,
+            text: packet.text,
+            replyTo: packet.replyTo,
+            silent: !!packet.silent,
+            vanish: !!packet.vanish,
+            invisibleInk: !!packet.invisibleInk,
+            time: packet.time || getCurrentTime(),
+            isMe: false,
+            reactions: {}
+          };
+          targetRoom.messages.push(incomingMsg);
+          saveState();
+          renderSidebar();
+          if (activeView === 'chat') {
+            if (isChatThreadOpen && activeRoomId === targetRoom.id) {
+              renderMessages();
+            } else {
+              renderChatHistory();
+            }
+          }
+          if (!packet.silent) {
+            try { playMsgTone(); } catch (e) {}
+            showToast(`📩 ${targetRoom.name}: ${String(packet.text || '').slice(0, 36)}`);
+          }
+
+          // Send delivery / seen acknowledgment back
+          const isViewingNow = (activeView === 'chat' && isChatThreadOpen && activeRoomId === targetRoom.id);
+          sendRawPeerPacket(fromEmail, {
+            type: 'chateams_ack',
+            remoteId: packet.remoteId,
+            status: isViewingNow ? 'seen' : 'delivered',
+            seenAt: isViewingNow ? getCurrentTime() : null,
+            fromEmail: currentUser.email
+          });
+        } else if (packet.type === 'chateams_ack') {
+          for (const r of rooms) {
+            const found = (r.messages || []).find(m => m.remoteId && m.remoteId === packet.remoteId);
+            if (found) {
+              if (packet.status === 'seen') {
+                found.status = 'seen';
+                found.seenAt = packet.seenAt || getCurrentTime();
+              } else if (found.status !== 'seen') {
+                found.status = 'delivered';
+              }
+              saveState();
+              if (activeView === 'chat' && isChatThreadOpen && activeRoomId === r.id) renderMessages();
+              break;
+            }
+          }
+        }
+      }
+
+      function sendRawPeerPacket(toEmail, packet) {
+        return new Promise((resolve) => {
+          if (!peerInstance || !peerReady || !toEmail) {
+            resolve(false);
+            return;
+          }
+          const targetPeerId = emailToPeerId(toEmail);
+          let settled = false;
+          const timer = setTimeout(() => {
+            if (!settled) { settled = true; resolve(false); }
+          }, 4500);
+          try {
+            const conn = peerInstance.connect(targetPeerId, { reliable: true });
+            conn.on('open', () => {
+              try {
+                conn.send(packet);
+                if (!settled) { settled = true; clearTimeout(timer); resolve(true); }
+                setTimeout(() => { try { conn.close(); } catch (e) {} }, 1500);
+              } catch (e) {
+                if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
+              }
+            });
+            conn.on('error', () => {
+              if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
+            });
+          } catch (e) {
+            if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
+          }
+        });
+      }
+
+      async function sendViaFirestore(toEmail, packet) {
+        if (!firestoreDb || !toEmail) return false;
+        try {
+          await firestoreDb.collection('chateams_messages').add({
+            ...packet,
+            toEmail: toEmail.toLowerCase(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function initFirebaseLive() {
+        if (firestoreUnsub) { try { firestoreUnsub(); } catch (e) {} firestoreUnsub = null; }
+        firestoreDb = null;
+        const fb = appSettings && appSettings.firebase;
+        if (!fb || !fb.apiKey || !fb.projectId || typeof firebase === 'undefined' || !currentUser) return;
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({
+              apiKey: fb.apiKey,
+              authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
+              projectId: fb.projectId
+            });
+          }
+          firestoreDb = firebase.firestore();
+          firestoreUnsub = firestoreDb.collection('chateams_messages')
+            .where('toEmail', '==', currentUser.email.toLowerCase())
+            .onSnapshot((snap) => {
+              snap.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                  handleIncomingNetworkData(change.doc.data());
+                }
+              });
+            });
+          updateNetworkPill('🔥 Firebase + P2P', 'ok');
+        } catch (e) {}
+      }
+
+      function initPeerLive() {
+        if (!currentUser || !currentUser.email || typeof Peer === 'undefined') return;
+        const myEmail = currentUser.email.toLowerCase();
+        if (peerInstance && lastSignedEmail === myEmail && !peerInstance.destroyed) return;
+        lastSignedEmail = myEmail;
+        if (peerInstance) { try { peerInstance.destroy(); } catch (e) {} }
+        peerReady = false;
+        updateNetworkPill('⏳ Connecting...', 'warn');
+
+        const myPeerId = emailToPeerId(myEmail);
+        peerInstance = new Peer(myPeerId, {
+          debug: 0,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+          }
+        });
+
+        peerInstance.on('open', () => {
+          peerReady = true;
+          updateNetworkPill(firestoreDb ? '🔥 Firebase + P2P' : '🟢 Live P2P', 'ok');
+          flushP2PPending();
+        });
+
+        peerInstance.on('connection', (conn) => {
+          conn.on('data', (data) => handleIncomingNetworkData(data));
+        });
+
+        peerInstance.on('disconnected', () => {
+          peerReady = false;
+          updateNetworkPill('⏳ Reconnecting...', 'warn');
+          try { peerInstance.reconnect(); } catch (e) {}
+        });
+
+        peerInstance.on('error', () => {
+          peerReady = false;
+          updateNetworkPill(firestoreDb ? '🔥 Firebase Live' : '🟡 Local / Retry', 'warn');
+        });
+      }
+
+      async function flushP2PPending() {
+        if (!p2pPending.length || !currentUser) return;
+        const remaining = [];
+        for (const item of p2pPending) {
+          const ok = await sendRawPeerPacket(item.toEmail, item.packet);
+          if (!ok) remaining.push(item);
+        }
+        p2pPending = remaining;
+        saveP2PPending();
+      }
+
+      window.sendChateamsNetworkMessage = async function (room, msgObj) {
+        if (!currentUser || !room) return;
+        const targets = [];
+        if (room.type === 'dm' && room.email) {
+          targets.push(room.email.toLowerCase());
+        } else if (Array.isArray(room.members)) {
+          room.members.forEach(m => {
+            const em = typeof m === 'string' ? m : (m && m.email);
+            if (em && em.toLowerCase() !== currentUser.email.toLowerCase()) targets.push(em.toLowerCase());
+          });
+        }
+        if (!targets.length) return;
+
+        const remoteId = `${currentUser.email.toLowerCase()}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        msgObj.remoteId = remoteId;
+        saveState();
+
+        for (const toEmail of targets) {
+          const packet = {
+            type: 'chateams_msg',
+            remoteId,
+            fromEmail: currentUser.email.toLowerCase(),
+            fromName: currentUser.name,
+            toEmail,
+            text: msgObj.text,
+            replyTo: msgObj.replyTo || null,
+            silent: !!msgObj.silent,
+            vanish: !!msgObj.vanish,
+            invisibleInk: !!msgObj.invisibleInk,
+            time: msgObj.time
+          };
+          const fbOk = await sendViaFirestore(toEmail, packet);
+          const p2pOk = await sendRawPeerPacket(toEmail, packet);
+          if (!p2pOk && !fbOk) {
+            p2pPending.push({ toEmail, packet });
+            saveP2PPending();
+            msgObj.status = 'sent';
+            saveState();
+            if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
+          } else if (fbOk && !p2pOk) {
+            msgObj.status = 'delivered';
+            saveState();
+            if (activeView === 'chat' && isChatThreadOpen && activeRoomId === room.id) renderMessages();
+          }
+        }
+      };
+
+      const origRenderAppSync = renderApp;
+      renderApp = function () {
+        origRenderAppSync();
+        if (currentUser) {
+          initFirebaseLive();
+          initPeerLive();
+        }
+      };
+
+      document.getElementById('save-firebase-btn')?.addEventListener('click', () => {
+        setTimeout(() => initFirebaseLive(), 150);
+      });
+
+      setInterval(flushP2PPending, 10000);
+      window.addEventListener('online', flushP2PPending);
+      window.addEventListener('focus', flushP2PPending);
+
+      if (currentUser) {
+        initFirebaseLive();
+        initPeerLive();
+      }
+    })();
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', (event) => {

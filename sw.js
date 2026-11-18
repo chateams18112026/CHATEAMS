@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chateams-v4';
+const CACHE_NAME = 'chateams-v5';
 const SHARE_CACHE = 'chateams-share-target';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
 
