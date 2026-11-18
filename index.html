@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.0.0" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.0.0" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.3.0" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.3.0" />
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <meta name="theme-color" content="#4f46e5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json?v=2.0.0" />
-  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="./icon.svg?v=2.3.0" type="image/svg+xml" />
   <title>CHATEAMS — Groups, Broadcast &amp; Status</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
@@ -107,6 +108,68 @@
     }
     .safe-top { padding-top: max(env(safe-area-inset-top), 0.5rem); }
     .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.375rem); }
+  
+    :root {
+      --ch-accent: #4f46e5;
+      --ch-accent-hover: #4338ca;
+      --ch-accent-soft: rgba(79, 70, 229, 0.12);
+    }
+    .ch-accent-bg { background-color: var(--ch-accent) !important; }
+    .ch-accent-bg:hover { background-color: var(--ch-accent-hover) !important; }
+    .ch-accent-text { color: var(--ch-accent) !important; }
+    .ch-accent-soft { background-color: var(--ch-accent-soft) !important; }
+    .ch-accent-border { border-color: var(--ch-accent) !important; }
+    body.font-sm { font-size: 13px; }
+    body.font-md { font-size: 14.5px; }
+    body.font-lg { font-size: 16.5px; }
+    body.font-sm .msg-text { font-size: 13px !important; }
+    body.font-md .msg-text { font-size: 14px !important; }
+    body.font-lg .msg-text { font-size: 16px !important; }
+    body.bubble-minimal .msg-bubble-me { border-radius: 10px !important; }
+    body.bubble-minimal .msg-bubble-them { border-radius: 10px !important; }
+    body.bubble-classic .msg-bubble-me { border-radius: 16px 16px 4px 16px !important; }
+    body.bubble-classic .msg-bubble-them { border-radius: 16px 16px 16px 4px !important; }
+    body.hide-nav-labels .nav-tab-label { display: none !important; }
+  
+    html, body { overflow-x: hidden; max-width: 100vw; }
+    .ch-rich-header {
+      background: linear-gradient(135deg, var(--ch-accent) 0%, #6d28d9 100%) !important;
+      color: #ffffff !important;
+      border-bottom: none !important;
+      box-shadow: 0 4px 20px -4px rgba(79, 70, 229, 0.28);
+    }
+    .ch-rich-header h2, .ch-rich-header p { color: #ffffff !important; }
+    .ch-rich-header p { opacity: 0.85; }
+    .ch-rich-header .hdr-icon-btn {
+      background: rgba(255, 255, 255, 0.16) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+    }
+    .ch-rich-header .hdr-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.28) !important;
+    }
+    #settings-modal, #settings-scroll-body, #settings-scroll-body * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #settings-scroll-body .flex.items-center.justify-between {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    #settings-scroll-body input, #settings-scroll-body select, #settings-scroll-body textarea {
+      min-width: 0;
+    }
+  
+    .ch-rich-header [data-hdr-btn="1"] {
+      background: rgba(255, 255, 255, 0.18) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.24) !important;
+    }
+    .ch-rich-header #room-avatar {
+      background: rgba(255, 255, 255, 0.22) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+    }
+
   </style>
 </head>
 <body class="bg-white dark:bg-black md:bg-slate-100 md:dark:bg-black h-[100dvh] w-screen overflow-hidden flex items-center justify-center p-0 md:p-4 transition-colors duration-200">
@@ -584,11 +647,11 @@
   </div>
 
   <!-- Settings, Security, Storage, Cloud Sync & OTA Update Modal -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-    <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-50 dark:bg-black flex flex-col">
+    <div class="w-full max-w-2xl mx-auto h-full bg-white dark:bg-black flex flex-col overflow-hidden">
       <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
-          <h3 class="text-sm font-bold text-slate-900 dark:text-white">⚙️ CHATEAMS Settings</h3>
+          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">⚙️ Settings</h3>
           <span id="settings-cloud-pill" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">🟢 Cloud Active</span>
         </div>
         <button id="close-settings-btn" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-lg leading-none cursor-pointer">✕</button>
@@ -621,17 +684,72 @@
       </div>
 
       <!-- Category Menu Pills -->
-      <div id="settings-tabs" class="px-4 pb-2 flex items-center gap-1.5 overflow-x-auto shrink-0">
-        <button type="button" data-stab="account" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white cursor-pointer shrink-0">👤 Account</button>
-        <button type="button" data-stab="chats" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">💬 Chats</button>
-        <button type="button" data-stab="calls" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">📞 Calls &amp; Tones</button>
-        <button type="button" data-stab="privacy" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">🔒 Privacy</button>
-        <button type="button" data-stab="update" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer shrink-0">🔄 Update</button>
-        <button id="dev-tab-btn" type="button" data-stab="network" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-amber-600 dark:text-amber-400 cursor-pointer shrink-0">🛠️ Developer</button>
-      </div>
-
-      <div class="p-4 pt-2 space-y-3 overflow-y-auto flex-1 text-xs">
+<div class="p-4 pt-2 space-y-3 overflow-y-auto flex-1 text-xs">
         <!-- TAB: ACCOUNT & GOOGLE CLOUD SYNC -->
+        
+        <!-- TAB: INTERFACE & APPEARANCE -->
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-1">🎨 Interface &amp; Theme</p>
+        <div id="stab-interface" class="space-y-3">
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
+            <p class="font-bold text-slate-800 dark:text-slate-100">🎨 Theme &amp; Accent Color</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="ui-theme-light-btn" type="button" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white text-slate-800 font-bold cursor-pointer">☀️ Light Mode</button>
+              <button id="ui-theme-dark-btn" type="button" class="py-2 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white font-bold cursor-pointer">🌙 Dark Mode</button>
+            </div>
+            <div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-2">App Accent Color</p>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <button type="button" data-accent="indigo" class="w-8 h-8 rounded-full bg-indigo-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="Indigo"></button>
+                <button type="button" data-accent="emerald" class="w-8 h-8 rounded-full bg-emerald-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="WhatsApp Green"></button>
+                <button type="button" data-accent="sky" class="w-8 h-8 rounded-full bg-sky-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="Telegram Blue"></button>
+                <button type="button" data-accent="violet" class="w-8 h-8 rounded-full bg-violet-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="Royal Violet"></button>
+                <button type="button" data-accent="rose" class="w-8 h-8 rounded-full bg-rose-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="Rose"></button>
+                <button type="button" data-accent="amber" class="w-8 h-8 rounded-full bg-amber-600 ring-2 ring-offset-2 ring-transparent cursor-pointer" title="Amber"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
+            <p class="font-bold text-slate-800 dark:text-slate-100">📱 Layout &amp; Readability</p>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-300">Chat List Style</span>
+              <select id="ui-list-style-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
+                <option value="clean">Clean List (Simple)</option>
+                <option value="cards">Rounded Cards</option>
+              </select>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-300">Default Chats Tab</span>
+              <select id="ui-default-filter-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
+                <option value="all">All Chats</option>
+                <option value="dm">Individual Only</option>
+                <option value="group">Groups Only</option>
+              </select>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-300">Text Font Size</span>
+              <select id="ui-font-size-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
+                <option value="sm">Small</option>
+                <option value="md">Medium (Default)</option>
+                <option value="lg">Large</option>
+              </select>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-600 dark:text-slate-300">Chat Bubble Shape</span>
+              <select id="ui-bubble-style-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
+                <option value="modern">Modern Rounded</option>
+                <option value="classic">Classic Tail</option>
+                <option value="minimal">Minimal Flat</option>
+              </select>
+            </div>
+            <label class="flex items-center justify-between pt-1 cursor-pointer">
+              <span class="text-slate-600 dark:text-slate-300">Show Bottom Tab Labels</span>
+              <input id="ui-nav-labels-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            </label>
+          </div>
+        </div>
+
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">👤 Account &amp; Cloud Sync</p>
         <div id="stab-account" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
             <label for="settings-name-input" class="block font-bold text-slate-800 dark:text-slate-100">🪪 Display Name &amp; Status Bio</label>
@@ -700,7 +818,8 @@
         </div>
 
         <!-- TAB: CHATS, APPEARANCE & MEDIA -->
-        <div id="stab-chats" class="hidden space-y-3">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">💬 Chats, Media &amp; Backup</p>
+        <div id="stab-chats" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <p class="font-bold text-slate-800 dark:text-slate-100">🎨 Chat Appearance &amp; Controls</p>
             <div class="flex items-center justify-between">
@@ -749,7 +868,8 @@
         </div>
 
         <!-- TAB: CALLS, TONES & NOTIFICATIONS -->
-        <div id="stab-calls" class="hidden space-y-3">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">🔔 Notifications &amp; Call Sounds</p>
+        <div id="stab-calls" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <div class="flex items-center justify-between">
               <span class="font-bold text-slate-800 dark:text-slate-100">🎵 CHATEAMS Call &amp; Audio Settings</span>
@@ -819,7 +939,8 @@
         </div>
 
         <!-- TAB: PRIVACY & SECURITY (Read Receipts & Online Status moved to Developer Options!) -->
-        <div id="stab-privacy" class="hidden space-y-3">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">🔒 Privacy &amp; App Lock</p>
+        <div id="stab-privacy" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
             <div class="flex items-center justify-between">
               <span class="font-bold text-slate-800 dark:text-slate-100">🔒 App Lock (4-Digit PIN)</span>
@@ -856,7 +977,8 @@
         </div>
 
         <!-- TAB: APP UPDATE & GITHUB OTA CHECKER -->
-        <div id="stab-update" class="hidden space-y-3">
+        <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">🔄 App Updates</p>
+        <div id="stab-update" class="space-y-3">
           <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
             <div class="flex items-center justify-between">
               <span class="font-bold text-slate-800 dark:text-slate-100">🔄 App Version &amp; GitHub Update</span>
@@ -941,7 +1063,7 @@
       <div class="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
         <span>CHATEAMS Production</span>
         <button id="build-number-btn" type="button" class="font-bold text-slate-500 dark:text-slate-300 hover:text-indigo-500 cursor-pointer">
-          v2.0 · Build 2001
+          v2.3 · Build 2300
         </button>
       </div>
     </div>
@@ -1238,42 +1360,36 @@
       </button>
     </div>
 
-    <div id="auth-google-panel" class="w-full text-left space-y-2.5">
-      <label for="demo-email-input" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-        Your Google Account
-      </label>
-      <input
-        id="demo-email-input"
-        type="email"
-        value=""
-        placeholder="you@gmail.com"
-        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-      <input
-        id="demo-name-input"
-        type="text"
-        value=""
-        placeholder="Google Profile Name"
-        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-      <p id="auth-error" class="hidden text-[11px] text-rose-500">
-        Please enter a valid Google Mail ID (e.g. name@gmail.com).
-      </p>
-    </div>
+    <div id="auth-google-buttons" class="w-full space-y-3 pt-1">
+      <button
+        id="google-signin-btn"
+        type="button"
+        class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-[0.99] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-sm py-3.5 px-4 rounded-2xl shadow-sm transition cursor-pointer"
+      >
+        <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
+          <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
+        </svg>
+        <span>Sign in with Google</span>
+      </button>
 
-    <button
-      id="google-signin-btn"
-      type="button"
-      class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-[0.99] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-sm py-3 px-4 rounded-xl shadow-sm transition cursor-pointer"
-    >
-      <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
-        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
-        <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
-        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
-      </svg>
-      <span>Sign in with Google</span>
-    </button>
+      <button
+        id="google-signup-btn"
+        type="button"
+        class="w-full flex items-center justify-center gap-3 ch-accent-bg text-white font-bold text-sm py-3.5 px-4 rounded-2xl shadow-md transition active:scale-[0.99] cursor-pointer"
+      >
+        <svg class="w-5 h-5 shrink-0 bg-white rounded-full p-0.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
+          <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
+        </svg>
+        <span>Sign up with Google</span>
+      </button>
+      <p id="auth-error" class="hidden text-[11px] text-rose-500 font-semibold pt-1"></p>
+    </div>
 
     <p class="text-[11px] text-slate-400 leading-relaxed">
       Groups, Broadcasts &amp; Status · Auto Dark Mode after 6:00 PM
@@ -1281,138 +1397,61 @@
   </div>
 
   <!-- SCREEN 2: Main App Shell -->
+  
+  <!-- Google Account Chooser / Direct OAuth Modal -->
+  <div id="google-chooser-modal" class="hidden fixed inset-0 z-[70] bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/></svg>
+          <div>
+            <h3 id="chooser-title" class="text-sm font-bold text-slate-900 dark:text-white">Choose a Google Account</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Tap an account to continue to CHATEAMS</p>
+          </div>
+        </div>
+        <button id="close-chooser-btn" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-lg cursor-pointer">✕</button>
+      </div>
+
+      <div id="chooser-saved-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+
+      <form id="chooser-gmail-form" class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <p class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Use another Google Account</p>
+        <input id="chooser-gmail-input" type="email" required placeholder="yourname@gmail.com" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl ch-accent-bg text-white text-xs font-bold cursor-pointer">Continue →</button>
+          <a href="https://accounts.google.com/AccountChooser" target="_blank" rel="noopener noreferrer" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">Google 🔗</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="app-shell" class="hidden relative w-full h-[100dvh] max-w-none max-h-none md:max-w-5xl md:h-[92vh] md:max-h-[820px] bg-white dark:bg-black rounded-none md:rounded-2xl shadow-none md:shadow-lg border-0 md:border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden transition-colors">
-
-    <div id="sidebar-backdrop" class="hidden fixed inset-0 bg-black/60 z-20 md:hidden"></div>
-
-    <!-- Middle Body -->
+<!-- Middle Body -->
     <div class="flex-1 flex min-h-0 overflow-hidden">
-
-      <!-- Left Sidebar (Groups + Broadcasts + Direct Messages) -->
-      <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-slate-900 dark:bg-black text-slate-200 flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-out border-r border-slate-800">
-        <div class="px-4 py-3.5 border-b border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-white dark:bg-black text-black dark:text-white border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm transition-colors shrink-0">
-              <svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor" aria-label="CHATEAMS logo">
-                <circle cx="8" cy="11" r="3" opacity="0.82" />
-                <path d="M2.5 22.5c0-3.2 2.4-5.5 5.5-5.5 1.1 0 2.1.3 3 .9-1.4 1.3-2.2 3.1-2.2 5.1v1H2.5v-1.5z" opacity="0.82" />
-                <circle cx="24" cy="11" r="3" opacity="0.82" />
-                <path d="M29.5 22.5c0-3.2-2.4-5.5-5.5-5.5-1.1 0-2.1.3-3 .9 1.4 1.3 2.2 3.1 2.2 5.1v1h6.3v-1.5z" opacity="0.82" />
-                <circle cx="16" cy="9.5" r="3.8" />
-                <path d="M9.5 23.5c0-3.8 2.9-6.5 6.5-6.5s6.5 2.7 6.5 6.5v1.5h-13v-1.5z" />
-              </svg>
-            </div>
-            <div>
-              <h2 class="font-bold text-white text-sm leading-tight">CHATEAMS</h2>
-              <p id="sidebar-sub-label" class="text-[10px] text-indigo-400 font-semibold">Cloud Messenger</p>
-            </div>
-          </div>
-          <button id="close-sidebar-btn" type="button" class="md:hidden text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer" aria-label="Close menu">
-            ✕
-          </button>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto p-3 space-y-5">
-          <!-- Groups -->
-          <div>
-            <div class="px-2.5 flex items-center justify-between mb-1.5">
-              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Groups
-              </p>
-              <button
-                id="add-channel-btn"
-                type="button"
-                class="text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 w-5 h-5 rounded flex items-center justify-center transition cursor-pointer"
-                title="Create new group"
-              >
-                +
-              </button>
-            </div>
-            <ul id="channel-list" class="space-y-1"></ul>
-          </div>
-
-          <!-- Broadcasts -->
-          <div>
-            <div class="px-2.5 flex items-center justify-between mb-1.5">
-              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Broadcast
-              </p>
-              <button
-                id="add-broadcast-btn"
-                type="button"
-                class="text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 w-5 h-5 rounded flex items-center justify-center transition cursor-pointer"
-                title="Create new broadcast list"
-              >
-                +
-              </button>
-            </div>
-            <ul id="broadcast-list" class="space-y-1"></ul>
-          </div>
-
-          <!-- Direct Messages -->
-          <div>
-            <div class="px-2.5 flex items-center justify-between mb-1.5">
-              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Direct Messages
-              </p>
-              <button
-                id="add-dm-btn"
-                type="button"
-                class="text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 w-5 h-5 rounded flex items-center justify-center transition cursor-pointer"
-                title="Find person by Gmail ID"
-              >
-                +
-              </button>
-            </div>
-            <ul id="dm-list" class="space-y-1"></ul>
-          </div>
-        </nav>
-
-        <!-- Signed-In Google Profile -->
-        <div class="p-3 border-t border-slate-800 flex items-center justify-between gap-2 bg-slate-950/70">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 text-white flex items-center justify-center text-xs font-bold shrink-0 ring-2 ring-emerald-400/30">
-              A
-            </div>
-            <div class="min-w-0">
-              <p id="user-name" class="text-xs font-bold text-white truncate">My Account</p>
-              <p class="text-[10px] text-emerald-400 truncate">Google Connected</p>
-            </div>
-          </div>
-          <button
-            id="sign-out-btn"
-            type="button"
-            class="text-[11px] text-slate-400 hover:text-rose-400 px-2 py-1 rounded-lg hover:bg-slate-800 transition cursor-pointer shrink-0"
-          >
-            Sign out
-          </button>
-        </div>
-      </aside>
-
       <!-- Right Main Content Area -->
       <div class="flex-1 flex flex-col min-w-0 bg-white dark:bg-black transition-colors">
 
         <!-- Top Header (Clean Layout: Full Chat Name + Only Call, Video Call & Options Menu when Chat is open) -->
-        <header class="safe-top bg-white dark:bg-black border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 shrink-0 transition-colors relative">
+        <header id="main-app-header" class="safe-top ch-rich-header px-3 sm:px-4 py-3 flex items-center justify-between gap-2 shrink-0 transition-all relative">
           <div class="flex items-center gap-2.5 min-w-0 flex-1">
-            <button id="open-sidebar-btn" type="button" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer shrink-0" aria-label="Open menu">
-              ☰
-            </button>
             <button id="back-to-chats-btn" type="button" class="hidden text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 text-sm font-bold cursor-pointer shrink-0" aria-label="Back to Chat History">
               ←
             </button>
-            <div id="room-avatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-              💬
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2 min-w-0">
-                <h2 id="room-title" class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Chats</h2>
-                <span id="typing-indicator" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-full shrink-0">
-                  typing...
-                </span>
+            <div id="room-header-trigger" role="button" tabindex="0" class="flex items-center gap-2.5 min-w-0 flex-1 rounded-xl px-1.5 py-1 -my-1 hover:bg-slate-100 dark:hover:bg-slate-900 transition cursor-pointer" title="Tap to view Contact Info, Gmail Sync, Disappearing Messages, Clear Chat & Block">
+              <div id="room-avatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm overflow-hidden">
+                💬
               </div>
-              <div class="flex items-center gap-1.5 min-w-0">
-                <p id="room-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Cloud Synced</p>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <h2 id="room-title" class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate">Chats</h2>
+                  <span id="room-disappear-pill" class="hidden text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 shrink-0">⏳</span>
+                  <span id="typing-indicator" class="hidden text-[11px] font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-full shrink-0">
+                    typing...
+                  </span>
+                </div>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <p id="room-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Cloud Synced</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1462,7 +1501,7 @@
 
             <!-- Shown ONLY on Main Screen (when no individual chat is open) -->
             <button
-              id="mobile-search-toggle-btn"
+              id="mobile-search-toggle-btn" data-hdr-btn="1"
               type="button"
               class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs cursor-pointer"
               title="Search"
@@ -1470,7 +1509,7 @@
               🔍
             </button>
             <button
-              id="theme-toggle-btn"
+              id="theme-toggle-btn" data-hdr-btn="1"
               type="button"
               class="text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition cursor-pointer"
               title="Day / Night Mode"
@@ -1478,7 +1517,7 @@
               ☀️
             </button>
             <button
-              id="open-settings-btn"
+              id="open-settings-btn" data-hdr-btn="1"
               type="button"
               class="text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition cursor-pointer"
               title="Settings, Cloud Sync & Updates"
@@ -1549,8 +1588,155 @@
 
         <!-- TAB 1: CHAT VIEW (History List first, tap to open thread) -->
         <div id="chat-view" class="relative flex-1 flex flex-col min-h-0">
+          <!-- Full-Screen Contact / Chat Info Page (Opens when tapping the Contact Name at top of Chat) -->
+          <div id="contact-profile-page" class="hidden absolute inset-0 z-30 bg-slate-50 dark:bg-black flex flex-col overflow-y-auto">
+            <!-- Top Bar of Contact Info Page -->
+            <div class="sticky top-0 z-10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xs border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shrink-0">
+              <button id="close-contact-profile-btn" type="button" class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer">
+                <span>←</span>
+                <span>Back to Chat</span>
+              </button>
+              <span id="cinfo-sync-badge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                🟢 Gmail Profile Synced
+              </span>
+            </div>
+
+            <div class="max-w-lg w-full mx-auto p-4 space-y-4">
+              <!-- Hero Profile Card (Gmail Profile Picture, Name, Gmail ID & Quick Call/Message Actions) -->
+              <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 flex flex-col items-center text-center shadow-xs space-y-3">
+                <div class="relative">
+                  <div id="cinfo-avatar-box" class="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg ring-4 ring-indigo-500/20 overflow-hidden">
+                    U
+                  </div>
+                  <button id="cinfo-sync-gmail-btn" type="button" class="absolute -bottom-1 -right-1 px-2 py-1 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold shadow cursor-pointer" title="Sync Gmail Profile Photo & Info">
+                    🔄 Sync
+                  </button>
+                </div>
+
+                <div class="space-y-1 max-w-full">
+                  <h3 id="cinfo-name" class="text-lg font-bold text-slate-900 dark:text-white truncate">Contact Name</h3>
+                  <p id="cinfo-email" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 truncate">contact@gmail.com</p>
+                  <p id="cinfo-bio" class="text-[11px] text-slate-500 dark:text-slate-400">Available on CHATEAMS</p>
+                </div>
+
+                <!-- 3 Primary Action Buttons: Message, Voice Call, Video Call -->
+                <div class="grid grid-cols-3 gap-2.5 w-full pt-2">
+                  <button id="cinfo-action-msg-btn" type="button" class="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs transition cursor-pointer">
+                    <span class="text-lg">💬</span>
+                    <span>Message</span>
+                  </button>
+                  <button id="cinfo-action-voice-btn" type="button" class="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold text-xs transition cursor-pointer">
+                    <span class="text-lg">📞</span>
+                    <span>Voice Call</span>
+                  </button>
+                  <button id="cinfo-action-video-btn" type="button" class="flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-bold text-xs transition cursor-pointer">
+                    <span class="text-lg">📹</span>
+                    <span>Video Call</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Synced Gmail Account Details Card -->
+              <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2.5 text-xs shadow-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800 dark:text-slate-100">🪪 Synced Google / Gmail Account</span>
+                  <button id="cinfo-copy-email-btn" type="button" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Copy Gmail ID</button>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-slate-500">Gmail ID:</span>
+                    <span id="cinfo-detail-email" class="font-bold text-slate-900 dark:text-white truncate">contact@gmail.com</span>
+                  </div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-slate-500">Google Name:</span>
+                    <span id="cinfo-detail-name" class="font-bold text-slate-900 dark:text-white truncate">Contact Name</span>
+                  </div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-slate-500">Profile Picture:</span>
+                    <span id="cinfo-detail-photo-status" class="font-bold text-emerald-600 dark:text-emerald-400">Auto-Synced</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Per-Person Disappearing Messages Card -->
+              <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2.5 text-xs shadow-xs">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-slate-800 dark:text-slate-100">⏳ Disappearing Messages (This Chat Only)</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Automatically clear messages in this chat after the selected time.</p>
+                  </div>
+                </div>
+                <div id="cinfo-disappear-options" class="grid grid-cols-5 gap-1.5 pt-1">
+                  <button type="button" data-cdisp="0" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] font-bold cursor-pointer">Off</button>
+                  <button type="button" data-cdisp="24h" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] font-bold cursor-pointer">24h</button>
+                  <button type="button" data-cdisp="7d" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] font-bold cursor-pointer">7 Days</button>
+                  <button type="button" data-cdisp="30d" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] font-bold cursor-pointer">30 Days</button>
+                  <button type="button" data-cdisp="90d" class="py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] font-bold cursor-pointer">90 Days</button>
+                </div>
+              </div>
+
+              <!-- Per-Person Chat Settings & Privacy Controls (Mute, Wallpaper, Lock, Clear Chat, Block) -->
+              <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2.5 text-xs shadow-xs">
+                <p class="font-bold text-slate-800 dark:text-slate-100">⚙️ Chat Controls &amp; Privacy</p>
+                <label class="flex items-center justify-between py-1.5 cursor-pointer">
+                  <span class="font-bold text-slate-700 dark:text-slate-200">🔕 Mute Notifications for This Chat</span>
+                  <input id="cinfo-mute-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                </label>
+                <label class="flex items-center justify-between py-1.5 cursor-pointer">
+                  <span class="font-bold text-slate-700 dark:text-slate-200">🔐 Lock This Chat in Private Vault</span>
+                  <input id="cinfo-lock-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                </label>
+                <button id="cinfo-wallpaper-btn" type="button" class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold flex items-center justify-between cursor-pointer">
+                  <span>🎨 Custom Wallpaper &amp; Bubble Color</span>
+                  <span>→</span>
+                </button>
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button id="cinfo-clear-chat-btn" type="button" class="py-2.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 font-bold cursor-pointer">
+                    🧹 Clear Chat
+                  </button>
+                  <button id="cinfo-block-btn" type="button" class="py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold cursor-pointer">
+                    🚫 Block Contact
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- Chat History List (Default view on Chat tab) -->
-          <div id="chat-history-view" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 bg-slate-50 dark:bg-black"></div>
+          <div id="chat-list-shell" class="relative flex-1 flex flex-col min-h-0 bg-white dark:bg-black">
+            <!-- Top Filter Tabs: All | Individual | Groups -->
+            <div id="chat-filter-bar" class="px-3 pt-2.5 pb-2 bg-white dark:bg-black border-b border-slate-100 dark:border-slate-900 flex items-center gap-2 shrink-0">
+              <button type="button" data-chat-filter="all" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer ch-accent-bg text-white">
+                All <span id="filter-count-all" class="opacity-80 text-[10px] ml-0.5">0</span>
+              </button>
+              <button type="button" data-chat-filter="dm" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                Individual <span id="filter-count-dm" class="opacity-75 text-[10px] ml-0.5">0</span>
+              </button>
+              <button type="button" data-chat-filter="group" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                Groups <span id="filter-count-group" class="opacity-75 text-[10px] ml-0.5">0</span>
+              </button>
+            </div>
+
+            <div id="chat-history-view" class="flex-1 overflow-y-auto px-3 pt-2.5 pb-24 bg-slate-100/70 dark:bg-slate-950"></div>
+
+            <!-- Floating '+' Pop-up Menu & FAB Button -->
+            <div id="fab-new-menu" class="hidden absolute bottom-20 right-4 z-30 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-1">
+              <button id="fab-new-dm-btn" type="button" class="w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2.5 cursor-pointer">
+                <span class="text-base">💬</span>
+                <span>New Chat</span>
+              </button>
+              <button id="fab-new-group-btn" type="button" class="w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2.5 cursor-pointer">
+                <span class="text-base">👥</span>
+                <span>New Group</span>
+              </button>
+              <button id="fab-new-broadcast-btn" type="button" class="w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2.5 cursor-pointer">
+                <span class="text-base">📢</span>
+                <span>New Broadcast</span>
+              </button>
+            </div>
+            <button id="chat-fab-btn" type="button" class="absolute bottom-4 right-4 z-30 w-14 h-14 rounded-2xl ch-accent-bg text-white shadow-xl flex items-center justify-center text-2xl font-bold transition transform active:scale-95 cursor-pointer" title="Create New Chat or Group" aria-label="New Chat">
+              +
+            </button>
+          </div>
 
           <!-- Active Chat Thread (Shown only when user selects a chat) -->
           <div id="chat-thread-view" class="hidden relative flex-1 flex flex-col min-h-0">
@@ -1785,7 +1971,7 @@
     </div>
 
     <!-- BOTTOM NAVIGATION TABS (1. Chat | 2. Status | 3. Calls | 4. Notes) -->
-    <nav id="bottom-nav" class="safe-bottom bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800 px-2 sm:px-3 py-1.5 grid grid-cols-4 gap-1.5 shrink-0">
+    <nav id="bottom-nav" class="safe-bottom bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 shadow-[0_-4px_20px_-6px_rgba(0,0,0,0.08)] px-2 sm:px-3 py-1.5 grid grid-cols-4 gap-1.5 shrink-0">
       <button id="tab-chat-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-slate-900 font-bold transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
@@ -2235,13 +2421,13 @@
     }
 
     function openSidebar() {
-      sidebar.classList.remove('-translate-x-full');
-      sidebarBackdrop.classList.remove('hidden');
+      sidebar?.classList.remove('-translate-x-full');
+      sidebarBackdrop?.classList.remove('hidden');
     }
 
     function closeSidebar() {
-      sidebar.classList.add('-translate-x-full');
-      sidebarBackdrop.classList.add('hidden');
+      sidebar?.classList.add('-translate-x-full');
+      sidebarBackdrop?.classList.add('hidden');
     }
 
     let selectedGroupEmails = new Set();
@@ -2927,6 +3113,7 @@
 
     // --- Render Sidebar ---
     function renderSidebar() {
+      if (!channelList || !dmList || !broadcastList) return;
       channelList.innerHTML = '';
       broadcastList.innerHTML = '';
       dmList.innerHTML = '';
@@ -3145,12 +3332,35 @@
         chatHistoryView.appendChild(vaultBar);
       }
 
+      const dmCount = unlockedPool.filter(r => r.type === 'dm').length;
+      const grpCount = unlockedPool.filter(r => r.type === 'group' || r.type === 'broadcast').length;
+      const fcAll = document.getElementById('filter-count-all');
+      const fcDm = document.getElementById('filter-count-dm');
+      const fcGrp = document.getElementById('filter-count-group');
+      if (fcAll) fcAll.textContent = unlockedPool.length;
+      if (fcDm) fcDm.textContent = dmCount;
+      if (fcGrp) fcGrp.textContent = grpCount;
+
+      const curFilter = window.activeChatFilter || (window.uiPrefs && window.uiPrefs.defaultFilter) || 'all';
+      document.querySelectorAll('.chat-filter-tab').forEach(btn => {
+        const isAct = btn.dataset.chatFilter === curFilter;
+        btn.className = isAct
+          ? 'chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer ch-accent-bg text-white shadow-xs'
+          : 'chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300';
+      });
+
+      const typePool = curFilter === 'dm'
+        ? unlockedPool.filter(r => r.type === 'dm')
+        : curFilter === 'group'
+          ? unlockedPool.filter(r => r.type === 'group' || r.type === 'broadcast')
+          : unlockedPool;
+
       const baseRooms = q
-        ? unlockedPool.filter(r =>
+        ? typePool.filter(r =>
             r.name.toLowerCase().includes(q) ||
             (r.messages && r.messages.some(m => (m.text && m.text.toLowerCase().includes(q)) || (m.attachment && m.attachment.title.toLowerCase().includes(q))))
           )
-        : unlockedPool;
+        : typePool;
       const visibleRooms = [...baseRooms].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
       if (visibleRooms.length === 0) {
@@ -3194,7 +3404,10 @@
         const lastMsg = room.messages && room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
         const row = document.createElement('button');
         row.type = 'button';
-        row.className = 'w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex items-center gap-3 hover:bg-indigo-50/50 dark:hover:bg-slate-800/80 transition cursor-pointer text-left shadow-xs';
+        const isCardStyle = window.uiPrefs && window.uiPrefs.listStyle === 'cards';
+        row.className = isCardStyle
+          ? 'w-full mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 mb-2 flex items-center gap-3 hover:bg-indigo-50/50 dark:hover:bg-slate-800/80 transition cursor-pointer text-left shadow-xs'
+          : 'w-full bg-white dark:bg-slate-900/90 border border-slate-200/70 dark:border-slate-800/80 rounded-2xl px-3.5 py-3 mb-2 flex items-center gap-3 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition cursor-pointer text-left shadow-xs';
 
         const av = document.createElement('div');
         av.className = `w-12 h-12 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-sm font-bold shrink-0 shadow-sm`;
@@ -3310,10 +3523,30 @@
         renderChatHistory();
         return;
       }
-      roomAvatar.textContent = room.avatar;
-      roomAvatar.className = `w-9 h-9 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm`;
+      if (room.avatarPhoto) {
+        roomAvatar.innerHTML = `<img src="${room.avatarPhoto}" alt="${room.name}" class="w-full h-full object-cover" />`;
+      } else if (room.type === 'dm' && room.email) {
+        const gUrl = `https://unavatar.io/google/${encodeURIComponent(room.email)}`;
+        roomAvatar.innerHTML = `<img src="${gUrl}" alt="${room.name}" class="w-full h-full object-cover" onerror="this.remove(); this.parentElement.textContent='${room.avatar || 'U'}';" />`;
+      } else {
+        roomAvatar.textContent = room.avatar;
+      }
+      roomAvatar.className = `w-9 h-9 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm overflow-hidden`;
       roomTitle.textContent = room.name;
-      roomSubtitle.textContent = room.type === 'dm' ? (room.email || 'Direct Chat') : room.subtitle;
+      const isBlockedRoom = room.email && Array.isArray(appSettings.blockedEmails) && appSettings.blockedEmails.includes(room.email.toLowerCase());
+      roomSubtitle.textContent = isBlockedRoom
+        ? `${room.email} · 🚫 Blocked`
+        : (room.type === 'dm' ? `${room.email || 'Direct Chat'} · Tap for Info` : `${room.subtitle} · Tap for Info`);
+      const dispPill = document.getElementById('room-disappear-pill');
+      if (dispPill) {
+        const dVal = room.disappearing || '0';
+        if (dVal && dVal !== '0') {
+          dispPill.textContent = `⏳ ${dVal}`;
+          dispPill.classList.remove('hidden');
+        } else {
+          dispPill.classList.add('hidden');
+        }
+      }
       searchInput.placeholder = 'Search chat...';
       messageInput.placeholder = room.type === 'broadcast'
         ? `Broadcast to ${room.name}...`
@@ -3896,7 +4129,7 @@
 
       if (activeView === 'chat' && isChatThreadOpen && curRoom) {
         // CHAT THREAD OPEN: Show ONLY Voice Call, Video Call, and ⋮ Options Menu on right!
-        openSidebarBtn.classList.add('hidden');
+        openSidebarBtn?.classList.add('hidden');
         backToChatsBtn.classList.remove('hidden');
         voiceCallBtn.classList.remove('hidden');
         videoCallBtn.classList.remove('hidden');
@@ -3922,18 +4155,23 @@
         }
 
         chatView.classList.remove('hidden');
+        document.getElementById('chat-list-shell')?.classList.add('hidden');
         chatHistoryView.classList.add('hidden');
+        document.getElementById('main-app-header')?.classList.remove('ch-rich-header');
         chatThreadView.classList.remove('hidden');
         renderMessages();
       } else {
         // MAIN SCREEN (Chats List, Status, Calls, or Takeaways)
-        openSidebarBtn.classList.remove('hidden');
+        document.getElementById('contact-profile-page')?.classList.add('hidden');
+        document.getElementById('room-disappear-pill')?.classList.add('hidden');
+        openSidebarBtn?.classList.remove('hidden');
         backToChatsBtn.classList.add('hidden');
         voiceCallBtn.classList.add('hidden');
         videoCallBtn.classList.add('hidden');
         moreBtn?.classList.add('hidden');
         moreMenu?.classList.add('hidden');
 
+        document.getElementById('main-app-header')?.classList.add('ch-rich-header');
         searchToggleBtn?.classList.remove('hidden');
         themeToggleBtn.classList.remove('hidden');
         document.getElementById('open-settings-btn')?.classList.remove('hidden');
@@ -3953,7 +4191,8 @@
         } else {
           chatView.classList.remove('hidden');
           chatThreadView.classList.add('hidden');
-          chatHistoryView.classList.remove('hidden');
+          document.getElementById('chat-list-shell')?.classList.remove('hidden');
+        chatHistoryView.classList.remove('hidden');
           renderChatHistory();
         }
       }
@@ -4579,15 +4818,15 @@
     });
 
     // Group, Broadcast, DM Modals
-    addChannelBtn.addEventListener('click', openChannelModal);
+    addChannelBtn?.addEventListener('click', openChannelModal);
     closeChannelModalBtn.addEventListener('click', closeChannelModal);
     cancelChannelBtn.addEventListener('click', closeChannelModal);
 
-    addBroadcastBtn.addEventListener('click', openBroadcastModal);
+    addBroadcastBtn?.addEventListener('click', openBroadcastModal);
     closeBroadcastModalBtn.addEventListener('click', closeBroadcastModal);
     cancelBroadcastBtn.addEventListener('click', closeBroadcastModal);
 
-    addDmBtn.addEventListener('click', openDmModal);
+    addDmBtn?.addEventListener('click', openDmModal);
     closeDmModalBtn.addEventListener('click', closeDmModal);
     cancelDmBtn.addEventListener('click', closeDmModal);
 
@@ -4808,38 +5047,149 @@
       messageInput.focus();
     });
 
-    googleSigninBtn.addEventListener('click', () => {
-      const email = demoEmailInput.value.trim().toLowerCase();
-      if (!isValidEmail(email)) {
-        authError.classList.remove('hidden');
+    function completeGoogleLogin(email, displayName, photoUrl) {
+      const cleanEmail = (email || '').trim().toLowerCase();
+      if (!isValidEmail(cleanEmail)) {
+        if (authError) {
+          authError.textContent = 'Please select a valid Google Mail ID.';
+          authError.classList.remove('hidden');
+        }
         return;
       }
-      authError.classList.add('hidden');
-      const profile = resolveGoogleProfile(email);
-      const name = demoNameInput.value.trim() || profile.name;
-      loadAccountStateForEmail(email);
-      currentUser = {
-        name,
-        email,
-        avatar: (appSettings && appSettings.avatarDataUrl) ? appSettings.avatarDataUrl : name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-      };
-      saveState();
-      renderApp();
-      if (typeof window.pullAccountFromGoogleCloud === 'function') {
-        window.pullAccountFromGoogleCloud(false);
+      if (authError) authError.classList.add('hidden');
+
+      // Remember this Google account in device history for 1-tap selection
+      try {
+        const savedAccts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]');
+        const profile = resolveGoogleProfile(cleanEmail);
+        const finalName = (displayName || '').trim() || profile.name;
+        const idx = savedAccts.findIndex(a => a.email === cleanEmail);
+        const entry = { email: cleanEmail, name: finalName, avatar: photoUrl || '' };
+        if (idx >= 0) savedAccts[idx] = entry; else savedAccts.unshift(entry);
+        localStorage.setItem('chateams_google_accounts', JSON.stringify(savedAccts.slice(0, 8)));
+
+        loadAccountStateForEmail(cleanEmail);
+        if (photoUrl && appSettings) {
+          appSettings.avatarDataUrl = photoUrl;
+        }
+        currentUser = {
+          name: finalName,
+          email: cleanEmail,
+          avatar: (appSettings && appSettings.avatarDataUrl) ? appSettings.avatarDataUrl : finalName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+        };
+        saveState();
+        renderApp();
+        if (typeof window.pullAccountFromGoogleCloud === 'function') {
+          window.pullAccountFromGoogleCloud(false);
+        }
+      } catch (err) {
+        console.error('Login error:', err);
       }
+    }
+
+    function openGoogleAccountChooser(modeLabel) {
+      const modal = document.getElementById('google-chooser-modal');
+      const title = document.getElementById('chooser-title');
+      const list = document.getElementById('chooser-saved-list');
+      if (title) title.textContent = modeLabel === 'signup' ? 'Sign up with Google' : 'Choose a Google Account';
+      if (list) {
+        list.innerHTML = '';
+        let accts = [];
+        try { accts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
+        if (accts.length === 0) {
+          list.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2">Enter your Gmail ID below to link your Google account.</p>';
+        } else {
+          accts.forEach(acct => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full flex items-center gap-3 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left cursor-pointer';
+            const av = acct.avatar
+              ? `<img src="${acct.avatar}" class="w-9 h-9 rounded-full object-cover shrink-0" alt="" />`
+              : `<div class="w-9 h-9 rounded-full ch-accent-bg text-white flex items-center justify-center text-xs font-bold shrink-0">${(acct.name || acct.email)[0].toUpperCase()}</div>`;
+            btn.innerHTML = `${av}<div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-900 dark:text-white truncate">${acct.name || acct.email}</p><p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${acct.email}</p></div>`;
+            btn.addEventListener('click', () => {
+              modal?.classList.add('hidden');
+              completeGoogleLogin(acct.email, acct.name, acct.avatar);
+            });
+            list.appendChild(btn);
+          });
+        }
+      }
+      modal?.classList.remove('hidden');
+    }
+
+    async function handleGoogleOAuthFlow(modeLabel) {
+      if (authError) authError.classList.add('hidden');
+      const fb = appSettings && appSettings.firebase;
+      const hasFirebaseAuth = fb && fb.apiKey && fb.apiKey !== 'rtdb-direct' && typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+
+      if (hasFirebaseAuth) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({
+              apiKey: fb.apiKey,
+              authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
+              projectId: fb.projectId,
+              databaseURL: fb.databaseURL || (fb.projectId ? `https://${fb.projectId}-default-rtdb.firebaseio.com` : undefined)
+            });
+          }
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: 'select_account' });
+          try {
+            const res = await firebase.auth().signInWithPopup(provider);
+            if (res && res.user && res.user.email) {
+              completeGoogleLogin(res.user.email, res.user.displayName, res.user.photoURL);
+              return;
+            }
+          } catch (popErr) {
+            if (popErr && (popErr.code === 'auth/popup-blocked' || popErr.code === 'auth/operation-not-supported-in-this-environment')) {
+              await firebase.auth().signInWithRedirect(provider);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Firebase Google OAuth fallback to account chooser:', e);
+        }
+      }
+      openGoogleAccountChooser(modeLabel);
+    }
+
+    // Check Firebase redirect result on page load
+    (async function checkGoogleRedirectResult() {
+      try {
+        if (typeof firebase !== 'undefined' && firebase.apps.length && typeof firebase.auth === 'function') {
+          const res = await firebase.auth().getRedirectResult();
+          if (res && res.user && res.user.email) {
+            completeGoogleLogin(res.user.email, res.user.displayName, res.user.photoURL);
+          }
+        }
+      } catch {}
+    })();
+
+    googleSigninBtn?.addEventListener('click', () => handleGoogleOAuthFlow('signin'));
+    document.getElementById('google-signup-btn')?.addEventListener('click', () => handleGoogleOAuthFlow('signup'));
+    document.getElementById('close-chooser-btn')?.addEventListener('click', () => {
+      document.getElementById('google-chooser-modal')?.classList.add('hidden');
+    });
+    document.getElementById('chooser-gmail-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('chooser-gmail-input');
+      const val = inp ? inp.value.trim().toLowerCase() : '';
+      if (!isValidEmail(val)) return;
+      document.getElementById('google-chooser-modal')?.classList.add('hidden');
+      completeGoogleLogin(val, '', '');
     });
 
-    signOutBtn.addEventListener('click', () => {
+    signOutBtn?.addEventListener('click', () => {
       currentUser = null;
       saveState();
       closeSidebar();
       renderApp();
     });
 
-    openSidebarBtn.addEventListener('click', openSidebar);
-    closeSidebarBtn.addEventListener('click', closeSidebar);
-    sidebarBackdrop.addEventListener('click', closeSidebar);
+    openSidebarBtn?.addEventListener('click', openSidebar);
+    closeSidebarBtn?.addEventListener('click', closeSidebar);
+    sidebarBackdrop?.addEventListener('click', closeSidebar);
 
     searchInput.addEventListener('input', function () {
       searchQuery = searchInput.value;
@@ -5436,7 +5786,7 @@
         try {
           new Notification(`Incoming ${mode === 'video' ? 'Video' : 'Voice'} Call · ${room.name}`, {
             body: 'Tap to Answer or Decline on CHATEAMS',
-            icon: './icon.svg',
+            icon: './icon.svg?v=2.3.0',
             requireInteraction: true
           });
         } catch (e) {}
@@ -5488,7 +5838,7 @@
         try {
           new Notification('CHATEAMS Cloud Alert', {
             body: 'Background notifications are active and working!',
-            icon: './icon.svg'
+            icon: './icon.svg?v=2.3.0'
           });
         } catch (e) {}
       }
@@ -5993,6 +6343,22 @@
               break;
             }
           }
+        } else if (packet.type === 'chateams_profile_req') {
+          sendRawPeerPacket(fromEmail, {
+            type: 'chateams_profile_res',
+            fromEmail: currentUser.email.toLowerCase(),
+            fromName: currentUser.name,
+            bio: appSettings.bio || 'Available on CHATEAMS',
+            avatarPhoto: appSettings.avatarDataUrl || currentUser.avatarPhoto || ''
+          });
+        } else if (packet.type === 'chateams_profile_res') {
+          const targetRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
+          if (packet.fromName) targetRoom.name = packet.fromName;
+          if (packet.bio) targetRoom.bio = packet.bio;
+          if (packet.avatarPhoto) targetRoom.avatarPhoto = packet.avatarPhoto;
+          saveState();
+          renderApp();
+          if (typeof window.populateContactProfilePage === 'function') window.populateContactProfilePage();
         } else if (packet.type === 'chateams_sync_req') {
           // Peer re-installed or opened chat: send shared DM history back so no messages are ever lost!
           const dmRoom = rooms.find(r => r.type === 'dm' && String(r.email || '').toLowerCase() === fromEmail);
@@ -6146,6 +6512,8 @@
           const safeState = {
             email: currentUser.email.toLowerCase(),
             name: currentUser.name,
+            bio: appSettings.bio || 'Available on CHATEAMS',
+            avatarPhoto: appSettings.avatarDataUrl || currentUser.avatarPhoto || '',
             rooms: (payload.rooms || []).map(r => ({
               ...r,
               messages: (r.messages || []).slice(-150).map(m => ({
@@ -6251,6 +6619,51 @@
         saveState();
         renderApp();
       }
+
+      window.syncSingleContactGmailProfile = async function (peerEmail, showFeedback = false) {
+        if (!peerEmail) return;
+        const cleanEmail = String(peerEmail).trim().toLowerCase();
+        const emailKey = emailToCloudKey(cleanEmail);
+        const room = findOrCreateDmRoom(cleanEmail);
+
+        // 1. Request live profile from peer via WebRTC
+        if (currentUser && currentUser.email) {
+          sendRawPeerPacket(cleanEmail, {
+            type: 'chateams_profile_req',
+            fromEmail: currentUser.email.toLowerCase(),
+            fromName: currentUser.name
+          });
+        }
+
+        // 2. Check Google Cloud (Firestore & Realtime DB) for the contact's saved Gmail profile
+        if (firestoreDb) {
+          try {
+            const doc = await firestoreDb.collection('chateams_accounts').doc(emailKey).get();
+            if (doc.exists) {
+              const d = doc.data();
+              if (d.name) room.name = d.name;
+              if (d.bio) room.bio = d.bio;
+              if (d.avatarPhoto) room.avatarPhoto = d.avatarPhoto;
+            }
+          } catch (e) {}
+        }
+        if (realtimeDb) {
+          try {
+            const snap = await realtimeDb.ref(`chateams_accounts/${emailKey}`).once('value');
+            if (snap.exists()) {
+              const d = snap.val();
+              if (d.name) room.name = d.name;
+              if (d.bio) room.bio = d.bio;
+              if (d.avatarPhoto) room.avatarPhoto = d.avatarPhoto;
+            }
+          } catch (e) {}
+        }
+
+        saveState();
+        renderApp();
+        if (typeof window.populateContactProfilePage === 'function') window.populateContactProfilePage();
+        if (showFeedback) showToast(`🔄 Synced Gmail profile for ${room.name}!`);
+      };
 
       window.requestPeerHistorySync = function (peerEmail) {
         if (!currentUser || !peerEmail) return;
@@ -6639,6 +7052,229 @@
         initFirebaseLive();
         initPeerLive();
       }
+    })();
+
+    // --- Contact / Chat Profile Page (Tap Chat Name in Header to Open) ---
+    (function initContactProfilePage() {
+      const trigger = document.getElementById('room-header-trigger');
+      const profilePage = document.getElementById('contact-profile-page');
+      const closeBtn = document.getElementById('close-contact-profile-btn');
+      const avatarBox = document.getElementById('cinfo-avatar-box');
+      const nameEl = document.getElementById('cinfo-name');
+      const emailEl = document.getElementById('cinfo-email');
+      const bioEl = document.getElementById('cinfo-bio');
+      const detailEmailEl = document.getElementById('cinfo-detail-email');
+      const detailNameEl = document.getElementById('cinfo-detail-name');
+      const detailPhotoEl = document.getElementById('cinfo-detail-photo-status');
+      const syncBtn = document.getElementById('cinfo-sync-gmail-btn');
+      const copyEmailBtn = document.getElementById('cinfo-copy-email-btn');
+      const actMsgBtn = document.getElementById('cinfo-action-msg-btn');
+      const actVoiceBtn = document.getElementById('cinfo-action-voice-btn');
+      const actVideoBtn = document.getElementById('cinfo-action-video-btn');
+      const dispContainer = document.getElementById('cinfo-disappear-options');
+      const muteToggle = document.getElementById('cinfo-mute-toggle');
+      const lockToggle = document.getElementById('cinfo-lock-toggle');
+      const wpBtn = document.getElementById('cinfo-wallpaper-btn');
+      const clearChatBtn = document.getElementById('cinfo-clear-chat-btn');
+      const blockBtn = document.getElementById('cinfo-block-btn');
+
+      function renderContactAvatar(room) {
+        if (!avatarBox || !room) return;
+        avatarBox.className = `w-24 h-24 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-3xl font-bold shadow-lg ring-4 ring-indigo-500/20 overflow-hidden`;
+        if (room.avatarPhoto) {
+          avatarBox.innerHTML = `<img src="${room.avatarPhoto}" alt="${room.name}" class="w-full h-full object-cover" />`;
+          if (detailPhotoEl) detailPhotoEl.textContent = 'Synced from Gmail Cloud';
+        } else if (room.type === 'dm' && room.email) {
+          const gUrl = `https://unavatar.io/google/${encodeURIComponent(room.email)}`;
+          avatarBox.innerHTML = `<img src="${gUrl}" alt="${room.name}" class="w-full h-full object-cover" onerror="this.remove(); this.parentElement.textContent='${room.avatar || 'U'}';" />`;
+          if (detailPhotoEl) detailPhotoEl.textContent = 'Google Avatar Synced';
+        } else {
+          avatarBox.textContent = room.avatar || '👥';
+          if (detailPhotoEl) detailPhotoEl.textContent = 'Group Emblem';
+        }
+      }
+
+      function highlightDisappearingOption(val) {
+        if (!dispContainer) return;
+        const current = val || '0';
+        dispContainer.querySelectorAll('button[data-cdisp]').forEach(btn => {
+          const active = btn.dataset.cdisp === current;
+          btn.className = active
+            ? 'py-2 rounded-xl border border-indigo-600 bg-indigo-600 text-white text-[11px] font-bold cursor-pointer shadow-xs'
+            : 'py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700';
+        });
+      }
+
+      function updateBlockButtonUI(room) {
+        if (!blockBtn || !room) return;
+        if (room.type !== 'dm' || !room.email) {
+          blockBtn.classList.add('hidden');
+          return;
+        }
+        blockBtn.classList.remove('hidden');
+        const em = room.email.toLowerCase();
+        const isBlocked = Array.isArray(appSettings.blockedEmails) && appSettings.blockedEmails.includes(em);
+        if (isBlocked) {
+          blockBtn.textContent = '✓ Unblock Contact';
+          blockBtn.className = 'py-2.5 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold cursor-pointer';
+        } else {
+          blockBtn.textContent = '🚫 Block Contact';
+          blockBtn.className = 'py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold cursor-pointer';
+        }
+      }
+
+      function populateContactProfilePage() {
+        const room = getActiveRoom();
+        if (!room || !profilePage) return;
+
+        renderContactAvatar(room);
+        if (nameEl) nameEl.textContent = room.name;
+        if (emailEl) emailEl.textContent = room.email || room.subtitle || '';
+        if (bioEl) bioEl.textContent = room.bio || (room.type === 'dm' ? 'Available on CHATEAMS · Synced via Gmail' : `${room.subtitle}`);
+        if (detailEmailEl) detailEmailEl.textContent = room.email || (room.members ? `${room.members.length} Gmail members` : 'Group Chat');
+        if (detailNameEl) detailNameEl.textContent = room.name;
+
+        highlightDisappearingOption(room.disappearing || '0');
+        if (muteToggle) muteToggle.checked = !!room.muted;
+        if (lockToggle) lockToggle.checked = !!room.locked;
+        updateBlockButtonUI(room);
+      }
+      window.populateContactProfilePage = populateContactProfilePage;
+
+      function openContactProfilePage() {
+        if (activeView !== 'chat' || !isChatThreadOpen) return;
+        const room = getActiveRoom();
+        if (!room || !profilePage) return;
+        populateContactProfilePage();
+        profilePage.classList.remove('hidden');
+        if (room.type === 'dm' && room.email && typeof window.syncSingleContactGmailProfile === 'function') {
+          window.syncSingleContactGmailProfile(room.email, false);
+        }
+      }
+
+      function closeContactProfilePage() {
+        profilePage?.classList.add('hidden');
+      }
+
+      trigger?.addEventListener('click', () => {
+        if (activeView === 'chat' && isChatThreadOpen) {
+          if (profilePage && !profilePage.classList.contains('hidden')) {
+            closeContactProfilePage();
+          } else {
+            openContactProfilePage();
+          }
+        }
+      });
+
+      closeBtn?.addEventListener('click', closeContactProfilePage);
+
+      // 3 Quick Actions: Message, Voice Call, Video Call
+      actMsgBtn?.addEventListener('click', () => {
+        closeContactProfilePage();
+        messageInput?.focus();
+      });
+
+      actVoiceBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        closeContactProfilePage();
+        if (room) startCall('voice', room);
+      });
+
+      actVideoBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        closeContactProfilePage();
+        if (room) startCall('video', room);
+      });
+
+      syncBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        if (!room) return;
+        if (room.email && typeof window.syncSingleContactGmailProfile === 'function') {
+          window.syncSingleContactGmailProfile(room.email, true);
+        } else {
+          populateContactProfilePage();
+          showToast('🔄 Synced latest chat details!');
+        }
+      });
+
+      copyEmailBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        if (!room || !room.email) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(room.email).catch(() => {});
+        }
+        showToast(`Copied ${room.email}`);
+      });
+
+      // Per-Person Disappearing Messages Selector
+      dispContainer?.querySelectorAll('button[data-cdisp]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const room = getActiveRoom();
+          if (!room) return;
+          const val = btn.dataset.cdisp || '0';
+          room.disappearing = val;
+          highlightDisappearingOption(val);
+          saveState();
+          renderMessages();
+          showToast(val === '0' ? `Disappearing messages OFF for ${room.name}` : `⏳ Disappearing messages set to ${val} for ${room.name}`);
+        });
+      });
+
+      muteToggle?.addEventListener('change', (e) => {
+        const room = getActiveRoom();
+        if (!room) return;
+        room.muted = e.target.checked;
+        saveState();
+        renderApp();
+        showToast(room.muted ? `Muted ${room.name} 🔕` : `Unmuted ${room.name} 🔔`);
+      });
+
+      lockToggle?.addEventListener('change', (e) => {
+        const room = getActiveRoom();
+        if (!room) return;
+        room.locked = e.target.checked;
+        saveState();
+        showToast(room.locked ? `${room.name} locked in Private Vault 🔐` : `${room.name} unlocked`);
+      });
+
+      wpBtn?.addEventListener('click', () => {
+        closeContactProfilePage();
+        document.getElementById('wallpaper-btn')?.click();
+      });
+
+      clearChatBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        if (!room) return;
+        room.messages = [];
+        saveState();
+        renderMessages();
+        closeContactProfilePage();
+        showToast(`🧹 Cleared all messages with ${room.name}`);
+      });
+
+      blockBtn?.addEventListener('click', () => {
+        const room = getActiveRoom();
+        if (!room || !room.email) return;
+        const em = room.email.toLowerCase();
+        if (!Array.isArray(appSettings.blockedEmails)) appSettings.blockedEmails = [];
+        const idx = appSettings.blockedEmails.indexOf(em);
+        if (idx >= 0) {
+          appSettings.blockedEmails.splice(idx, 1);
+          showToast(`✓ Unblocked ${room.name} (${em})`);
+        } else {
+          appSettings.blockedEmails.push(em);
+          showToast(`🚫 Blocked ${room.name} (${em})`);
+        }
+        saveSettings();
+        updateBlockButtonUI(room);
+        renderMessages();
+        if (typeof window.renderBlockedEmails === 'function') window.renderBlockedEmails();
+      });
+
+      // Close Contact Info Page automatically when pressing Back to Chats
+      backToChatsBtn?.addEventListener('click', () => {
+        closeContactProfilePage();
+      });
     })();
 
     // --- GitHub & Service Worker OTA Update Checker ---
@@ -7298,6 +7934,151 @@
         checkIncomingShareTarget();
       });
     }
+
+    // === CHATEAMS v2.1 Interface & Settings Controller ===
+    (function initInterfaceAndFab() {
+      const ACCENT_MAP = {
+        indigo:  { c: '#4f46e5', h: '#4338ca', s: 'rgba(79,70,229,0.12)' },
+        emerald: { c: '#059669', h: '#047857', s: 'rgba(5,150,105,0.12)' },
+        sky:     { c: '#0284c7', h: '#0369a1', s: 'rgba(2,132,199,0.12)' },
+        violet:  { c: '#7c3aed', h: '#6d28d9', s: 'rgba(124,58,237,0.12)' },
+        rose:    { c: '#e11d48', h: '#be123c', s: 'rgba(225,29,72,0.12)' },
+        amber:   { c: '#d97706', h: '#b45309', s: 'rgba(217,119,6,0.12)' }
+      };
+
+      const defaultPrefs = {
+        accent: 'indigo',
+        listStyle: 'clean',
+        defaultFilter: 'all',
+        fontSize: 'md',
+        bubbleStyle: 'modern',
+        showNavLabels: true
+      };
+
+      try {
+        window.uiPrefs = Object.assign({}, defaultPrefs, JSON.parse(localStorage.getItem('chateams_ui_prefs') || '{}'));
+      } catch {
+        window.uiPrefs = Object.assign({}, defaultPrefs);
+      }
+      window.activeChatFilter = window.uiPrefs.defaultFilter || 'all';
+
+      function saveAndApplyUiPrefs() {
+        localStorage.setItem('chateams_ui_prefs', JSON.stringify(window.uiPrefs));
+        const acc = ACCENT_MAP[window.uiPrefs.accent] || ACCENT_MAP.indigo;
+        document.documentElement.style.setProperty('--ch-accent', acc.c);
+        document.documentElement.style.setProperty('--ch-accent-hover', acc.h);
+        document.documentElement.style.setProperty('--ch-accent-soft', acc.s);
+
+        document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'bubble-modern', 'bubble-classic', 'bubble-minimal', 'hide-nav-labels');
+        document.body.classList.add('font-' + (window.uiPrefs.fontSize || 'md'));
+        document.body.classList.add('bubble-' + (window.uiPrefs.bubbleStyle || 'modern'));
+        if (!window.uiPrefs.showNavLabels) document.body.classList.add('hide-nav-labels');
+
+        document.querySelectorAll('[data-accent]').forEach(btn => {
+          btn.style.outline = btn.dataset.accent === window.uiPrefs.accent ? '2px solid currentColor' : 'none';
+          btn.style.outlineOffset = '2px';
+        });
+
+        const lsSel = document.getElementById('ui-list-style-select');
+        const dfSel = document.getElementById('ui-default-filter-select');
+        const fsSel = document.getElementById('ui-font-size-select');
+        const bsSel = document.getElementById('ui-bubble-style-select');
+        const nlTog = document.getElementById('ui-nav-labels-toggle');
+        if (lsSel) lsSel.value = window.uiPrefs.listStyle;
+        if (dfSel) dfSel.value = window.uiPrefs.defaultFilter;
+        if (fsSel) fsSel.value = window.uiPrefs.fontSize;
+        if (bsSel) bsSel.value = window.uiPrefs.bubbleStyle;
+        if (nlTog) nlTog.checked = !!window.uiPrefs.showNavLabels;
+      }
+
+      // Wire Chat Filter Tabs (All / Individual / Groups)
+      document.querySelectorAll('.chat-filter-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          window.activeChatFilter = btn.dataset.chatFilter || 'all';
+          if (typeof renderChatHistory === 'function') renderChatHistory();
+        });
+      });
+
+      // Wire Floating '+' FAB & Popup Menu
+      const fabBtn = document.getElementById('chat-fab-btn');
+      const fabMenu = document.getElementById('fab-new-menu');
+      fabBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fabMenu?.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (fabMenu && !fabMenu.classList.contains('hidden') && !fabMenu.contains(e.target) && e.target !== fabBtn) {
+          fabMenu.classList.add('hidden');
+        }
+      });
+      document.getElementById('fab-new-dm-btn')?.addEventListener('click', () => {
+        fabMenu?.classList.add('hidden');
+        if (typeof openDmModal === 'function') openDmModal();
+      });
+      document.getElementById('fab-new-group-btn')?.addEventListener('click', () => {
+        fabMenu?.classList.add('hidden');
+        if (typeof openChannelModal === 'function') openChannelModal();
+      });
+      document.getElementById('fab-new-broadcast-btn')?.addEventListener('click', () => {
+        fabMenu?.classList.add('hidden');
+        if (typeof openBroadcastModal === 'function') openBroadcastModal();
+      });
+
+      // Wire Settings Sign Out button
+      document.getElementById('settings-sign-out-btn')?.addEventListener('click', () => {
+        document.getElementById('settings-modal')?.classList.add('hidden');
+        if (typeof signOutBtn !== 'undefined' && signOutBtn) {
+          signOutBtn.click();
+        } else {
+          localStorage.removeItem('chateams_current_user');
+          location.reload();
+        }
+      });
+
+      // Wire Interface Settings Controls
+      document.getElementById('ui-theme-light-btn')?.addEventListener('click', () => {
+        isDarkMode = false;
+        localStorage.setItem('chateams_dark', 'false');
+        if (typeof applyTheme === 'function') applyTheme();
+      });
+      document.getElementById('ui-theme-dark-btn')?.addEventListener('click', () => {
+        isDarkMode = true;
+        localStorage.setItem('chateams_dark', 'true');
+        if (typeof applyTheme === 'function') applyTheme();
+      });
+      document.querySelectorAll('[data-accent]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          window.uiPrefs.accent = btn.dataset.accent;
+          saveAndApplyUiPrefs();
+          if (typeof renderChatHistory === 'function') renderChatHistory();
+        });
+      });
+      document.getElementById('ui-list-style-select')?.addEventListener('change', (e) => {
+        window.uiPrefs.listStyle = e.target.value;
+        saveAndApplyUiPrefs();
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+      document.getElementById('ui-default-filter-select')?.addEventListener('change', (e) => {
+        window.uiPrefs.defaultFilter = e.target.value;
+        window.activeChatFilter = e.target.value;
+        saveAndApplyUiPrefs();
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+      document.getElementById('ui-font-size-select')?.addEventListener('change', (e) => {
+        window.uiPrefs.fontSize = e.target.value;
+        saveAndApplyUiPrefs();
+      });
+      document.getElementById('ui-bubble-style-select')?.addEventListener('change', (e) => {
+        window.uiPrefs.bubbleStyle = e.target.value;
+        saveAndApplyUiPrefs();
+      });
+      document.getElementById('ui-nav-labels-toggle')?.addEventListener('change', (e) => {
+        window.uiPrefs.showNavLabels = e.target.checked;
+        saveAndApplyUiPrefs();
+      });
+
+      saveAndApplyUiPrefs();
+    })();
   </script>
 </body>
 </html>
