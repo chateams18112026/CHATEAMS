@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.4.0" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.4.0" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.7.0" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.7.0" />
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json?v=2.0.0" />
-  <link rel="icon" href="./icon.svg?v=2.4.0" type="image/svg+xml" />
+  <link rel="icon" href="./icon.svg?v=2.7.0" type="image/svg+xml" />
   <title>CHATEAMS — Groups, Broadcast &amp; Status</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
@@ -170,6 +170,34 @@
       border: 1.5px solid rgba(255, 255, 255, 0.35);
     }
 
+  
+    @keyframes chPopIn {
+      0% { opacity: 0; transform: scale(0.75) translateY(8px); }
+      70% { opacity: 1; transform: scale(1.05) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes chSlideUp {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes chPageSlide {
+      0% { opacity: 0; transform: translateX(24px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes chMenuPop {
+      0% { opacity: 0; transform: scale(0.85) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes chBubbleFloat {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, -2px); }
+    }
+    .ch-anim-pin { animation: chPopIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .ch-anim-row { animation: chSlideUp 0.24s ease-out both; }
+    .ch-anim-bubble { animation: chBubbleFloat 2.4s ease-in-out infinite; }
+    #settings-modal:not(.hidden) > div { animation: chPageSlide 0.25s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    #fab-new-menu:not(.hidden) { animation: chMenuPop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    #chat-thread-view:not(.hidden) { animation: chPageSlide 0.22s ease-out both; }
   </style>
 </head>
 <body class="bg-white dark:bg-black md:bg-slate-100 md:dark:bg-black h-[100dvh] w-screen overflow-hidden flex items-center justify-center p-0 md:p-4 transition-colors duration-200">
@@ -1063,7 +1091,7 @@
       <div class="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
         <span>CHATEAMS Production</span>
         <button id="build-number-btn" type="button" class="font-bold text-slate-500 dark:text-slate-300 hover:text-indigo-500 cursor-pointer">
-          v2.4 · Build 2400
+          v2.7 · Build 2700
         </button>
       </div>
     </div>
@@ -1413,15 +1441,11 @@
       </div>
 
       <div id="chooser-saved-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
-
-      <form id="chooser-gmail-form" class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-        <p class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Use another Google Account</p>
-        <input id="chooser-gmail-input" type="email" required placeholder="yourname@gmail.com" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        <div class="flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 rounded-xl ch-accent-bg text-white text-xs font-bold cursor-pointer">Continue →</button>
-          <a href="https://accounts.google.com/AccountChooser" target="_blank" rel="noopener noreferrer" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">Google 🔗</a>
-        </div>
-      </form>
+      <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+        <button id="chooser-google-redirect-btn" type="button" class="w-full py-3 rounded-2xl ch-accent-bg text-white text-xs font-bold shadow cursor-pointer flex items-center justify-center gap-2">
+          <span>Select Google Account →</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -3416,7 +3440,79 @@
         return;
       }
 
-      visibleRooms.forEach(room => {
+      const pinnedRooms = visibleRooms.filter(r => r.pinned);
+      const unpinnedRooms = visibleRooms.filter(r => !r.pinned);
+
+      if (pinnedRooms.length > 0) {
+        const pinGrid = document.createElement('div');
+        pinGrid.className = 'grid grid-cols-3 gap-3 px-2 pt-1 pb-3.5 mb-2.5 border-b border-slate-200/80 dark:border-slate-800/80';
+        pinnedRooms.forEach(room => {
+          const lastMsg = room.messages && room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
+          const tile = document.createElement('div');
+          tile.className = 'ch-anim-pin relative flex flex-col items-center gap-1.5 cursor-pointer group select-none';
+
+          const avWrap = document.createElement('div');
+          avWrap.className = 'relative';
+
+          const av = document.createElement('div');
+          av.className = `w-16 h-16 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-lg font-bold shadow-md ring-2 ring-white dark:ring-slate-900 group-hover:scale-105 transition-transform overflow-hidden`;
+          if (room.avatar && (room.avatar.startsWith('http') || room.avatar.startsWith('data:'))) {
+            av.innerHTML = `<img src="${room.avatar}" class="w-full h-full object-cover" alt="" />`;
+          } else {
+            av.textContent = room.avatar || room.name[0]?.toUpperCase() || '💬';
+          }
+          avWrap.appendChild(av);
+
+          // Unread badge (top-right, iMessage style)
+          if (room.unread > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1.5 rounded-full ch-accent-bg text-white text-[10px] font-extrabold flex items-center justify-center shadow ring-2 ring-white dark:ring-slate-900';
+            badge.textContent = room.unread > 99 ? '99+' : room.unread;
+            avWrap.appendChild(badge);
+          }
+
+          // Quick Unpin button (top-left)
+          const unpinBtn = document.createElement('button');
+          unpinBtn.type = 'button';
+          unpinBtn.className = 'absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white dark:bg-slate-800 text-amber-500 text-[10px] flex items-center justify-center shadow border border-slate-200 dark:border-slate-700 opacity-85 hover:opacity-100 cursor-pointer';
+          unpinBtn.textContent = '📌';
+          unpinBtn.title = 'Unpin Chat';
+          unpinBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            room.pinned = false;
+            saveState();
+            renderChatHistory();
+            showToast(`Unpinned ${room.name}`);
+          });
+          avWrap.appendChild(unpinBtn);
+
+          // iMessage mini speech bubble preview when unread > 0
+          if (room.unread > 0 && lastMsg && lastMsg.text) {
+            const bubble = document.createElement('div');
+            bubble.className = 'ch-anim-bubble absolute -bottom-1.5 left-1/2 max-w-[90px] px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm text-[9px] font-semibold text-slate-700 dark:text-slate-200 truncate';
+            bubble.textContent = lastMsg.text;
+            avWrap.appendChild(bubble);
+          }
+
+          const nm = document.createElement('p');
+          nm.className = 'text-[11px] font-bold text-slate-800 dark:text-slate-100 truncate w-full text-center px-1 pt-0.5';
+          nm.textContent = room.name;
+
+          tile.appendChild(avWrap);
+          tile.appendChild(nm);
+          tile.addEventListener('click', () => {
+            activeRoomId = room.id;
+            room.unread = 0;
+            isChatThreadOpen = true;
+            saveState();
+            renderApp();
+          });
+          pinGrid.appendChild(tile);
+        });
+        chatHistoryView.appendChild(pinGrid);
+      }
+
+      unpinnedRooms.forEach(room => {
         const lastMsg = room.messages && room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
         const row = document.createElement('button');
         row.type = 'button';
@@ -5113,7 +5209,7 @@
         let accts = [];
         try { accts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
         if (accts.length === 0) {
-          list.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2">Enter your Gmail ID below to link your Google account.</p>';
+          list.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2">Tap below to select your Google account directly.</p>';
         } else {
           accts.forEach(acct => {
             const btn = document.createElement('button');
@@ -5136,10 +5232,9 @@
 
     async function handleGoogleOAuthFlow(modeLabel) {
       if (authError) authError.classList.add('hidden');
-      const fb = appSettings && appSettings.firebase;
-      const hasFirebaseAuth = fb && fb.apiKey && fb.apiKey !== 'rtdb-direct' && typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+      const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
 
-      if (hasFirebaseAuth) {
+      if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
         try {
           if (!firebase.apps.length) {
             firebase.initializeApp({
@@ -5158,22 +5253,47 @@
               return;
             }
           } catch (popErr) {
-            if (popErr && (popErr.code === 'auth/popup-blocked' || popErr.code === 'auth/operation-not-supported-in-this-environment')) {
-              await firebase.auth().signInWithRedirect(provider);
+            // On mobile WebView / Capacitor or popup-blocked browsers, redirect straight to Google Account Picker
+            if (popErr && popErr.code !== 'auth/popup-closed-by-user' && popErr.code !== 'auth/cancelled-popup-request') {
+              try {
+                await firebase.auth().signInWithRedirect(provider);
+                return;
+              } catch (redirErr) {
+                console.warn('Redirect fallback:', redirErr);
+              }
+            } else {
               return;
             }
           }
         } catch (e) {
-          console.warn('Firebase Google OAuth fallback to account chooser:', e);
+          console.warn('Firebase Google OAuth error:', e);
         }
       }
-      openGoogleAccountChooser(modeLabel);
+
+      // If saved Google accounts exist on this device, show 1-tap account picker (no typing!)
+      let savedAccts = [];
+      try { savedAccts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
+      if (savedAccts.length > 0) {
+        openGoogleAccountChooser(modeLabel);
+      } else {
+        window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
+        openGoogleAccountChooser(modeLabel);
+      }
     }
 
     // Check Firebase redirect result on page load
     (async function checkGoogleRedirectResult() {
       try {
-        if (typeof firebase !== 'undefined' && firebase.apps.length && typeof firebase.auth === 'function') {
+        const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
+        if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+          if (!firebase.apps.length && fb.apiKey) {
+            firebase.initializeApp({
+              apiKey: fb.apiKey,
+              authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
+              projectId: fb.projectId,
+              databaseURL: fb.databaseURL || (fb.projectId ? `https://${fb.projectId}-default-rtdb.firebaseio.com` : undefined)
+            });
+          }
           const res = await firebase.auth().getRedirectResult();
           if (res && res.user && res.user.email) {
             completeGoogleLogin(res.user.email, res.user.displayName, res.user.photoURL);
@@ -5187,13 +5307,18 @@
     document.getElementById('close-chooser-btn')?.addEventListener('click', () => {
       document.getElementById('google-chooser-modal')?.classList.add('hidden');
     });
-    document.getElementById('chooser-gmail-form')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const inp = document.getElementById('chooser-gmail-input');
-      const val = inp ? inp.value.trim().toLowerCase() : '';
-      if (!isValidEmail(val)) return;
+    document.getElementById('chooser-google-redirect-btn')?.addEventListener('click', () => {
       document.getElementById('google-chooser-modal')?.classList.add('hidden');
-      completeGoogleLogin(val, '', '');
+      const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
+      if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        firebase.auth().signInWithRedirect(provider).catch(() => {
+          window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
+        });
+      } else {
+        window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
+      }
     });
 
     signOutBtn?.addEventListener('click', () => {
@@ -5802,7 +5927,7 @@
         try {
           new Notification(`Incoming ${mode === 'video' ? 'Video' : 'Voice'} Call · ${room.name}`, {
             body: 'Tap to Answer or Decline on CHATEAMS',
-            icon: './icon.svg?v=2.4.0',
+            icon: './icon.svg?v=2.7.0',
             requireInteraction: true
           });
         } catch (e) {}
@@ -5854,7 +5979,7 @@
         try {
           new Notification('CHATEAMS Cloud Alert', {
             body: 'Background notifications are active and working!',
-            icon: './icon.svg?v=2.4.0'
+            icon: './icon.svg?v=2.7.0'
           });
         } catch (e) {}
       }

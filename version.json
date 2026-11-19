@@ -1,7 +1,7 @@
 {
-  "version": "2.4.0",
-  "build": 2400,
+  "version": "2.7.0",
+  "build": 2700,
   "releasedAt": "2026-11-18",
   "channel": "production",
-  "notes": "CHATEAMS v2.4 \u2014 Pre-connected Google Cloud / Firebase Config (chateams1811) for instant Google Sign-In, Live Messaging & Calls."
+  "notes": "CHATEAMS v2.7 \u2014 Direct Google Account Selection for Sign In & Sign Up (Zero Typing Input)."
 }
