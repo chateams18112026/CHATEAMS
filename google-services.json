@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "575613113951",
+    "firebase_url": "https://chateams-18112026-default-rtdb.firebaseio.com",
+    "project_id": "chateams-18112026",
+    "storage_bucket": "chateams-18112026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575613113951:android:4bd76d4e38fbd75b2eadea",
+        "android_client_info": {
+          "package_name": "com.chateams.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575613113951-6s5qsd3mb7cuqe4evut8nleqka7m2qct.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACDa1VK5uyYY3wTx6N5ClRxfzWqcf5eFg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575613113951-6s5qsd3mb7cuqe4evut8nleqka7m2qct.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

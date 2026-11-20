@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chateams-prod-v2700';
+const CACHE_NAME = 'chateams-prod-v2800';
 const SHARE_CACHE = 'chateams-share-target';
 const ASSETS = [
   './',

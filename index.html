@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.7.0" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.7.0" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2.8.0" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2.8.0" />
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json?v=2.0.0" />
-  <link rel="icon" href="./icon.svg?v=2.7.0" type="image/svg+xml" />
+  <link rel="icon" href="./icon.svg?v=2.8.0" type="image/svg+xml" />
   <title>CHATEAMS — Groups, Broadcast &amp; Status</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
@@ -1440,12 +1440,24 @@
         <button id="close-chooser-btn" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-lg cursor-pointer">✕</button>
       </div>
 
-      <div id="chooser-saved-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
-      <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
-        <button id="chooser-google-redirect-btn" type="button" class="w-full py-3 rounded-2xl ch-accent-bg text-white text-xs font-bold shadow cursor-pointer flex items-center justify-center gap-2">
-          <span>Select Google Account →</span>
-        </button>
-      </div>
+      <div id="chooser-saved-list" class="space-y-2 max-h-52 overflow-y-auto"></div>
+      <form id="chooser-device-google-form" class="pt-2.5 border-t border-slate-200 dark:border-slate-800 space-y-2">
+        <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Or select your phone's Google Account (1-Tap Autofill):</p>
+        <div class="flex items-center gap-2">
+          <input
+            id="chooser-autofill-email"
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="username email"
+            placeholder="Tap here to pick phone's Gmail..."
+            class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-2xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button type="submit" class="px-4 py-2.5 rounded-2xl ch-accent-bg text-white text-xs font-bold shadow cursor-pointer shrink-0">
+            Continue →
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -5022,6 +5034,9 @@
       room.members = Array.from(selectedManageEmails);
       const unit = room.type === 'broadcast' ? 'recipients' : 'members';
       room.subtitle = `${room.type === 'broadcast' ? 'Broadcast' : 'Group'} · ${room.members.length} ${unit}`;
+      if (room.type === 'group' && typeof window.broadcastGroupRoomToCloud === 'function') {
+        window.broadcastGroupRoomToCloud(room);
+      }
       manageMembersModal.classList.add('hidden');
       saveState();
       renderApp();
@@ -5057,6 +5072,17 @@
         ]
       });
 
+      const createdRoom = rooms.find(r => r.id === id);
+      if (createdRoom && currentUser && currentUser.email) {
+        const myEm = currentUser.email.toLowerCase();
+        if (!createdRoom.members.some(m => String(m).toLowerCase() === myEm)) {
+          createdRoom.members.unshift(myEm);
+        }
+        createdRoom.createdBy = myEm;
+        if (typeof window.broadcastGroupRoomToCloud === 'function') {
+          window.broadcastGroupRoomToCloud(createdRoom);
+        }
+      }
       activeView = 'chat';
       activeRoomId = id;
       isChatThreadOpen = true;
@@ -5199,43 +5225,105 @@
       }
     }
 
-    function openGoogleAccountChooser(modeLabel) {
+    const SECONDARY_RTDB_URL = "https://chateams-18112026-default-rtdb.firebaseio.com";
+    const PRIMARY_RTDB_URL = "https://chateams1811-default-rtdb.firebaseio.com";
+
+    async function fetchCloudGoogleAccounts() {
+      const found = [];
+      const urls = [
+        `${SECONDARY_RTDB_URL}/chateams_accounts.json`,
+        `${PRIMARY_RTDB_URL}/chateams_accounts.json`
+      ];
+      for (const u of urls) {
+        try {
+          const resp = await fetch(u);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && typeof data === 'object') {
+              Object.values(data).forEach(acc => {
+                if (acc && acc.email && isValidEmail(acc.email)) {
+                  found.push({
+                    email: String(acc.email).trim().toLowerCase(),
+                    name: acc.name || resolveGoogleProfile(acc.email).name,
+                    avatar: acc.avatarPhoto || ''
+                  });
+                }
+              });
+            }
+          }
+        } catch (e) {}
+      }
+      return found;
+    }
+
+    function renderChooserAccountList(accts, modal) {
+      const list = document.getElementById('chooser-saved-list');
+      if (!list) return;
+      list.innerHTML = '';
+      if (!accts.length) {
+        list.innerHTML = '<div class="p-3 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] text-slate-600 dark:text-slate-300 text-center">Tap the box below and select your Gmail ID from your phone\'s Google Autofill strip above the keyboard.</div>';
+        return;
+      }
+      accts.forEach(acct => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full flex items-center gap-3 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-800 transition text-left cursor-pointer';
+        const av = acct.avatar
+          ? `<img src="${acct.avatar}" class="w-9 h-9 rounded-full object-cover shrink-0" alt="" />`
+          : `<div class="w-9 h-9 rounded-full ch-accent-bg text-white flex items-center justify-center text-xs font-bold shrink-0">${(acct.name || acct.email)[0].toUpperCase()}</div>`;
+        btn.innerHTML = `${av}<div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-900 dark:text-white truncate">${acct.name || acct.email}</p><p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${acct.email}</p></div><span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Tap →</span>`;
+        btn.addEventListener('click', () => {
+          modal?.classList.add('hidden');
+          completeGoogleLogin(acct.email, acct.name, acct.avatar);
+        });
+        list.appendChild(btn);
+      });
+    }
+
+    async function openGoogleAccountChooser(modeLabel) {
       const modal = document.getElementById('google-chooser-modal');
       const title = document.getElementById('chooser-title');
-      const list = document.getElementById('chooser-saved-list');
       if (title) title.textContent = modeLabel === 'signup' ? 'Sign up with Google' : 'Choose a Google Account';
-      if (list) {
-        list.innerHTML = '';
-        let accts = [];
-        try { accts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
-        if (accts.length === 0) {
-          list.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2">Tap below to select your Google account directly.</p>';
-        } else {
-          accts.forEach(acct => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'w-full flex items-center gap-3 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left cursor-pointer';
-            const av = acct.avatar
-              ? `<img src="${acct.avatar}" class="w-9 h-9 rounded-full object-cover shrink-0" alt="" />`
-              : `<div class="w-9 h-9 rounded-full ch-accent-bg text-white flex items-center justify-center text-xs font-bold shrink-0">${(acct.name || acct.email)[0].toUpperCase()}</div>`;
-            btn.innerHTML = `${av}<div class="min-w-0 flex-1"><p class="text-xs font-bold text-slate-900 dark:text-white truncate">${acct.name || acct.email}</p><p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${acct.email}</p></div>`;
-            btn.addEventListener('click', () => {
-              modal?.classList.add('hidden');
-              completeGoogleLogin(acct.email, acct.name, acct.avatar);
-            });
-            list.appendChild(btn);
-          });
-        }
-      }
+
+      let accts = [];
+      try { accts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
+      renderChooserAccountList(accts, modal);
       modal?.classList.remove('hidden');
+
+      const inputEl = document.getElementById('chooser-autofill-email');
+      if (inputEl && accts.length === 0) {
+        setTimeout(() => { try { inputEl.focus(); } catch {} }, 120);
+      }
+
+      // Also merge any accounts found in Firebase Cloud so users can pick their account in 1 tap
+      try {
+        const cloudAccts = await fetchCloudGoogleAccounts();
+        if (cloudAccts.length > 0) {
+          const map = new Map();
+          [...accts, ...cloudAccts].forEach(a => {
+            if (a && a.email && !map.has(a.email)) map.set(a.email, a);
+          });
+          const merged = Array.from(map.values());
+          localStorage.setItem('chateams_google_accounts', JSON.stringify(merged.slice(0, 12)));
+          renderChooserAccountList(merged, modal);
+        }
+      } catch (e) {}
     }
 
     async function handleGoogleOAuthFlow(modeLabel) {
       if (authError) authError.classList.add('hidden');
-      const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
+      const isCapacitorOrWebView = Boolean(
+        window.Capacitor ||
+        /; wv\)/i.test(navigator.userAgent || '') ||
+        location.hostname === 'localhost' ||
+        location.protocol === 'file:'
+      );
 
-      if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+      // NEVER call signInWithRedirect — on Android APK / mobile WebView it kicks out to
+      // external Chrome at *.firebaseapp.com/__/auth/handler with "The requested action is invalid."
+      if (!isCapacitorOrWebView && typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
         try {
+          const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
           if (!firebase.apps.length) {
             firebase.initializeApp({
               apiKey: fb.apiKey,
@@ -5246,79 +5334,37 @@
           }
           const provider = new firebase.auth.GoogleAuthProvider();
           provider.setCustomParameters({ prompt: 'select_account' });
-          try {
-            const res = await firebase.auth().signInWithPopup(provider);
-            if (res && res.user && res.user.email) {
-              completeGoogleLogin(res.user.email, res.user.displayName, res.user.photoURL);
-              return;
-            }
-          } catch (popErr) {
-            // On mobile WebView / Capacitor or popup-blocked browsers, redirect straight to Google Account Picker
-            if (popErr && popErr.code !== 'auth/popup-closed-by-user' && popErr.code !== 'auth/cancelled-popup-request') {
-              try {
-                await firebase.auth().signInWithRedirect(provider);
-                return;
-              } catch (redirErr) {
-                console.warn('Redirect fallback:', redirErr);
-              }
-            } else {
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn('Firebase Google OAuth error:', e);
-        }
-      }
-
-      // If saved Google accounts exist on this device, show 1-tap account picker (no typing!)
-      let savedAccts = [];
-      try { savedAccts = JSON.parse(localStorage.getItem('chateams_google_accounts') || '[]'); } catch {}
-      if (savedAccts.length > 0) {
-        openGoogleAccountChooser(modeLabel);
-      } else {
-        window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
-        openGoogleAccountChooser(modeLabel);
-      }
-    }
-
-    // Check Firebase redirect result on page load
-    (async function checkGoogleRedirectResult() {
-      try {
-        const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
-        if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
-          if (!firebase.apps.length && fb.apiKey) {
-            firebase.initializeApp({
-              apiKey: fb.apiKey,
-              authDomain: fb.authDomain || `${fb.projectId}.firebaseapp.com`,
-              projectId: fb.projectId,
-              databaseURL: fb.databaseURL || (fb.projectId ? `https://${fb.projectId}-default-rtdb.firebaseio.com` : undefined)
-            });
-          }
-          const res = await firebase.auth().getRedirectResult();
+          const res = await firebase.auth().signInWithPopup(provider);
           if (res && res.user && res.user.email) {
             completeGoogleLogin(res.user.email, res.user.displayName, res.user.photoURL);
+            return;
           }
+        } catch (popErr) {
+          // Fall straight through to the in-app Google Account Chooser without redirecting to firebaseapp.com
         }
-      } catch {}
-    })();
+      }
+
+      openGoogleAccountChooser(modeLabel);
+    }
 
     googleSigninBtn?.addEventListener('click', () => handleGoogleOAuthFlow('signin'));
     document.getElementById('google-signup-btn')?.addEventListener('click', () => handleGoogleOAuthFlow('signup'));
     document.getElementById('close-chooser-btn')?.addEventListener('click', () => {
       document.getElementById('google-chooser-modal')?.classList.add('hidden');
     });
-    document.getElementById('chooser-google-redirect-btn')?.addEventListener('click', () => {
-      document.getElementById('google-chooser-modal')?.classList.add('hidden');
-      const fb = (appSettings && appSettings.firebase && appSettings.firebase.apiKey) ? appSettings.firebase : DEFAULT_FIREBASE_CONFIG;
-      if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        firebase.auth().signInWithRedirect(provider).catch(() => {
-          window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
-        });
-      } else {
-        window.open('https://accounts.google.com/AccountChooser', '_blank', 'noopener,noreferrer');
+    document.getElementById('chooser-device-google-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inputEl = document.getElementById('chooser-autofill-email');
+      const raw = (inputEl?.value || '').trim().toLowerCase();
+      if (!raw) return;
+      const finalEmail = raw.includes('@') ? raw : `${raw}@gmail.com`;
+      if (!isValidEmail(finalEmail)) {
+        showToast('Please select a valid Gmail ID');
+        return;
       }
+      document.getElementById('google-chooser-modal')?.classList.add('hidden');
+      const prof = resolveGoogleProfile(finalEmail);
+      completeGoogleLogin(finalEmail, prof.name, '');
     });
 
     signOutBtn?.addEventListener('click', () => {
@@ -5927,7 +5973,7 @@
         try {
           new Notification(`Incoming ${mode === 'video' ? 'Video' : 'Voice'} Call · ${room.name}`, {
             body: 'Tap to Answer or Decline on CHATEAMS',
-            icon: './icon.svg?v=2.7.0',
+            icon: './icon.svg?v=2.8.0',
             requireInteraction: true
           });
         } catch (e) {}
@@ -5979,7 +6025,7 @@
         try {
           new Notification('CHATEAMS Cloud Alert', {
             body: 'Background notifications are active and working!',
-            icon: './icon.svg?v=2.7.0'
+            icon: './icon.svg?v=2.8.0'
           });
         } catch (e) {}
       }
@@ -6410,8 +6456,65 @@
         // Check blocked list
         if (Array.isArray(appSettings.blockedEmails) && appSettings.blockedEmails.includes(fromEmail)) return;
 
+        if (packet.type === 'chateams_group_sync' && packet.group && packet.group.id) {
+          let gRoom = rooms.find(r => r.id === packet.group.id || (r.type === 'group' && r.name.toLowerCase() === String(packet.group.name || '').toLowerCase()));
+          const members = Array.isArray(packet.group.members) ? packet.group.members : [];
+          if (!gRoom) {
+            gRoom = {
+              id: packet.group.id,
+              type: 'group',
+              name: packet.group.name || 'Team Group',
+              members: members,
+              subtitle: `Group · ${members.length || 2} members`,
+              avatar: '👥',
+              color: 'from-indigo-500 to-purple-600',
+              unread: 1,
+              messages: [
+                {
+                  id: nextId++,
+                  sender: 'CHATEAMS',
+                  text: `You joined group "${packet.group.name}" (${fromEmail})`,
+                  time: getCurrentTime(),
+                  isMe: false,
+                  reactions: {}
+                }
+              ]
+            };
+            rooms.unshift(gRoom);
+            saveState();
+            renderApp();
+            showToast(`👥 Added to group: ${gRoom.name}`);
+          } else {
+            gRoom.members = Array.from(new Set([...(gRoom.members || []), ...members]));
+            gRoom.subtitle = `Group · ${gRoom.members.length} members`;
+            saveState();
+            renderApp();
+          }
+          return;
+        }
+
         if (packet.type === 'chateams_msg') {
-          const targetRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
+          let targetRoom;
+          if (packet.isGroup && (packet.groupId || packet.groupName)) {
+            targetRoom = rooms.find(r => r.id === packet.groupId || (r.type === 'group' && r.name.toLowerCase() === String(packet.groupName || '').toLowerCase()));
+            if (!targetRoom) {
+              const gMembers = Array.isArray(packet.groupMembers) ? packet.groupMembers : [fromEmail, currentUser.email.toLowerCase()];
+              targetRoom = {
+                id: packet.groupId || `group-${Date.now()}`,
+                type: 'group',
+                name: packet.groupName || 'Group Chat',
+                members: gMembers,
+                subtitle: `Group · ${gMembers.length} members`,
+                avatar: '👥',
+                color: 'from-indigo-500 to-purple-600',
+                unread: 0,
+                messages: []
+              };
+              rooms.unshift(targetRoom);
+            }
+          } else {
+            targetRoom = findOrCreateDmRoom(fromEmail, packet.fromName);
+          }
           if (targetRoom.messages.some(m => m.remoteId && m.remoteId === packet.remoteId)) return;
 
           const incomingMsg = {
@@ -6622,15 +6725,26 @@
           } catch (e) {}
         }
 
+        const inboxKey = emailToCloudKey(cleanTo);
+        const cloudPayload = {
+          ...packet,
+          toEmail: cleanTo,
+          createdAtMs: Date.now()
+        };
         if (realtimeDb) {
           try {
-            const inboxKey = emailToCloudKey(cleanTo);
-            await realtimeDb.ref(`chateams_inbox/${inboxKey}`).push({
-              ...packet,
-              toEmail: cleanTo,
-              createdAtMs: Date.now()
-            });
+            await realtimeDb.ref(`chateams_inbox/${inboxKey}`).push(cloudPayload);
             sentCloud = true;
+          } catch (e) {}
+        }
+        for (const baseUrl of [SECONDARY_RTDB_URL, PRIMARY_RTDB_URL]) {
+          try {
+            const r = await fetch(`${baseUrl}/chateams_inbox/${inboxKey}.json`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(cloudPayload)
+            });
+            if (r.ok) sentCloud = true;
           } catch (e) {}
         }
         return sentCloud;
@@ -6646,7 +6760,6 @@
       let cloudSaveTimer = null;
       window.syncAccountToGoogleCloud = function (payload) {
         if (!currentUser || !currentUser.email) return;
-        if (!firestoreDb && !realtimeDb) return;
         clearTimeout(cloudSaveTimer);
         cloudSaveTimer = setTimeout(async () => {
           const emailKey = emailToCloudKey(currentUser.email);
@@ -6675,6 +6788,15 @@
           if (realtimeDb) {
             try {
               await realtimeDb.ref(`chateams_accounts/${emailKey}`).set(safeState);
+            } catch (e) {}
+          }
+          for (const baseUrl of [SECONDARY_RTDB_URL, PRIMARY_RTDB_URL]) {
+            try {
+              await fetch(`${baseUrl}/chateams_accounts/${emailKey}.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(safeState)
+              });
             } catch (e) {}
           }
         }, 1200);
@@ -6707,6 +6829,18 @@
             if (snap.exists()) {
               mergeCloudAccountSnapshot(snap.val());
               restoredAny = true;
+            }
+          } catch (e) {}
+        }
+        for (const baseUrl of [SECONDARY_RTDB_URL, PRIMARY_RTDB_URL]) {
+          try {
+            const r = await fetch(`${baseUrl}/chateams_accounts/${emailKey}.json`);
+            if (r.ok) {
+              const d = await r.json();
+              if (d) {
+                mergeCloudAccountSnapshot(d);
+                restoredAny = true;
+              }
             }
           } catch (e) {}
         }
@@ -7126,6 +7260,10 @@
             fromEmail: currentUser.email.toLowerCase(),
             fromName: currentUser.name,
             toEmail,
+            isGroup: room.type === 'group',
+            groupId: room.type === 'group' ? room.id : undefined,
+            groupName: room.type === 'group' ? room.name : undefined,
+            groupMembers: room.type === 'group' ? room.members : undefined,
             text: msgObj.text,
             attachment: safeAtt,
             replyTo: msgObj.replyTo || null,
@@ -7185,9 +7323,106 @@
         }
       };
 
+      window.broadcastGroupRoomToCloud = async function (groupRoom) {
+        if (!groupRoom || !currentUser) return;
+        const gPayload = {
+          id: groupRoom.id,
+          name: groupRoom.name,
+          members: Array.isArray(groupRoom.members) ? groupRoom.members : [currentUser.email.toLowerCase()],
+          createdBy: currentUser.email.toLowerCase(),
+          updatedAt: Date.now()
+        };
+        for (const baseUrl of [SECONDARY_RTDB_URL, PRIMARY_RTDB_URL]) {
+          try {
+            await fetch(`${baseUrl}/chateams_groups/${encodeURIComponent(groupRoom.id)}.json`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(gPayload)
+            });
+          } catch (e) {}
+        }
+        (gPayload.members || []).forEach(m => {
+          const em = String(typeof m === 'string' ? m : (m && m.email) || '').trim().toLowerCase();
+          if (em && em !== currentUser.email.toLowerCase()) {
+            sendPacketToEmail(em, {
+              type: 'chateams_group_sync',
+              fromEmail: currentUser.email.toLowerCase(),
+              fromName: currentUser.name,
+              group: gPayload
+            });
+          }
+        });
+      };
+
+      const processedCloudKeys = new Set();
+      async function pollDualCloudInboxAndGroups() {
+        if (!currentUser || !currentUser.email) return;
+        const myEmail = currentUser.email.toLowerCase();
+        const inboxKey = emailToCloudKey(myEmail);
+        for (const baseUrl of [SECONDARY_RTDB_URL, PRIMARY_RTDB_URL]) {
+          try {
+            const r = await fetch(`${baseUrl}/chateams_inbox/${inboxKey}.json`);
+            if (r.ok) {
+              const data = await r.json();
+              if (data && typeof data === 'object') {
+                Object.entries(data).forEach(([k, pkt]) => {
+                  if (!processedCloudKeys.has(k) && pkt) {
+                    processedCloudKeys.add(k);
+                    handleIncomingNetworkData(pkt);
+                  }
+                });
+              }
+            }
+          } catch (e) {}
+          try {
+            const gr = await fetch(`${baseUrl}/chateams_groups.json`);
+            if (gr.ok) {
+              const gData = await gr.json();
+              if (gData && typeof gData === 'object') {
+                let changed = false;
+                Object.values(gData).forEach(g => {
+                  if (!g || !g.id || !g.name) return;
+                  let localG = rooms.find(rm => rm.id === g.id || (rm.type === 'group' && rm.name.toLowerCase() === String(g.name).toLowerCase()));
+                  const gMembers = Array.isArray(g.members) ? g.members : [];
+                  if (!localG) {
+                    rooms.push({
+                      id: g.id,
+                      type: 'group',
+                      name: g.name,
+                      members: gMembers,
+                      subtitle: `Group · ${gMembers.length || 1} members`,
+                      avatar: '👥',
+                      color: 'from-indigo-500 to-purple-600',
+                      unread: 0,
+                      messages: [
+                        {
+                          id: nextId++,
+                          sender: 'CHATEAMS',
+                          text: `Synced group "${g.name}" from Google Cloud.`,
+                          time: getCurrentTime(),
+                          isMe: false,
+                          reactions: {}
+                        }
+                      ]
+                    });
+                    changed = true;
+                  }
+                });
+                if (changed) {
+                  saveState();
+                  renderApp();
+                }
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      setInterval(pollDualCloudInboxAndGroups, 4000);
+      setTimeout(pollDualCloudInboxAndGroups, 1200);
       setInterval(flushP2PPending, 8000);
-      window.addEventListener('online', flushP2PPending);
-      window.addEventListener('focus', flushP2PPending);
+      window.addEventListener('online', () => { flushP2PPending(); pollDualCloudInboxAndGroups(); });
+      window.addEventListener('focus', () => { flushP2PPending(); pollDualCloudInboxAndGroups(); });
 
       if (currentUser) {
         initFirebaseLive();

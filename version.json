@@ -1,6 +1,6 @@
 {
-  "version": "2.7.0",
-  "build": 2700,
+  "version": "2.8.0",
+  "build": 2800,
   "releasedAt": "2026-11-18",
   "channel": "production",
   "notes": "CHATEAMS v2.7 \u2014 Direct Google Account Selection for Sign In & Sign Up (Zero Typing Input)."
