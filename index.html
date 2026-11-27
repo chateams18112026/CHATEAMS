@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <meta name="theme-color" content="#4f46e5" />
+  <meta name="theme-color" content="#2e8b57" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json?v=2.0.0" />
@@ -110,9 +110,51 @@
     .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.375rem); }
   
     :root {
-      --ch-accent: #4f46e5;
-      --ch-accent-hover: #4338ca;
-      --ch-accent-soft: rgba(79, 70, 229, 0.12);
+      --ch-accent: #2e8b57;
+      --ch-accent-hover: #247347;
+      --ch-accent-soft: rgba(46, 139, 87, 0.14);
+    }
+    /* Fresh Sage-Mint Botanical Chat Wallpaper & Soft Mint Outgoing Bubbles */
+    #messages {
+      background: linear-gradient(155deg, #dce7b8 0%, #a8cfa2 48%, #7db796 100%) !important;
+    }
+    /* Dark Mode Palette matched to user's Midnight Slate reference */
+    html.dark #messages {
+      background: linear-gradient(160deg, #0e1621 0%, #131d29 55%, #0e1621 100%) !important;
+    }
+    html.dark .ch-rich-header {
+      background: linear-gradient(135deg, #17212b 0%, #1e2c3a 100%) !important;
+      box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.45);
+    }
+    html.dark #chat-form {
+      background: #17212b !important;
+      border-top-color: #22303e !important;
+    }
+    html.dark #chat-form > div.flex-1 {
+      background: #212e3b !important;
+    }
+    .msg-bubble-me {
+      background: #effdde !important;
+      background-image: none !important;
+      color: #132a1c !important;
+      border: 1px solid #cbe9bb !important;
+      box-shadow: 0 1px 3px rgba(24, 62, 39, 0.08) !important;
+    }
+    html.dark .msg-bubble-me {
+      background: #2b82e0 !important;
+      color: #ffffff !important;
+      border: 1px solid #358eed !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28) !important;
+    }
+    .msg-bubble-them {
+      background: #ffffff !important;
+      color: #16261d !important;
+      border: 1px solid rgba(46, 139, 87, 0.14) !important;
+    }
+    html.dark .msg-bubble-them {
+      background: #1c2733 !important;
+      color: #f1f5f9 !important;
+      border: 1px solid #283747 !important;
     }
     .ch-accent-bg { background-color: var(--ch-accent) !important; }
     .ch-accent-bg:hover { background-color: var(--ch-accent-hover) !important; }
@@ -125,6 +167,56 @@
     body.font-sm .msg-text { font-size: 13px !important; }
     body.font-md .msg-text { font-size: 14px !important; }
     body.font-lg .msg-text { font-size: 16px !important; }
+    /* === TELEGRAM SPRING ANIMATIONS & IMESSAGE BUBBLE EFFECTS === */
+    @keyframes tgMsgPopIn {
+      0% { opacity: 0; transform: translateY(12px) scale(0.92); }
+      65% { opacity: 1; transform: translateY(-2px) scale(1.015); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes tgRowSlideIn {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes tgTapbackPop {
+      0% { opacity: 0; transform: scale(0.72) translateY(6px); }
+      70% { opacity: 1; transform: scale(1.06) translateY(-1px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes imsgSlam {
+      0% { transform: scale(2.1); opacity: 0; }
+      60% { transform: scale(0.92); opacity: 1; }
+      80% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @keyframes imsgLoud {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      20% { transform: scale(1.18) rotate(-2deg); }
+      40% { transform: scale(1.18) rotate(2deg); }
+      60% { transform: scale(1.12) rotate(-1deg); }
+    }
+    @keyframes imsgGentle {
+      0% { opacity: 0.25; transform: scale(0.84); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .tg-msg-anim { animation: tgMsgPopIn 0.34s cubic-bezier(0.22, 1.28, 0.36, 1) both; }
+    .tg-row-anim { animation: tgRowSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .tg-tapback-anim { animation: tgTapbackPop 0.28s cubic-bezier(0.22, 1.32, 0.36, 1) both; }
+    .imsg-effect-slam { animation: imsgSlam 0.45s cubic-bezier(0.2, 1.2, 0.3, 1) both; }
+    .imsg-effect-loud { animation: imsgLoud 0.6s ease-in-out both; }
+    .imsg-effect-gentle { animation: imsgGentle 0.8s ease-out both; }
+    #floating-huddle-card:not(.hidden),
+    #send-options-menu:not(.hidden),
+    #attach-menu:not(.hidden),
+    #effects-menu:not(.hidden),
+    #emoji-gif-popover:not(.hidden),
+    #fab-new-menu:not(.hidden) {
+      animation: tgTapbackPop 0.26s cubic-bezier(0.22, 1.3, 0.36, 1) both;
+    }
+
+    body.bubble-pill .msg-bubble-me { border-radius: 9999px !important; }
+    body.bubble-pill .msg-bubble-them { border-radius: 9999px !important; }
+    body.bubble-pill .msg-bubble-me.msg-bubble-multiline,
+    body.bubble-pill .msg-bubble-them.msg-bubble-multiline { border-radius: 26px !important; }
     body.bubble-minimal .msg-bubble-me { border-radius: 10px !important; }
     body.bubble-minimal .msg-bubble-them { border-radius: 10px !important; }
     body.bubble-classic .msg-bubble-me { border-radius: 16px 16px 4px 16px !important; }
@@ -133,10 +225,10 @@
   
     html, body { overflow-x: hidden; max-width: 100vw; }
     .ch-rich-header {
-      background: linear-gradient(135deg, var(--ch-accent) 0%, #6d28d9 100%) !important;
+      background: linear-gradient(135deg, var(--ch-accent) 0%, #4da970 55%, #68b684 100%) !important;
       color: #ffffff !important;
       border-bottom: none !important;
-      box-shadow: 0 4px 20px -4px rgba(79, 70, 229, 0.28);
+      box-shadow: 0 4px 18px -4px rgba(46, 139, 87, 0.28);
     }
     .ch-rich-header h2, .ch-rich-header p { color: #ffffff !important; }
     .ch-rich-header p { opacity: 0.85; }
@@ -148,16 +240,37 @@
     .ch-rich-header .hdr-icon-btn:hover {
       background: rgba(255, 255, 255, 0.28) !important;
     }
-    #settings-modal, #settings-scroll-body, #settings-scroll-body * {
+    #settings-modal {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    #settings-modal *, #settings-scroll-body, #settings-scroll-body * {
       max-width: 100%;
       box-sizing: border-box;
+    }
+    #settings-scroll-body {
+      overflow-x: hidden !important;
+      word-break: break-word;
     }
     #settings-scroll-body .flex.items-center.justify-between {
       flex-wrap: wrap;
       gap: 0.5rem;
-    }
-    #settings-scroll-body input, #settings-scroll-body select, #settings-scroll-body textarea {
       min-width: 0;
+    }
+    #settings-scroll-body .flex.items-center.justify-between > span,
+    #settings-scroll-body .flex.items-center.justify-between > div {
+      min-width: 0;
+    }
+    #settings-scroll-body input:not([type="checkbox"]),
+    #settings-scroll-body select,
+    #settings-scroll-body textarea {
+      min-width: 0;
+      max-width: 100%;
+    }
+    #settings-scroll-body .flex.items-center.justify-between > select {
+      max-width: 58%;
+      text-overflow: ellipsis;
     }
   
     .ch-rich-header [data-hdr-btn="1"] {
@@ -675,8 +788,8 @@
   </div>
 
   <!-- Settings, Security, Storage, Cloud Sync & OTA Update Modal -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-50 dark:bg-black flex flex-col">
-    <div class="w-full max-w-2xl mx-auto h-full bg-white dark:bg-black flex flex-col overflow-hidden">
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-50 dark:bg-black flex flex-col overflow-hidden">
+    <div class="w-full max-w-lg mx-auto h-full bg-white dark:bg-black flex flex-col overflow-hidden min-w-0">
       <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <h3 class="text-base font-extrabold text-slate-900 dark:text-white">⚙️ Settings</h3>
@@ -696,7 +809,7 @@
 
       <!-- Profile Summary Card -->
       <div class="px-4 pt-3 pb-2 shrink-0">
-        <div class="p-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white flex items-center gap-3 shadow-sm">
+        <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-green-500 text-white flex items-center gap-3 shadow-sm">
           <div class="relative shrink-0">
             <div id="settings-profile-avatar" class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center font-bold text-base overflow-hidden border-2 border-white/40">ME</div>
             <button id="change-avatar-btn" type="button" class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white text-indigo-700 text-[10px] font-bold flex items-center justify-center shadow cursor-pointer" title="Change Profile Photo">📷</button>
@@ -711,8 +824,8 @@
         </div>
       </div>
 
-      <!-- Category Menu Pills -->
-<div class="p-4 pt-2 space-y-3 overflow-y-auto flex-1 text-xs">
+      <!-- Settings Vertical Scroll Body -->
+      <div id="settings-scroll-body" class="p-4 pt-2 pb-10 space-y-3 overflow-y-auto overflow-x-hidden flex-1 min-w-0 text-xs">
         <!-- TAB: ACCOUNT & GOOGLE CLOUD SYNC -->
         
         <!-- TAB: INTERFACE & APPEARANCE -->
@@ -742,7 +855,8 @@
             <div class="flex items-center justify-between gap-2">
               <span class="text-slate-600 dark:text-slate-300">Chat List Style</span>
               <select id="ui-list-style-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
-                <option value="clean">Clean List (Simple)</option>
+                <option value="clean">Clean UI — Google Chat (Default)</option>
+                <option value="snap">Snap Style (Activity Feed)</option>
                 <option value="cards">Rounded Cards</option>
               </select>
             </div>
@@ -765,6 +879,7 @@
             <div class="flex items-center justify-between gap-2">
               <span class="text-slate-600 dark:text-slate-300">Chat Bubble Shape</span>
               <select id="ui-bubble-style-select" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100">
+                <option value="pill">Pill (Default)</option>
                 <option value="modern">Modern Rounded</option>
                 <option value="classic">Classic Tail</option>
                 <option value="minimal">Minimal Flat</option>
@@ -867,8 +982,8 @@
               </select>
             </div>
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-bold text-slate-800 dark:text-slate-100">⏎ Send Message on Enter Key</span>
-              <input id="enter-send-toggle" type="checkbox" checked class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+              <span class="font-bold text-slate-800 dark:text-slate-100">⏎ Enter to Send (Optional)</span>
+              <input id="enter-send-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
             </label>
             <label class="flex items-center justify-between cursor-pointer">
               <span class="font-bold text-slate-800 dark:text-slate-100">🗜️ Storage Saver (Compress Media)</span>
@@ -1220,7 +1335,9 @@
         <option value="60">In 1 minute</option>
         <option value="300">In 5 minutes</option>
         <option value="3600">In 1 hour</option>
+        <option value="custom">Pick Date &amp; Time...</option>
       </select>
+      <input id="schedule-custom-dt" type="datetime-local" class="hidden w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-xs font-bold rounded-xl px-3 py-2" />
       <button type="submit" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer">Schedule Send</button>
     </form>
   </div>
@@ -1739,23 +1856,45 @@
           </div>
           <!-- Chat History List (Default view on Chat tab) -->
           <div id="chat-list-shell" class="relative flex-1 flex flex-col min-h-0 bg-white dark:bg-black">
-            <!-- Top Filter Tabs: All | Individual | Groups -->
-            <div id="chat-filter-bar" class="px-3 pt-2.5 pb-2 bg-white dark:bg-black border-b border-slate-100 dark:border-slate-900 flex items-center gap-2 shrink-0">
-              <button type="button" data-chat-filter="all" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer ch-accent-bg text-white">
-                All <span id="filter-count-all" class="opacity-80 text-[10px] ml-0.5">0</span>
-              </button>
-              <button type="button" data-chat-filter="dm" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
-                Individual <span id="filter-count-dm" class="opacity-75 text-[10px] ml-0.5">0</span>
-              </button>
-              <button type="button" data-chat-filter="group" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
-                Groups <span id="filter-count-group" class="opacity-75 text-[10px] ml-0.5">0</span>
-              </button>
+            <!-- Top Filter Tabs: All | Individual | Groups + Unread Switch & @Mentions Filter -->
+            <div id="chat-filter-bar" class="px-3 pt-2.5 pb-2 bg-white dark:bg-black border-b border-slate-100 dark:border-slate-900 space-y-2 shrink-0">
+              <div class="flex items-center gap-2">
+                <button type="button" data-chat-filter="all" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition cursor-pointer ch-accent-bg text-white">
+                  All <span id="filter-count-all" class="opacity-80 text-[10px] ml-0.5">0</span>
+                </button>
+                <button type="button" data-chat-filter="dm" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                  Individual <span id="filter-count-dm" class="opacity-75 text-[10px] ml-0.5">0</span>
+                </button>
+                <button type="button" data-chat-filter="group" class="chat-filter-tab flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition cursor-pointer bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300">
+                  Groups <span id="filter-count-group" class="opacity-75 text-[10px] ml-0.5">0</span>
+                </button>
+              </div>
+              <div class="flex items-center justify-between gap-2 pt-0.5">
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+
+                  <button id="filter-mentions-pill" type="button" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-sky-50 dark:hover:bg-sky-950/50 transition cursor-pointer shrink-0">
+                    @ Mentions
+                  </button>
+                  <button id="filter-threads-pill" type="button" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition cursor-pointer shrink-0">
+                    ✓ Threads
+                  </button>
+                </div>
+                <label class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 cursor-pointer select-none shrink-0">
+                  <span>Unread</span>
+                  <span id="snap-unread-count-pill" class="hidden px-1.5 py-0.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-extrabold">0</span>
+                  <span class="relative inline-flex items-center">
+                    <input id="filter-unread-toggle" type="checkbox" class="sr-only peer" />
+                    <span class="w-9 h-5 rounded-full bg-slate-200 dark:bg-slate-800 peer-checked:bg-emerald-600 transition-colors block"></span>
+                    <span class="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-xs transition-transform peer-checked:translate-x-4"></span>
+                  </span>
+                </label>
+              </div>
             </div>
 
-            <div id="chat-history-view" class="flex-1 overflow-y-auto px-3 pt-2.5 pb-24 bg-slate-100/70 dark:bg-slate-950"></div>
+            <div id="chat-history-view" class="flex-1 overflow-y-auto pb-28 bg-white dark:bg-black"></div>
 
-            <!-- Floating '+' Pop-up Menu & FAB Button -->
-            <div id="fab-new-menu" class="hidden absolute bottom-20 right-4 z-30 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-1">
+            <!-- Floating '+' Pop-up Menu & Dual Round FABs (Camera + Blue New Chat) -->
+            <div id="fab-new-menu" class="hidden absolute bottom-24 right-4 z-30 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-1">
               <button id="fab-new-dm-btn" type="button" class="w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2.5 cursor-pointer">
                 <span class="text-base">💬</span>
                 <span>New Chat</span>
@@ -1769,13 +1908,70 @@
                 <span>New Broadcast</span>
               </button>
             </div>
-            <button id="chat-fab-btn" type="button" class="absolute bottom-4 right-4 z-30 w-14 h-14 rounded-2xl ch-accent-bg text-white shadow-xl flex items-center justify-center text-2xl font-bold transition transform active:scale-95 cursor-pointer" title="Create New Chat or Group" aria-label="New Chat">
-              +
+            <!-- Floating Blue "More unread Chats" Pill (Snap Style) -->
+            <button id="more-unread-pill" type="button" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-30 px-5 py-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-extrabold shadow-lg active:scale-95 transition cursor-pointer">
+              More unread Chats
             </button>
+            <div class="absolute bottom-5 right-4 z-30 flex flex-col items-center gap-2.5">
+              <button id="fab-camera-btn" type="button" class="w-11 h-11 rounded-full bg-white/95 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-lg flex items-center justify-center text-lg hover:scale-105 active:scale-95 transition cursor-pointer" title="Quick Status Camera" aria-label="Quick Camera">
+                📷
+              </button>
+              <button id="chat-fab-btn" type="button" class="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl flex items-center justify-center transition transform active:scale-95 cursor-pointer" title="Create New Chat or Group" aria-label="New Chat">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 9h-4v4h-2v-4H7V9h4V5h2v4h4v2z"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- Active Chat Thread (Shown only when user selects a chat) -->
           <div id="chat-thread-view" class="hidden relative flex-1 flex flex-col min-h-0">
+          <!-- Feature #7: Chat Thread Quick Action Bar (Huddle, Shared Files, Tasks, Pinned) -->
+          <div id="chat-quick-bar" class="px-3 py-1.5 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <button id="qbar-huddle-btn" type="button" class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold flex items-center gap-1 cursor-pointer shrink-0 transition">
+                <span>🎧</span><span>Huddle</span>
+              </button>
+              <button id="qbar-files-btn" type="button" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer shrink-0 transition">
+                <span>📁</span><span>Files</span><span id="qbar-files-cnt" class="text-[10px] opacity-70">0</span>
+              </button>
+              <button id="qbar-tasks-btn" type="button" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer shrink-0 transition">
+                <span>✓</span><span>Tasks</span>
+              </button>
+              <button id="qbar-pinned-btn" type="button" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer shrink-0 transition">
+                <span>📌</span><span>Pinned</span>
+              </button>
+            </div>
+            <span id="qbar-live-dot" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 shrink-0 animate-pulse">● Live Huddle</span>
+          </div>
+          <!-- Quick Drawer for Shared Files / Tasks / Pinned -->
+          <div id="chat-quick-drawer" class="hidden px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs max-h-44 overflow-y-auto shrink-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span id="chat-quick-drawer-title" class="font-bold text-slate-800 dark:text-white">Shared Files</span>
+              <button id="close-quick-drawer-btn" type="button" class="text-slate-400 hover:text-slate-700 dark:hover:text-white font-bold cursor-pointer">✕</button>
+            </div>
+            <div id="chat-quick-drawer-body" class="space-y-1.5"></div>
+          </div>
+          <!-- Feature #1: Floating Mini Huddle Card -->
+          <div id="floating-huddle-card" class="hidden absolute top-14 right-3 z-40 w-60 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl p-3.5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span id="huddle-card-title" class="text-xs font-bold text-slate-800 dark:text-white truncate">Quick Huddle</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span id="huddle-timer" class="text-[10px] font-bold text-slate-400">00:00</span>
+                <button id="huddle-expand-btn" type="button" title="Expand to Full Call" class="w-6 h-6 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 text-xs flex items-center justify-center cursor-pointer">↗</button>
+              </div>
+            </div>
+            <div id="huddle-avatars" class="flex items-center justify-center -space-x-2"></div>
+            <div class="flex items-center justify-center gap-2">
+              <button id="huddle-mute-btn" type="button" title="Mute / Unmute" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 flex items-center justify-center text-sm cursor-pointer transition">🎙️</button>
+              <button id="huddle-cam-btn" type="button" title="Camera On / Off" class="w-9 h-9 rounded-full bg-rose-100 dark:bg-rose-950/60 hover:bg-rose-200 text-rose-600 dark:text-rose-300 flex items-center justify-center text-sm cursor-pointer transition">📷</button>
+              <button id="huddle-screen-btn" type="button" title="Share Screen" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 flex items-center justify-center text-sm cursor-pointer transition">🖥️</button>
+              <button id="huddle-end-btn" type="button" title="Leave Huddle" class="w-9 h-9 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm shadow-sm cursor-pointer transition">📞</button>
+            </div>
+          </div>
           <!-- Pinned Message Banner -->
           <div id="pinned-msg-banner" class="hidden px-4 py-2 bg-amber-50 dark:bg-amber-950/60 border-b border-amber-200 dark:border-amber-800 flex items-center justify-between gap-2 text-xs shrink-0">
             <div class="flex items-center gap-2 min-w-0">
@@ -1789,8 +1985,24 @@
           <!-- Attachment / Sharing Menu Popover -->
           <div id="attach-menu" class="hidden absolute bottom-16 left-3 z-30 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-3 grid grid-cols-4 gap-2 text-center">
             <div class="col-span-4 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 rounded-lg py-1 px-2 mb-0.5">
-              ✨ 100+ Photos/Videos &amp; Unlimited Share
+              ✨ Tools &amp; 100+ Unlimited Share
             </div>
+            <button id="format-toggle-btn" type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 cursor-pointer">
+              <span class="text-sm font-extrabold underline text-slate-700 dark:text-white">A</span>
+              <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">Format</span>
+            </button>
+            <button id="gif-open-btn" type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 cursor-pointer">
+              <span class="text-xs font-extrabold text-indigo-600 dark:text-indigo-300">GIF</span>
+              <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">GIFs</span>
+            </button>
+            <button id="voice-note-btn" type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl bg-rose-50 dark:bg-slate-800 hover:bg-rose-100 cursor-pointer">
+              <span class="text-base">🎙️</span>
+              <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">Voice</span>
+            </button>
+            <button id="effects-btn" type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl bg-purple-50 dark:bg-slate-800 hover:bg-purple-100 cursor-pointer">
+              <span class="text-base">✨</span>
+              <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">Effects</span>
+            </button>
             <button type="button" data-share="photo" title="Share 100+ Photos at once" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 cursor-pointer">
               <span class="text-lg">🖼️</span>
               <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200">Photo</span>
@@ -1854,88 +2066,127 @@
             </div>
           </div>
 
-          <form id="chat-form" class="p-3 bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <!-- Feature #5: Smart Reply Quick Chips Bar -->
+          <div id="smart-reply-bar" class="hidden px-3 pt-2 pb-1 bg-white/95 dark:bg-black/95 border-t border-slate-100 dark:border-slate-900 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0"></div>
+
+          <!-- Feature #4: Rich Text Formatting Popover (A) -->
+          <div id="format-toolbar" class="hidden px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs shrink-0">
+            <span class="text-[10px] font-bold uppercase text-slate-400 mr-1">Format:</span>
+            <button type="button" data-fmt="bold" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-extrabold text-slate-800 dark:text-white cursor-pointer hover:bg-indigo-50">B</button>
+            <button type="button" data-fmt="accent" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-rose-600 cursor-pointer hover:bg-rose-50">A Color</button>
+            <button type="button" data-fmt="bullet" class="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-indigo-50">• List</button>
+            <button type="button" data-fmt="mention" class="px-2.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 font-bold text-sky-700 dark:text-sky-300 cursor-pointer">@ Mention</button>
+            <button type="button" data-fmt="filechip" class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 font-bold text-indigo-700 dark:text-indigo-300 cursor-pointer">📄 File Chip</button>
+          </div>
+
+          <!-- Emoji & GIF Quick Picker Popover -->
+          <div id="emoji-gif-popover" class="hidden absolute bottom-16 right-4 z-40 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2.5 space-y-2 text-xs">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+              <div class="flex gap-1">
+                <button id="eg-tab-emoji" type="button" class="px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold cursor-pointer">😊 Emoji</button>
+                <button id="eg-tab-gif" type="button" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold cursor-pointer">GIF</button>
+              </div>
+              <button id="eg-close-btn" type="button" class="text-slate-400 hover:text-slate-700 font-bold cursor-pointer">✕</button>
+            </div>
+            <div id="eg-emoji-grid" class="grid grid-cols-6 gap-1 text-lg text-center">
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">😊</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🔥</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🎉</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">❤️</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">👍</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🙌</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🚀</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">😂</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🙏</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">✨</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">🥳</button>
+              <button type="button" class="eg-pick p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">👏</button>
+            </div>
+            <div id="eg-gif-grid" class="hidden grid grid-cols-2 gap-1.5">
+              <button type="button" data-gif="🚀 Launch Time!" class="gif-pick p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-center cursor-pointer">🚀 Launch!</button>
+              <button type="button" data-gif="🎉 Woo! Go Team!" class="gif-pick p-2 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 text-white font-bold text-center cursor-pointer">🎉 Go Team!</button>
+              <button type="button" data-gif="👏 Awesome Job!" class="gif-pick p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-center cursor-pointer">👏 Awesome!</button>
+              <button type="button" data-gif="☕ Coffee Break!" class="gif-pick p-2 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white font-bold text-center cursor-pointer">☕ Break!</button>
+            </div>
+          </div>
+
+          <form id="chat-form" class="p-2.5 bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800 flex items-end gap-1.5 shrink-0">
             <button
               id="attach-btn"
               type="button"
-              class="pro-icon-btn w-10 h-10 rounded-xl bg-indigo-50 dark:bg-slate-900 hover:bg-indigo-100 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center transition cursor-pointer shrink-0"
-              title="Share Photo, Video, File, Audio, Music, Contact, or Location"
-              aria-label="Attach and share"
+              class="pro-icon-btn w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xl font-bold transition cursor-pointer shrink-0"
+              title="Attach, Format, Voice, GIF &amp; Effects"
+              aria-label="More options and attach"
             >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
+              +
             </button>
-            <input
-              id="message-input"
-              type="text"
-              placeholder="Message Team Hangout..."
-              autocomplete="off"
-              class="flex-1 bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
+            <!-- Wide Spacious Pill Typing Box -->
+            <div class="flex-1 min-w-0 flex items-end bg-slate-100 dark:bg-slate-900 rounded-3xl px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 transition">
+              <textarea
+                id="message-input"
+                rows="1"
+                placeholder="Type a message..."
+                autocomplete="off"
+                class="flex-1 min-w-0 bg-transparent text-slate-800 dark:text-white placeholder-slate-400 text-sm py-1 pr-1.5 focus:outline-none resize-none overflow-y-auto max-h-28 leading-snug"
+              ></textarea>
+              <button id="emoji-open-btn" type="button" title="Emoji" class="w-7 h-7 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300 text-base flex items-center justify-center cursor-pointer shrink-0">😊</button>
+            </div>
             <div id="effects-menu" class="hidden absolute bottom-16 right-3 z-30 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-2.5 space-y-1.5 text-xs">
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">✨ Message &amp; Screen Effects</p>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">✨ iMessage Bubble &amp; Screen Effects</p>
+              <button type="button" data-effect="slam" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">💥 Slam (Impact)</button>
+              <button type="button" data-effect="loud" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🔊 Loud (Shake)</button>
+              <button type="button" data-effect="gentle" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🫧 Gentle (Soft Fade)</button>
               <button type="button" data-effect="ink" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🕵️ Invisible Ink (Secret)</button>
               <button type="button" data-effect="confetti" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🎉 Confetti Celebration</button>
               <button type="button" data-effect="balloons" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🎈 Floating Balloons</button>
               <button type="button" data-effect="fireworks" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">🎆 Fireworks Burst</button>
               <button type="button" data-effect="hearts" class="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold text-slate-800 dark:text-slate-100 cursor-pointer">❤️ Hearts Shower</button>
+              <div class="border-t border-slate-100 dark:border-slate-800 pt-1.5 flex items-center gap-1.5">
+                <button id="silent-send-btn" type="button" class="flex-1 px-2 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200 cursor-pointer">🤫 Whisper</button>
+                <button id="walkie-talkie-btn" type="button" class="flex-1 px-2 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer">📻 Walkie</button>
+                <button id="quick-like-btn" type="button" class="px-2.5 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/60 font-bold cursor-pointer">👍</button>
+              </div>
             </div>
-            <button
-              id="silent-send-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Silent / Whisper Send (No sound on receiver)"
-            >
-              🤫
-            </button>
-            <button
-              id="effects-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-purple-50 dark:bg-slate-900 hover:bg-purple-100 dark:hover:bg-slate-800 text-purple-600 dark:text-purple-400 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Secret Invisible Ink &amp; Celebration Effects"
-            >
-              ✨
-            </button>
-            <button
-              id="walkie-talkie-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-emerald-50 dark:bg-slate-900 hover:bg-emerald-100 dark:hover:bg-slate-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Walkie-Talkie (Instant Low-Data Voice)"
-            >
-              📻
-            </button>
-            <button
-              id="voice-note-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-rose-50 dark:bg-slate-900 hover:bg-rose-100 dark:hover:bg-slate-800 text-rose-600 dark:text-rose-400 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Record Voice Note"
-            >
-              🎙️
-            </button>
-            <button
-              id="schedule-msg-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-amber-50 dark:bg-slate-900 hover:bg-amber-100 dark:hover:bg-slate-800 text-amber-600 dark:text-amber-400 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Schedule Message"
-            >
-              ⏰
-            </button>
-            <button
-              id="quick-like-btn"
-              type="button"
-              class="w-9 h-10 rounded-xl bg-sky-50 dark:bg-slate-900 hover:bg-sky-100 dark:hover:bg-slate-800 text-sky-600 dark:text-sky-400 flex items-center justify-center text-base transition cursor-pointer shrink-0"
-              title="Quick Thumbs Up"
-            >
-              👍
-            </button>
-            <button
-              id="send-btn"
-              type="submit"
-              class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-95 text-white text-sm font-bold px-4 py-2.5 rounded-xl shadow-sm transition cursor-pointer shrink-0"
-            >
-              Send
-            </button>
+            <div id="send-btn-wrap" class="relative flex items-center shrink-0">
+              <div id="send-options-menu" class="hidden absolute bottom-12 right-0 z-40 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-1 text-xs">
+                <button id="send-now-opt-btn" type="button" class="w-full px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 cursor-pointer">
+                  <span>➤</span>
+                  <span>Send Now</span>
+                </button>
+                <button id="schedule-msg-btn" type="button" class="w-full px-3 py-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-left font-bold text-amber-700 dark:text-amber-300 flex items-center gap-2 cursor-pointer">
+                  <span>⏰</span>
+                  <span>Schedule Send</span>
+                </button>
+                <label class="w-full px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between gap-2 cursor-pointer border-t border-slate-100 dark:border-slate-800 mt-1 pt-2">
+                  <span class="font-bold text-slate-700 dark:text-slate-200">⏎ Enter to Send</span>
+                  <input id="quick-enter-send-toggle" type="checkbox" class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                </label>
+              </div>
+              <div class="inline-flex items-center rounded-full bg-gradient-to-r from-emerald-600 to-green-600 shadow-sm overflow-hidden">
+                <button
+                  id="send-btn"
+                  type="submit"
+                  title="Send message (Hold for Schedule Send)"
+                  class="hover:bg-white/10 active:scale-95 text-white text-sm font-bold pl-3.5 pr-2 py-2.5 flex items-center gap-1 transition cursor-pointer"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                  </svg>
+                  <span class="hidden sm:inline">Send</span>
+                </button>
+                <button
+                  id="send-options-btn"
+                  type="button"
+                  title="Schedule Send &amp; Send Options"
+                  aria-label="Send options and schedule send"
+                  class="hover:bg-white/15 active:scale-95 text-white px-2 py-2.5 border-l border-white/25 flex items-center justify-center transition cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </form>
           </div>
         </div>
@@ -1947,7 +2198,7 @@
 
         <!-- TAB 3: CALLS VIEW -->
         <div id="calls-view" class="hidden flex-1 flex flex-col min-h-0 overflow-y-auto p-4 sm:p-5 space-y-5 bg-slate-50 dark:bg-black">
-          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-4 text-white flex items-center justify-between shadow-sm">
+          <div class="bg-gradient-to-r from-emerald-700 to-green-600 rounded-2xl p-4 text-white flex items-center justify-between shadow-sm">
             <div>
               <h3 class="font-bold text-sm sm:text-base">Voice, Video &amp; Screen Share</h3>
               <p class="text-xs text-indigo-100 mt-0.5">Tap any contact below to call or share your screen</p>
@@ -2007,12 +2258,16 @@
     </div>
 
     <!-- BOTTOM NAVIGATION TABS (1. Chat | 2. Status | 3. Calls | 4. Notes) -->
-    <nav id="bottom-nav" class="safe-bottom bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 shadow-[0_-4px_20px_-6px_rgba(0,0,0,0.08)] px-2 sm:px-3 py-1.5 grid grid-cols-4 gap-1.5 shrink-0">
-      <button id="tab-chat-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-slate-900 font-bold transition cursor-pointer">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-        </svg>
-        <span class="text-[11px] mt-1">Chat</span>
+    <div class="safe-bottom px-3 pb-2 pt-1 bg-transparent shrink-0">
+    <nav id="bottom-nav" class="mx-auto max-w-md rounded-full bg-white/88 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-[0_8px_28px_rgba(15,23,42,0.12)] px-2 py-1.5 grid grid-cols-4 gap-1">
+      <button id="tab-chat-btn" type="button" class="pro-icon-btn relative flex flex-col items-center justify-center py-1.5 rounded-full text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/60 font-bold transition cursor-pointer">
+        <span class="relative inline-flex">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+          <span id="nav-chat-unread-badge" class="hidden absolute -top-1.5 -right-3 min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-600 text-white text-[9px] font-extrabold flex items-center justify-center shadow-xs">0</span>
+        </span>
+        <span class="nav-tab-label text-[11px] mt-0.5">Chats</span>
       </button>
       <button id="tab-status-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 font-normal transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -2027,22 +2282,23 @@
         </svg>
         <span class="text-[11px] mt-1">Calls</span>
       </button>
-      <button id="tab-notes-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 font-normal transition cursor-pointer">
+      <button id="tab-notes-btn" type="button" class="pro-icon-btn flex flex-col items-center justify-center py-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-normal transition cursor-pointer">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
           <line x1="8" y1="13" x2="16" y2="13"/>
           <line x1="8" y1="17" x2="13" y2="17"/>
         </svg>
-        <span class="text-[11px] mt-1">Takeaways</span>
+        <span class="nav-tab-label text-[11px] mt-0.5">Takeaways</span>
       </button>
     </nav>
+    </div>
 
   </div>
 
   <!-- 3. JavaScript Logic -->
   <script>
-    const quickEmojis = ['👍', '❤️', '😂', '🎉'];
+    const quickEmojis = ['❤️', '👍', '👎', '😂', '‼️', '❓'];
     const APP_VERSION = '2.0.0';
     const APP_BUILD = 2001;
     const STORAGE_KEY = 'chateams_prod_v2_state';
@@ -3407,12 +3663,22 @@
           ? unlockedPool.filter(r => r.type === 'group' || r.type === 'broadcast')
           : unlockedPool;
 
+      let filteredPool = typePool;
+      if (window.filterUnreadOnly) {
+        filteredPool = filteredPool.filter(r => (r.unread || 0) > 0);
+      }
+      if (window.filterMentionsOnly) {
+        filteredPool = filteredPool.filter(r => r.messages && r.messages.some(m => m.text && /@[A-Za-z0-9_]+/.test(m.text)));
+      }
+      if (window.filterThreadsOnly) {
+        filteredPool = filteredPool.filter(r => r.messages && r.messages.some(m => m.replyTo));
+      }
       const baseRooms = q
-        ? typePool.filter(r =>
+        ? filteredPool.filter(r =>
             r.name.toLowerCase().includes(q) ||
             (r.messages && r.messages.some(m => (m.text && m.text.toLowerCase().includes(q)) || (m.attachment && m.attachment.title.toLowerCase().includes(q))))
           )
-        : typePool;
+        : filteredPool;
       const visibleRooms = [...baseRooms].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
       if (visibleRooms.length === 0) {
@@ -3524,45 +3790,242 @@
         chatHistoryView.appendChild(pinGrid);
       }
 
+      // Update floating bottom nav total unread badge & Snap UI controls
+      const totalUnread = unlockedPool.reduce((sum, r) => sum + (Number(r.unread) || 0), 0);
+      const isSnapUI = !!(window.uiPrefs && window.uiPrefs.listStyle === 'snap');
+      const navBadge = document.getElementById('nav-chat-unread-badge');
+      if (navBadge) {
+        navBadge.textContent = totalUnread > 99 ? '99+' : String(totalUnread);
+        navBadge.classList.toggle('hidden', totalUnread <= 0);
+      }
+      const snapUnreadPill = document.getElementById('snap-unread-count-pill');
+      if (snapUnreadPill) {
+        snapUnreadPill.textContent = totalUnread > 9 ? '9+' : String(totalUnread);
+        snapUnreadPill.classList.toggle('hidden', !isSnapUI || totalUnread <= 0);
+      }
+      const moreUnreadPill = document.getElementById('more-unread-pill');
+      if (moreUnreadPill) {
+        moreUnreadPill.classList.toggle('hidden', !isSnapUI || totalUnread <= 0 || !!window.filterUnreadOnly);
+      }
+      const fabMain = document.getElementById('chat-fab-btn');
+      if (fabMain) {
+        fabMain.className = isSnapUI
+          ? 'w-14 h-14 rounded-full bg-[#FFFC00] hover:bg-yellow-300 text-slate-900 shadow-xl flex items-center justify-center transition transform active:scale-95 cursor-pointer border border-yellow-400/50'
+          : 'w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl flex items-center justify-center transition transform active:scale-95 cursor-pointer';
+      }
+      const modeBtn = document.getElementById('quick-ui-mode-btn');
+      if (modeBtn) {
+        modeBtn.textContent = isSnapUI ? '✈️ Clean UI' : '👻 Snap UI';
+      }
+
       unpinnedRooms.forEach(room => {
+        if (isSnapUI) {
+          const lastMsg = room.messages && room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
+          const row = document.createElement('div');
+          row.className = 'w-full bg-white dark:bg-black hover:bg-slate-50 dark:hover:bg-slate-900/70 px-3.5 py-2.5 flex items-center gap-3 border-b border-slate-100 dark:border-slate-900 transition cursor-pointer';
+
+          const avWrap = document.createElement('div');
+          avWrap.className = 'relative shrink-0';
+          const hasStory = room.unread > 0 || room.pinned;
+          const ringWrap = document.createElement('div');
+          ringWrap.className = hasStory
+            ? 'p-[2px] rounded-full bg-gradient-to-tr from-fuchsia-500 via-purple-500 to-sky-400'
+            : 'p-[2px] rounded-full bg-transparent';
+
+          const av = document.createElement('div');
+          av.className = `w-12 h-12 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-base font-bold overflow-hidden ring-2 ring-white dark:ring-black`;
+          const avFallback = (room.avatar || (room.name ? room.name[0].toUpperCase() : '💬')).replace(/'/g, '');
+          if (room.type === 'group' && !room.avatarPhoto && Array.isArray(room.memberAvatars) && room.memberAvatars.length >= 2) {
+            av.className = 'w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ring-2 ring-white dark:ring-black grid grid-cols-2 grid-rows-2 gap-[1px]';
+            room.memberAvatars.slice(0, 4).forEach((mAv, idx) => {
+              const cell = document.createElement('div');
+              const cols = ['bg-fuchsia-500', 'bg-sky-500', 'bg-amber-500', 'bg-emerald-500'];
+              cell.className = `${cols[idx % 4]} text-white text-[9px] font-bold flex items-center justify-center`;
+              cell.textContent = String(mAv || 'U').slice(0, 2);
+              av.appendChild(cell);
+            });
+          } else if (room.avatarPhoto) {
+            av.innerHTML = `<img src="${room.avatarPhoto}" alt="${room.name}" class="w-full h-full object-cover rounded-full" />`;
+          } else if (room.type === 'dm' && room.email) {
+            const gUrl = `https://unavatar.io/google/${encodeURIComponent(room.email)}`;
+            av.innerHTML = `<img src="${gUrl}" alt="${room.name}" class="w-full h-full object-cover rounded-full" onerror="this.remove(); this.parentElement.textContent='${avFallback}';" />`;
+          } else {
+            av.textContent = room.avatar || avFallback;
+          }
+          ringWrap.appendChild(av);
+          avWrap.appendChild(ringWrap);
+
+          if (room.unread > 0) {
+            const mood = document.createElement('span');
+            mood.className = 'absolute -bottom-0.5 -left-0.5 text-xs bg-white dark:bg-black rounded-full leading-none p-0.5 shadow-2xs';
+            mood.textContent = '😊';
+            avWrap.appendChild(mood);
+          }
+
+          const info = document.createElement('div');
+          info.className = 'min-w-0 flex-1';
+          const nm = document.createElement('p');
+          nm.className = 'text-[15px] font-extrabold text-slate-900 dark:text-white truncate';
+          nm.textContent = room.name;
+
+          const statusLine = document.createElement('div');
+          statusLine.className = 'flex items-center gap-1.5 mt-0.5 text-xs font-bold';
+          const hasMedia = lastMsg && (lastMsg.attachment || lastMsg.huddle || (lastMsg.text && lastMsg.text.includes('[[file:')));
+          if (room.unread > 0 && hasMedia) {
+            statusLine.innerHTML = `<span class="w-3 h-3 rounded-[3px] bg-fuchsia-600 inline-block shrink-0"></span><span class="text-fuchsia-600 dark:text-fuchsia-400">${room.unread > 9 ? '9+' : room.unread} new Snaps</span><span class="text-slate-400 font-normal">· ${lastMsg ? lastMsg.time : 'now'}</span>`;
+          } else if (room.unread > 0 && room.type === 'group') {
+            statusLine.innerHTML = `<span class="w-3 h-3 rounded-[3px] bg-rose-500 inline-block shrink-0"></span><span class="text-rose-500">${room.unread > 9 ? '9+' : room.unread} new Updates</span><span class="text-slate-400 font-normal">· ${lastMsg ? lastMsg.time : 'now'}</span>`;
+          } else if (room.unread > 0) {
+            statusLine.innerHTML = `<span class="text-sky-500 text-xs">💬</span><span class="text-sky-500">New Chat</span><span class="text-slate-400 font-normal">· ${lastMsg ? lastMsg.time : 'now'}</span>`;
+          } else {
+            statusLine.innerHTML = `<span class="text-slate-400 text-xs">${lastMsg && lastMsg.isMe ? '➤' : '💬'}</span><span class="text-slate-500 dark:text-slate-400 font-semibold truncate">${lastMsg ? (lastMsg.isMe ? 'Delivered' : 'Opened') : 'Tap to chat'}</span><span class="text-slate-400 font-normal shrink-0">· ${lastMsg ? lastMsg.time : ''}</span>`;
+          }
+
+          info.appendChild(nm);
+          info.appendChild(statusLine);
+          if (room.nudgeText) {
+            const nudge = document.createElement('p');
+            nudge.className = 'text-[10px] font-bold text-amber-600 dark:text-amber-400 mt-0.5 truncate';
+            nudge.textContent = room.nudgeText;
+            info.appendChild(nudge);
+          }
+
+          const rightBtns = document.createElement('div');
+          rightBtns.className = 'flex items-center gap-2 shrink-0 pl-2 border-l border-slate-100 dark:border-slate-900';
+          if (room.pinned) {
+            const pinMark = document.createElement('span');
+            pinMark.className = 'text-xs text-rose-500';
+            pinMark.textContent = '📌';
+            rightBtns.appendChild(pinMark);
+          }
+          const quickAction = document.createElement('button');
+          quickAction.type = 'button';
+          quickAction.className = 'w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-lg cursor-pointer transition';
+          quickAction.textContent = hasMedia || room.pinned ? '📷' : '💬';
+          quickAction.title = hasMedia || room.pinned ? 'Quick Snap Photo' : 'Open Chat';
+          quickAction.addEventListener('click', (e) => {
+            e.stopPropagation();
+            activeRoomId = room.id;
+            isChatThreadOpen = true;
+            room.unread = 0;
+            saveState();
+            renderApp();
+            if (hasMedia || room.pinned) {
+              setTimeout(() => document.getElementById('attach-btn')?.click(), 120);
+            } else {
+              messageInput.focus();
+            }
+          });
+          rightBtns.appendChild(quickAction);
+
+          row.appendChild(avWrap);
+          row.appendChild(info);
+          row.appendChild(rightBtns);
+
+          row.addEventListener('click', () => {
+            activeRoomId = room.id;
+            isChatThreadOpen = true;
+            room.unread = 0;
+            searchQuery = '';
+            searchInput.value = '';
+            clearSearchBtn.classList.add('hidden');
+            saveState();
+            renderApp();
+            messageInput.focus();
+          });
+          chatHistoryView.appendChild(row);
+          return;
+        }
         const lastMsg = room.messages && room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
         const row = document.createElement('button');
         row.type = 'button';
-        const isCardStyle = window.uiPrefs && window.uiPrefs.listStyle === 'cards';
-        row.className = isCardStyle
-          ? 'w-full mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 mb-2 flex items-center gap-3 hover:bg-indigo-50/50 dark:hover:bg-slate-800/80 transition cursor-pointer text-left shadow-xs'
-          : 'w-full bg-white dark:bg-slate-900/90 border border-slate-200/70 dark:border-slate-800/80 rounded-2xl px-3.5 py-3 mb-2 flex items-center gap-3 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition cursor-pointer text-left shadow-xs';
+        row.className = 'tg-row-anim w-full bg-white dark:bg-black hover:bg-slate-50 dark:hover:bg-slate-900/70 active:scale-[0.99] px-3.5 py-2.5 flex items-center gap-3.5 transition cursor-pointer text-left';
+
+        const avWrap = document.createElement('div');
+        avWrap.className = 'relative shrink-0';
 
         const av = document.createElement('div');
-        av.className = `w-12 h-12 rounded-full bg-gradient-to-br ${room.color || 'from-indigo-500 to-purple-600'} text-white flex items-center justify-center text-sm font-bold shrink-0 shadow-sm`;
-        av.textContent = room.avatar;
+        av.className = `w-[52px] h-[52px] rounded-full bg-gradient-to-br ${room.color || 'from-sky-500 to-indigo-600'} text-white flex items-center justify-center text-base font-bold overflow-hidden shadow-2xs`;
+        const avFallback = (room.avatar || (room.name ? room.name[0].toUpperCase() : '💬')).replace(/'/g, '');
+        if (room.type === 'group' && !room.avatarPhoto && Array.isArray(room.memberAvatars) && room.memberAvatars.length >= 2) {
+          av.className = 'w-[52px] h-[52px] rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden grid grid-cols-2 grid-rows-2 gap-[1px]';
+          room.memberAvatars.slice(0, 4).forEach((mAv, idx) => {
+            const cell = document.createElement('div');
+            const colors = ['bg-sky-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
+            cell.className = `${colors[idx % 4]} text-white text-[10px] font-bold flex items-center justify-center overflow-hidden`;
+            if (typeof mAv === 'string' && (mAv.startsWith('http') || mAv.startsWith('data:'))) {
+              cell.innerHTML = `<img src="${mAv}" class="w-full h-full object-cover" alt="" />`;
+            } else {
+              cell.textContent = String(mAv || 'U').slice(0, 2);
+            }
+            av.appendChild(cell);
+          });
+        } else if (room.avatarPhoto) {
+          av.innerHTML = `<img src="${room.avatarPhoto}" alt="${room.name}" class="w-full h-full object-cover rounded-full" />`;
+        } else if (room.avatar && (room.avatar.startsWith('http') || room.avatar.startsWith('data:'))) {
+          av.innerHTML = `<img src="${room.avatar}" alt="${room.name}" class="w-full h-full object-cover rounded-full" />`;
+        } else if (room.type === 'dm' && room.email) {
+          const gUrl = `https://unavatar.io/google/${encodeURIComponent(room.email)}`;
+          av.innerHTML = `<img src="${gUrl}" alt="${room.name}" class="w-full h-full object-cover rounded-full" onerror="this.remove(); this.parentElement.textContent='${avFallback}';" />`;
+        } else {
+          av.textContent = room.avatar || avFallback;
+        }
+        avWrap.appendChild(av);
+
+        // Live Green Online Dot for DMs
+        if (room.type === 'dm' && !room.muted) {
+          const dot = document.createElement('span');
+          dot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-black';
+          avWrap.appendChild(dot);
+        }
 
         const info = document.createElement('div');
-        info.className = 'min-w-0 flex-1';
+        info.className = 'min-w-0 flex-1 border-b border-slate-100 dark:border-slate-900 pb-2.5 pt-0.5';
 
         const topRow = document.createElement('div');
         topRow.className = 'flex items-center justify-between gap-2';
 
+        const nameWrap = document.createElement('div');
+        nameWrap.className = 'flex items-center gap-1 min-w-0';
         const nm = document.createElement('p');
-        nm.className = 'text-sm font-bold text-slate-900 dark:text-white truncate';
+        nm.className = 'text-[15px] font-bold text-slate-900 dark:text-white truncate';
         nm.textContent = room.name;
+        nameWrap.appendChild(nm);
+        if (room.muted) {
+          const mIcon = document.createElement('span');
+          mIcon.className = 'text-[11px] text-slate-400 shrink-0';
+          mIcon.textContent = '🔇';
+          nameWrap.appendChild(mIcon);
+        }
 
+        const rightTop = document.createElement('div');
+        rightTop.className = 'flex items-center gap-1 shrink-0';
+        if (lastMsg && lastMsg.isMe) {
+          const ticks = document.createElement('span');
+          ticks.className = 'text-[11px] font-extrabold text-emerald-500';
+          ticks.textContent = lastMsg.status === 'seen' || lastMsg.status === 'delivered' ? '✓✓' : '✓';
+          rightTop.appendChild(ticks);
+        }
         const tm = document.createElement('span');
-        tm.className = 'text-[11px] text-slate-400 shrink-0';
+        tm.className = room.unread > 0 && !room.muted
+          ? 'text-[11px] font-bold text-emerald-600 dark:text-emerald-400'
+          : 'text-[11px] text-slate-400';
         tm.textContent = lastMsg ? lastMsg.time : '';
+        rightTop.appendChild(tm);
 
-        topRow.appendChild(nm);
-        topRow.appendChild(tm);
+        topRow.appendChild(nameWrap);
+        topRow.appendChild(rightTop);
 
         const bottomRow = document.createElement('div');
         bottomRow.className = 'flex items-center justify-between gap-2 mt-0.5';
 
         const preview = document.createElement('p');
-        preview.className = 'text-xs text-slate-500 dark:text-slate-400 truncate';
+        preview.className = 'text-[13px] text-slate-500 dark:text-slate-400 truncate flex-1';
         if (lastMsg) {
-          const prefix = lastMsg.isMe ? 'You: ' : (room.type === 'group' ? `${lastMsg.sender}: ` : '');
-          const body = lastMsg.text || (lastMsg.attachment ? `📎 ${lastMsg.attachment.title}` : '');
-          preview.textContent = prefix + body;
+          const prefix = lastMsg.isMe ? '<span class="text-emerald-700 dark:text-emerald-400 font-semibold">You: </span>' : (room.type === 'group' ? `<span class="text-slate-700 dark:text-slate-200 font-semibold">${lastMsg.sender}: </span>` : '');
+          const bodyRaw = (lastMsg.text || (lastMsg.attachment ? `📎 ${lastMsg.attachment.title}` : '')).replace(/\[\[file:([^\]]+)\]\]/g, '📄 $1').replace(/\*\*|\[red\]|\[\/red\]/g, '');
+          const safeBody = bodyRaw.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          preview.innerHTML = prefix + safeBody.replace(/(@[A-Za-z0-9_.-]+)/g, '<span class="inline-block px-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 font-bold text-[11px]">$1</span>');
         } else {
           preview.textContent = room.subtitle || 'No messages yet';
         }
@@ -3570,58 +4033,24 @@
 
         if (room.unread > 0) {
           const badge = document.createElement('span');
-          badge.className = 'bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none shrink-0';
-          badge.textContent = room.unread;
+          badge.className = room.muted
+            ? 'min-w-[22px] h-[22px] px-1.5 rounded-full bg-slate-300 dark:bg-slate-700 text-white text-[11px] font-bold flex items-center justify-center shrink-0'
+            : 'min-w-[22px] h-[22px] px-1.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0';
+          badge.textContent = room.unread > 99 ? '99+' : room.unread;
           bottomRow.appendChild(badge);
         }
 
         info.appendChild(topRow);
         info.appendChild(bottomRow);
+        if (room.nudgeText) {
+          const nudge = document.createElement('p');
+          nudge.className = 'text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-0.5 truncate';
+          nudge.textContent = room.nudgeText;
+          info.appendChild(nudge);
+        }
 
-        const pinChatBtn = document.createElement('button');
-        pinChatBtn.type = 'button';
-        pinChatBtn.className = `px-2 py-1 rounded-lg text-xs shrink-0 cursor-pointer transition ${room.pinned ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
-        pinChatBtn.textContent = room.pinned ? '📌 Pinned' : '📌';
-        pinChatBtn.title = room.pinned ? 'Unpin Chat' : 'Pin Chat to Top';
-        pinChatBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          room.pinned = !room.pinned;
-          saveState();
-          renderChatHistory();
-          showToast(room.pinned ? `Pinned ${room.name}! 📌` : `Unpinned ${room.name}`);
-        });
-
-        const muteChatBtn = document.createElement('button');
-        muteChatBtn.type = 'button';
-        muteChatBtn.className = `px-1.5 py-1 rounded-lg text-xs shrink-0 cursor-pointer transition ${room.muted ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
-        muteChatBtn.textContent = room.muted ? '🔕' : '🔔';
-        muteChatBtn.title = room.muted ? 'Unmute Chat' : 'Mute Chat';
-        muteChatBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          room.muted = !room.muted;
-          saveState();
-          renderChatHistory();
-          showToast(room.muted ? `Muted ${room.name} 🔕` : `Unmuted ${room.name} 🔔`);
-        });
-
-        const lockChatBtn = document.createElement('button');
-        lockChatBtn.type = 'button';
-        lockChatBtn.className = `px-1.5 py-1 rounded-lg text-xs shrink-0 cursor-pointer transition ${room.locked ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
-        lockChatBtn.textContent = room.locked ? '🔓' : '🔒';
-        lockChatBtn.title = room.locked ? 'Unlock Chat' : 'Lock Chat to Vault';
-        lockChatBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          room.locked = !room.locked;
-          saveState();
-          renderChatHistory();
-          showToast(room.locked ? `${room.name} moved to Locked Vault 🔐` : `${room.name} unlocked`);
-        });
-
-        row.appendChild(av);
+        row.appendChild(avWrap);
         row.appendChild(info);
-        row.appendChild(lockChatBtn);
-        row.appendChild(muteChatBtn);
-        row.appendChild(pinChatBtn);
 
         row.addEventListener('click', () => {
           activeRoomId = room.id;
@@ -3722,23 +4151,56 @@
 
       visibleMessages.forEach(msg => {
         const wrapper = document.createElement('div');
-        wrapper.className = `group flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`;
+        wrapper.className = `tg-msg-anim group flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`;
 
         if (!msg.isMe && room.type === 'group') {
           const senderLabel = document.createElement('span');
-          senderLabel.className = 'text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mb-1 ml-1';
+          senderLabel.className = 'text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mb-1 ml-10';
           senderLabel.textContent = msg.sender;
           wrapper.appendChild(senderLabel);
         }
 
         const bubbleRow = document.createElement('div');
-        bubbleRow.className = `flex items-center gap-1.5 max-w-[92%] ${msg.isMe ? 'flex-row-reverse' : 'flex-row'}`;
+        bubbleRow.className = `flex items-end gap-2 max-w-[92%] ${msg.isMe ? 'flex-row-reverse' : 'flex-row'}`;
+
+        const msgAvatar = document.createElement('div');
+        msgAvatar.className = `w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm ring-2 ring-white dark:ring-slate-900 flex items-center justify-center text-[11px] font-bold text-white bg-gradient-to-br ${msg.isMe ? 'from-indigo-500 to-purple-600' : (room.color || 'from-indigo-500 to-purple-600')} ${!msg.isMe ? 'cursor-pointer' : ''}`;
+        if (msg.isMe) {
+          const myPhoto = (typeof appSettings !== 'undefined' && appSettings.avatarDataUrl) || (currentUser && currentUser.avatarPhoto) || '';
+          const myFallback = ((currentUser && currentUser.avatar) || (currentUser && currentUser.name ? currentUser.name[0].toUpperCase() : 'ME')).replace(/'/g, '');
+          if (myPhoto) {
+            msgAvatar.innerHTML = `<img src="${myPhoto}" alt="You" class="w-full h-full object-cover rounded-full" />`;
+          } else if (currentUser && currentUser.email) {
+            const myGUrl = `https://unavatar.io/google/${encodeURIComponent(currentUser.email)}`;
+            msgAvatar.innerHTML = `<img src="${myGUrl}" alt="You" class="w-full h-full object-cover rounded-full" onerror="this.remove(); this.parentElement.textContent='${myFallback}';" />`;
+          } else {
+            msgAvatar.textContent = myFallback;
+          }
+        } else {
+          const peerPhoto = msg.senderPhoto || room.avatarPhoto || (room.avatar && (room.avatar.startsWith('http') || room.avatar.startsWith('data:')) ? room.avatar : '');
+          const peerFallback = (room.type === 'group' && msg.sender ? msg.sender.slice(0, 2).toUpperCase() : (room.avatar && !room.avatar.startsWith('http') && !room.avatar.startsWith('data:') ? room.avatar : (room.name ? room.name[0].toUpperCase() : 'U'))).replace(/'/g, '');
+          const peerEmail = msg.senderEmail || (room.type === 'dm' ? room.email : '');
+          if (peerPhoto) {
+            msgAvatar.innerHTML = `<img src="${peerPhoto}" alt="${msg.sender || room.name}" class="w-full h-full object-cover rounded-full" />`;
+          } else if (peerEmail) {
+            const pGUrl = `https://unavatar.io/google/${encodeURIComponent(peerEmail)}`;
+            msgAvatar.innerHTML = `<img src="${pGUrl}" alt="${msg.sender || room.name}" class="w-full h-full object-cover rounded-full" onerror="this.remove(); this.parentElement.textContent='${peerFallback}';" />`;
+          } else {
+            msgAvatar.textContent = peerFallback;
+          }
+          msgAvatar.title = room.name || msg.sender || 'Profile';
+          msgAvatar.addEventListener('click', () => {
+            document.getElementById('room-info-btn')?.click();
+          });
+        }
 
         const bubble = document.createElement('div');
         const myGrad = room.bubbleColor || 'from-indigo-600 to-purple-600';
+        const isSimplePill = !msg.replyTo && !msg.attachment && !msg.poll && msg.text && msg.text.length <= 42 && !msg.text.includes('\n');
+        const imsgFxCls = msg.bubbleEffect === 'slam' ? 'imsg-effect-slam' : (msg.bubbleEffect === 'loud' ? 'imsg-effect-loud' : (msg.bubbleEffect === 'gentle' ? 'imsg-effect-gentle' : ''));
         bubble.className = msg.isMe
-          ? `bg-gradient-to-br ${myGrad} text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm text-sm leading-relaxed break-words space-y-2`
-          : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm text-sm leading-relaxed break-words space-y-2';
+          ? `msg-bubble-me ${imsgFxCls} ${isSimplePill ? 'rounded-full px-4 py-2' : 'msg-bubble-multiline rounded-[26px] px-4 py-2.5'} bg-gradient-to-br ${myGrad} text-white shadow-sm text-sm leading-relaxed break-words space-y-2`
+          : `msg-bubble-them ${imsgFxCls} ${isSimplePill ? 'rounded-full px-4 py-2' : 'msg-bubble-multiline rounded-[26px] px-4 py-2.5'} bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800 shadow-sm text-sm leading-relaxed break-words space-y-2`;
 
         if (msg.replyTo) {
           const qBox = document.createElement('div');
@@ -3825,7 +4287,18 @@
               span.textContent = trimmedEmoji;
               p.appendChild(span);
             } else {
-              p.textContent = rawDisplay;
+              // Features #3, #4, #8: Render @Mentions as blue pills, **bold**, [red]...[/red], • bullets, & [[file:Name]] inline chips
+              const esc = rawDisplay.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              let formatted = esc
+                .replace(/\[\[file:([^\]]+)\]\]/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/90 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 text-xs font-bold shadow-2xs mx-0.5">📄 $1</span>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-extrabold">$1</strong>')
+                .replace(/\[red\]([^\[]+)\[\/red\]/g, '<span class="font-bold text-rose-500 dark:text-rose-400">$1</span>')
+                .replace(/(@[A-Za-z0-9_.-]+)/g, msg.isMe
+                  ? '<span class="inline-block px-1.5 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800 dark:text-emerald-100 font-bold text-xs">$1</span>'
+                  : '<span class="inline-block px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 font-bold text-xs">$1</span>')
+                .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" class="underline font-semibold">$1</a>')
+                .replace(/\n/g, '<br/>');
+              p.innerHTML = formatted;
             }
             if (msg.invisibleInk) {
               p.className = 'invisible-ink-blur';
@@ -3833,6 +4306,41 @@
               p.addEventListener('click', () => p.classList.toggle('revealed'));
             }
             bubble.appendChild(p);
+          }
+          // Feature #1: Inline Huddle Join Card inside chat
+          if (msg.huddle) {
+            const hCard = document.createElement('div');
+            hCard.className = 'mt-1.5 p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-slate-800 dark:text-white';
+            hCard.innerHTML = `
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-sm shrink-0">🎧</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-bold truncate">${msg.huddle.title || 'Started a huddle'}</p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${msg.huddle.subtitle || 'CHATEAMS Audio & Video Huddle'}</p>
+                </div>
+              </div>
+              <button type="button" class="join-huddle-inline-btn px-3.5 py-1 rounded-full border border-indigo-600 text-indigo-600 dark:text-indigo-300 dark:border-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-bold transition cursor-pointer shrink-0">Join</button>
+            `;
+            hCard.querySelector('.join-huddle-inline-btn')?.addEventListener('click', () => {
+              if (typeof window.openFloatingHuddle === 'function') window.openFloatingHuddle(room);
+            });
+            bubble.appendChild(hCard);
+          }
+          // Feature #8: Smart Info Card at a Glance (Trip / Event / Reservation summary)
+          if (msg.infoCard) {
+            const ic = document.createElement('div');
+            ic.className = 'mt-1.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white space-y-2';
+            const rowsHtml = (msg.infoCard.items || []).map(it =>
+              `<div class="flex items-center gap-1.5 text-[11px] font-semibold"><span>${it.icon || '📅'}</span><span>${it.label}</span></div>`
+            ).join('');
+            ic.innerHTML = `
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-xs font-extrabold">${msg.infoCard.title}</p>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${msg.infoCard.badge || 'Info'}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5">${rowsHtml}</div>
+            `;
+            bubble.appendChild(ic);
           }
         }
 
@@ -3920,6 +4428,20 @@
           editMsgBtn.addEventListener('click', () => openEditMsgModal(room.id, msg.id));
           actionBar.appendChild(editMsgBtn);
         }
+        if (msg.isMe && !msg.deleted) {
+          const undoSendBtn = document.createElement('button');
+          undoSendBtn.type = 'button';
+          undoSendBtn.className = 'text-[10px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-full px-1.5 py-0.5 transition cursor-pointer';
+          undoSendBtn.textContent = 'Undo';
+          undoSendBtn.title = 'iMessage Undo Send (Unsend for everyone)';
+          undoSendBtn.addEventListener('click', () => {
+            room.messages = room.messages.filter(m => m.id !== msg.id);
+            saveState();
+            renderMessages();
+            showToast('Message unsent (Undo Send) ↩️');
+          });
+          actionBar.appendChild(undoSendBtn);
+        }
         if (msg.isMe) {
           const delMsgBtn = document.createElement('button');
           delMsgBtn.type = 'button';
@@ -3938,6 +4460,7 @@
           actionBar.appendChild(delMsgBtn);
         }
 
+        bubbleRow.appendChild(msgAvatar);
         bubbleRow.appendChild(bubble);
         bubbleRow.appendChild(actionBar);
         wrapper.appendChild(bubbleRow);
@@ -3945,7 +4468,7 @@
         const reactionEntries = Object.entries(msg.reactions || {});
         if (reactionEntries.length > 0) {
           const pillsRow = document.createElement('div');
-          pillsRow.className = `flex flex-wrap gap-1 mt-1 ${msg.isMe ? 'justify-end' : 'justify-start'}`;
+          pillsRow.className = `flex flex-wrap gap-1 mt-1 ${msg.isMe ? 'justify-end mr-10' : 'justify-start ml-10'}`;
 
           reactionEntries.forEach(([emoji, info]) => {
             const pill = document.createElement('button');
@@ -3964,7 +4487,7 @@
         }
 
         const meta = document.createElement('span');
-        meta.className = `text-[11px] text-slate-400 mt-1 flex items-center gap-1 ${msg.isMe ? 'mr-1 justify-end' : 'ml-1'}`;
+        meta.className = `text-[11px] text-slate-400 mt-1 flex items-center gap-1 ${msg.isMe ? 'mr-10 justify-end' : 'ml-10'}`;
         if (msg.isMe) {
           if (msg.queued) {
             meta.textContent = `${msg.time} ⏳ Queued`;
@@ -5411,6 +5934,7 @@
         silent: isSilentSendMode,
         vanish: !!room.vanishMode,
         invisibleInk: pendingEffectMode === 'ink',
+        bubbleEffect: ['slam', 'loud', 'gentle'].includes(pendingEffectMode) ? pendingEffectMode : '',
         time: getCurrentTime(),
         isMe: true,
         queued: offlineNow,
@@ -5424,7 +5948,7 @@
         if (lowerTxt.includes('birthday') || lowerTxt.includes('congrats') || lowerTxt.includes('diwali') || lowerTxt.includes('new year') || lowerTxt.includes('🎉')) autoEffect = 'confetti';
         else if (lowerTxt.includes('love') || lowerTxt.includes('anniversary') || lowerTxt.includes('❤️')) autoEffect = 'hearts';
       }
-      if (autoEffect && autoEffect !== 'ink') launchCelebrationEffect(autoEffect);
+      if (autoEffect && !['ink', 'slam', 'loud', 'gentle'].includes(autoEffect)) launchCelebrationEffect(autoEffect);
       pendingEffectMode = '';
       isSilentSendMode = false;
       document.getElementById('silent-send-btn').classList.remove('ring-2', 'ring-indigo-500');
@@ -5444,6 +5968,9 @@
       replyToMsg = null;
       document.getElementById('reply-preview-banner').classList.add('hidden');
       messageInput.value = '';
+      messageInput.style.height = 'auto';
+      messageInput.classList.add('rounded-full');
+      messageInput.classList.remove('rounded-2xl');
       saveState();
       updateNetworkPill();
       renderApp();
@@ -5575,24 +6102,144 @@
       }
     });
 
-    // Scheduled Messages
+    // Scheduled Messages & Split Send Button Options
     const scheduleModal = document.getElementById('schedule-modal');
-    document.getElementById('schedule-msg-btn').addEventListener('click', () => {
+    const sendOptionsMenu = document.getElementById('send-options-menu');
+    const sendOptionsBtn = document.getElementById('send-options-btn');
+    const sendBtnEl = document.getElementById('send-btn');
+    const quickEnterToggle = document.getElementById('quick-enter-send-toggle');
+    const settingsEnterToggle = document.getElementById('enter-send-toggle');
+    const scheduleDelaySel = document.getElementById('schedule-delay-select');
+    const scheduleCustomDt = document.getElementById('schedule-custom-dt');
+
+    function syncEnterToSendUI() {
+      const enabled = !!(appSettings && appSettings.enterToSend === true);
+      if (settingsEnterToggle) settingsEnterToggle.checked = enabled;
+      if (quickEnterToggle) quickEnterToggle.checked = enabled;
+    }
+    if (typeof appSettings !== 'undefined' && typeof appSettings.enterToSend === 'undefined') {
+      appSettings.enterToSend = false;
+    }
+    syncEnterToSendUI();
+
+    quickEnterToggle?.addEventListener('change', (e) => {
+      appSettings.enterToSend = e.target.checked;
+      saveSettings();
+      syncEnterToSendUI();
+      showToast(e.target.checked ? '⏎ Enter to Send ON' : '⏎ Enter to Send OFF (Use Send button)');
+    });
+
+    function openScheduleSendModal() {
+      if (sendOptionsMenu) sendOptionsMenu.classList.add('hidden');
       document.getElementById('schedule-msg-text').value = messageInput.value.trim();
+      if (scheduleDelaySel && scheduleCustomDt) {
+        scheduleCustomDt.classList.toggle('hidden', scheduleDelaySel.value !== 'custom');
+      }
       scheduleModal.classList.remove('hidden');
       document.getElementById('schedule-msg-text').focus();
+    }
+
+    sendOptionsBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      syncEnterToSendUI();
+      sendOptionsMenu?.classList.toggle('hidden');
     });
+
+    document.getElementById('send-now-opt-btn')?.addEventListener('click', () => {
+      sendOptionsMenu?.classList.add('hidden');
+      if (messageInput.value.trim()) chatForm.requestSubmit();
+      else messageInput.focus();
+    });
+
+    document.getElementById('schedule-msg-btn')?.addEventListener('click', openScheduleSendModal);
+
+    // Long-press on Send button opens Schedule Send
+    let sendHoldTimer = null;
+    let sendHoldTriggered = false;
+    const startSendHold = () => {
+      sendHoldTriggered = false;
+      clearTimeout(sendHoldTimer);
+      sendHoldTimer = setTimeout(() => {
+        sendHoldTriggered = true;
+        openScheduleSendModal();
+      }, 500);
+    };
+    const clearSendHold = () => clearTimeout(sendHoldTimer);
+    sendBtnEl?.addEventListener('mousedown', startSendHold);
+    sendBtnEl?.addEventListener('touchstart', startSendHold, { passive: true });
+    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(ev => sendBtnEl?.addEventListener(ev, clearSendHold));
+    sendBtnEl?.addEventListener('click', (e) => {
+      if (sendHoldTriggered) {
+        e.preventDefault();
+        sendHoldTriggered = false;
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (sendOptionsMenu && !sendOptionsMenu.classList.contains('hidden')) {
+        const wrap = document.getElementById('send-btn-wrap');
+        if (wrap && !wrap.contains(e.target)) sendOptionsMenu.classList.add('hidden');
+      }
+    });
+
+    // Auto-resize pill textarea & optional Enter-to-Send
+    messageInput.addEventListener('input', () => {
+      messageInput.style.height = 'auto';
+      const nextH = Math.min(messageInput.scrollHeight, 112);
+      messageInput.style.height = nextH + 'px';
+      const isMulti = nextH > 46 || messageInput.value.includes('\n');
+      messageInput.classList.toggle('rounded-2xl', isMulti);
+      messageInput.classList.toggle('rounded-full', !isMulti);
+    });
+
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        if (appSettings && appSettings.enterToSend === true) {
+          e.preventDefault();
+          if (messageInput.value.trim()) chatForm.requestSubmit();
+        }
+      }
+    });
+
+    scheduleDelaySel?.addEventListener('change', () => {
+      if (!scheduleCustomDt) return;
+      const isCustom = scheduleDelaySel.value === 'custom';
+      scheduleCustomDt.classList.toggle('hidden', !isCustom);
+      if (isCustom && !scheduleCustomDt.value) {
+        const d = new Date(Date.now() + 10 * 60000);
+        const pad = n => String(n).padStart(2, '0');
+        scheduleCustomDt.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+    });
+
     document.getElementById('close-schedule-btn').addEventListener('click', () => scheduleModal.classList.add('hidden'));
     document.getElementById('schedule-modal-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const text = document.getElementById('schedule-msg-text').value.trim();
-      const delaySec = parseInt(document.getElementById('schedule-delay-select').value, 10) || 5;
       if (!text) return;
+      let sendAt = Date.now() + 5000;
+      let toastLabel = '5s from now';
+      if (scheduleDelaySel.value === 'custom' && scheduleCustomDt && scheduleCustomDt.value) {
+        const parsed = new Date(scheduleCustomDt.value).getTime();
+        if (isNaN(parsed) || parsed <= Date.now()) {
+          showToast('Please choose a future date & time');
+          return;
+        }
+        sendAt = parsed;
+        toastLabel = new Date(parsed).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      } else {
+        const delaySec = parseInt(scheduleDelaySel.value, 10) || 5;
+        sendAt = Date.now() + delaySec * 1000;
+        toastLabel = delaySec >= 3600 ? `${Math.round(delaySec / 3600)}h from now` : (delaySec >= 60 ? `${Math.round(delaySec / 60)}m from now` : `${delaySec}s from now`);
+      }
       const room = getActiveRoom();
-      scheduledMessages.push({ roomId: room.id, text, sendAt: Date.now() + delaySec * 1000 });
+      scheduledMessages.push({ roomId: room.id, text, sendAt });
       messageInput.value = '';
+      messageInput.style.height = 'auto';
+      messageInput.classList.add('rounded-full');
+      messageInput.classList.remove('rounded-2xl');
       scheduleModal.classList.add('hidden');
-      showToast(`Scheduled for ${delaySec}s from now! ⏰`);
+      showToast(`Scheduled for ${toastLabel}! ⏰`);
     });
 
     setInterval(() => {
@@ -6262,6 +6909,9 @@
       document.getElementById('enter-send-toggle')?.addEventListener('change', (e) => {
         appSettings.enterToSend = e.target.checked;
         saveSettings();
+        const qt = document.getElementById('quick-enter-send-toggle');
+        if (qt) qt.checked = e.target.checked;
+        showToast(e.target.checked ? '⏎ Enter to Send ON' : '⏎ Enter to Send OFF (Use Send button)');
       });
 
       document.getElementById('noise-suppress-toggle')?.addEventListener('change', (e) => {
@@ -8315,7 +8965,7 @@
     (function initInterfaceAndFab() {
       const ACCENT_MAP = {
         indigo:  { c: '#4f46e5', h: '#4338ca', s: 'rgba(79,70,229,0.12)' },
-        emerald: { c: '#059669', h: '#047857', s: 'rgba(5,150,105,0.12)' },
+        emerald: { c: '#2e8b57', h: '#247347', s: 'rgba(46,139,87,0.14)' },
         sky:     { c: '#0284c7', h: '#0369a1', s: 'rgba(2,132,199,0.12)' },
         violet:  { c: '#7c3aed', h: '#6d28d9', s: 'rgba(124,58,237,0.12)' },
         rose:    { c: '#e11d48', h: '#be123c', s: 'rgba(225,29,72,0.12)' },
@@ -8323,16 +8973,26 @@
       };
 
       const defaultPrefs = {
-        accent: 'indigo',
+        accent: 'emerald',
         listStyle: 'clean',
         defaultFilter: 'all',
         fontSize: 'md',
-        bubbleStyle: 'modern',
-        showNavLabels: true
+        bubbleStyle: 'pill',
+        showNavLabels: true,
+        pillMigrated: true
       };
 
       try {
-        window.uiPrefs = Object.assign({}, defaultPrefs, JSON.parse(localStorage.getItem('chateams_ui_prefs') || '{}'));
+        const storedPrefs = JSON.parse(localStorage.getItem('chateams_ui_prefs') || '{}');
+        window.uiPrefs = Object.assign({}, defaultPrefs, storedPrefs);
+        if (!storedPrefs.pillMigrated) {
+          window.uiPrefs.bubbleStyle = 'pill';
+          window.uiPrefs.pillMigrated = true;
+        }
+        if (!storedPrefs.sageThemeMigrated) {
+          window.uiPrefs.accent = 'emerald';
+          window.uiPrefs.sageThemeMigrated = true;
+        }
       } catch {
         window.uiPrefs = Object.assign({}, defaultPrefs);
       }
@@ -8345,9 +9005,9 @@
         document.documentElement.style.setProperty('--ch-accent-hover', acc.h);
         document.documentElement.style.setProperty('--ch-accent-soft', acc.s);
 
-        document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'bubble-modern', 'bubble-classic', 'bubble-minimal', 'hide-nav-labels');
+        document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'bubble-pill', 'bubble-modern', 'bubble-classic', 'bubble-minimal', 'hide-nav-labels');
         document.body.classList.add('font-' + (window.uiPrefs.fontSize || 'md'));
-        document.body.classList.add('bubble-' + (window.uiPrefs.bubbleStyle || 'modern'));
+        document.body.classList.add('bubble-' + (window.uiPrefs.bubbleStyle || 'pill'));
         if (!window.uiPrefs.showNavLabels) document.body.classList.add('hide-nav-labels');
 
         document.querySelectorAll('[data-accent]').forEach(btn => {
@@ -8386,6 +9046,10 @@
         if (fabMenu && !fabMenu.classList.contains('hidden') && !fabMenu.contains(e.target) && e.target !== fabBtn) {
           fabMenu.classList.add('hidden');
         }
+      });
+      document.getElementById('fab-camera-btn')?.addEventListener('click', () => {
+        document.getElementById('tab-status-btn')?.click();
+        setTimeout(() => document.getElementById('add-status-btn')?.click(), 120);
       });
       document.getElementById('fab-new-dm-btn')?.addEventListener('click', () => {
         fabMenu?.classList.add('hidden');
@@ -8454,6 +9118,264 @@
       });
 
       saveAndApplyUiPrefs();
+
+      // === ALL 8 NEW GOOGLE CHAT / GMAIL INSPIRED FEATURES CONTROLLER ===
+      // Feature #2: Unread Switch, @Mentions & Threads Filters
+      const unreadTog = document.getElementById('filter-unread-toggle');
+      const mentionsPill = document.getElementById('filter-mentions-pill');
+      const threadsPill = document.getElementById('filter-threads-pill');
+      unreadTog?.addEventListener('change', (e) => {
+        window.filterUnreadOnly = e.target.checked;
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+      document.getElementById('quick-ui-mode-btn')?.addEventListener('click', () => {
+        window.uiPrefs.listStyle = window.uiPrefs.listStyle === 'snap' ? 'clean' : 'snap';
+        saveAndApplyUiPrefs();
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+        if (typeof showToast === 'function') showToast(window.uiPrefs.listStyle === 'snap' ? '👻 Snap Style UI Active' : '✈️ Clean Telegram UI Active');
+      });
+      document.getElementById('more-unread-pill')?.addEventListener('click', () => {
+        window.filterUnreadOnly = true;
+        if (unreadTog) unreadTog.checked = true;
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+      mentionsPill?.addEventListener('click', () => {
+        window.filterMentionsOnly = !window.filterMentionsOnly;
+        mentionsPill.className = window.filterMentionsOnly
+          ? 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white border border-emerald-600 transition cursor-pointer'
+          : 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-sky-50 transition cursor-pointer';
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+      threadsPill?.addEventListener('click', () => {
+        window.filterThreadsOnly = !window.filterThreadsOnly;
+        threadsPill.className = window.filterThreadsOnly
+          ? 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white border border-emerald-600 transition cursor-pointer'
+          : 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-indigo-50 transition cursor-pointer';
+        if (typeof renderChatHistory === 'function') renderChatHistory();
+      });
+
+      // Feature #1: Floating Mini Huddle Card
+      let huddleInterval = null;
+      let huddleSec = 0;
+      let huddleMuted = false;
+      let huddleCamOn = false;
+      window.openFloatingHuddle = function(room) {
+        const card = document.getElementById('floating-huddle-card');
+        const dot = document.getElementById('qbar-live-dot');
+        const titleEl = document.getElementById('huddle-card-title');
+        const avEl = document.getElementById('huddle-avatars');
+        if (!card) return;
+        if (titleEl) titleEl.textContent = room ? `${room.name} Huddle` : 'Quick Huddle';
+        if (avEl) {
+          const initials = room && Array.isArray(room.memberAvatars) && room.memberAvatars.length
+            ? room.memberAvatars.slice(0, 3)
+            : [(currentUser && currentUser.avatar) || 'ME', (room && room.avatar) || 'U'];
+          const cols = ['from-indigo-500 to-purple-600', 'from-emerald-500 to-teal-600', 'from-amber-500 to-rose-500'];
+          avEl.innerHTML = initials.map((x, i) =>
+            `<div class="w-11 h-11 rounded-full bg-gradient-to-br ${cols[i % 3]} text-white text-xs font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-sm">${String(x).slice(0, 2)}</div>`
+          ).join('');
+        }
+        card.classList.remove('hidden');
+        dot?.classList.remove('hidden');
+        clearInterval(huddleInterval);
+        huddleSec = 0;
+        const timerEl = document.getElementById('huddle-timer');
+        huddleInterval = setInterval(() => {
+          huddleSec++;
+          const m = String(Math.floor(huddleSec / 60)).padStart(2, '0');
+          const s = String(huddleSec % 60).padStart(2, '0');
+          if (timerEl) timerEl.textContent = `${m}:${s}`;
+        }, 1000);
+        if (typeof showToast === 'function') showToast('🎧 Joined Quick Huddle!');
+      };
+
+      document.getElementById('qbar-huddle-btn')?.addEventListener('click', () => {
+        const room = typeof getActiveRoom === 'function' ? getActiveRoom() : null;
+        if (room) {
+          room.messages.push({
+            id: nextId++,
+            sender: currentUser ? currentUser.name : 'You',
+            text: 'Let\'s have a quick huddle if you\'re free?',
+            huddle: { title: 'Started a huddle', subtitle: `${room.name} · Tap Join to connect` },
+            time: getCurrentTime(),
+            isMe: true,
+            status: 'sent',
+            reactions: {}
+          });
+          saveState();
+          renderMessages();
+        }
+        window.openFloatingHuddle(room);
+      });
+      document.getElementById('huddle-mute-btn')?.addEventListener('click', (e) => {
+        huddleMuted = !huddleMuted;
+        e.currentTarget.textContent = huddleMuted ? '🔇' : '🎙️';
+        e.currentTarget.classList.toggle('bg-rose-100', huddleMuted);
+        if (typeof showToast === 'function') showToast(huddleMuted ? 'Huddle Muted 🔇' : 'Mic Active 🎙️');
+      });
+      document.getElementById('huddle-cam-btn')?.addEventListener('click', (e) => {
+        huddleCamOn = !huddleCamOn;
+        e.currentTarget.textContent = huddleCamOn ? '📹' : '📷';
+        e.currentTarget.classList.toggle('bg-emerald-100', huddleCamOn);
+        if (typeof showToast === 'function') showToast(huddleCamOn ? 'Camera ON 📹' : 'Camera OFF');
+      });
+      document.getElementById('huddle-screen-btn')?.addEventListener('click', () => {
+        if (typeof showToast === 'function') showToast('🖥️ Screen sharing started in Huddle');
+      });
+      document.getElementById('huddle-expand-btn')?.addEventListener('click', () => {
+        document.getElementById('floating-huddle-card')?.classList.add('hidden');
+        document.getElementById('voice-call-btn')?.click();
+      });
+      document.getElementById('huddle-end-btn')?.addEventListener('click', () => {
+        clearInterval(huddleInterval);
+        document.getElementById('floating-huddle-card')?.classList.add('hidden');
+        document.getElementById('qbar-live-dot')?.classList.add('hidden');
+        if (typeof showToast === 'function') showToast('Left Huddle');
+      });
+
+      // Feature #7: Chat Header Quick Drawer (Files, Tasks, Pinned)
+      const qDrawer = document.getElementById('chat-quick-drawer');
+      const qDrawerTitle = document.getElementById('chat-quick-drawer-title');
+      const qDrawerBody = document.getElementById('chat-quick-drawer-body');
+      document.getElementById('close-quick-drawer-btn')?.addEventListener('click', () => qDrawer?.classList.add('hidden'));
+
+      function openQuickDrawer(mode) {
+        const room = typeof getActiveRoom === 'function' ? getActiveRoom() : null;
+        if (!room || !qDrawer || !qDrawerBody) return;
+        qDrawer.classList.remove('hidden');
+        qDrawerBody.innerHTML = '';
+        if (mode === 'files') {
+          qDrawerTitle.textContent = '📁 Shared Files & Media';
+          const items = (room.messages || []).filter(m => m.attachment || (m.text && m.text.includes('[[file:')));
+          if (!items.length) { qDrawerBody.innerHTML = '<p class="text-slate-400">No shared files in this chat yet.</p>'; return; }
+          items.forEach(m => {
+            const title = m.attachment ? m.attachment.title : (m.text.match(/\[\[file:([^\]]+)\]\]/)?.[1] || 'File');
+            const div = document.createElement('div');
+            div.className = 'px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between';
+            div.innerHTML = `<span class="font-bold text-slate-800 dark:text-white truncate">📄 ${title}</span><span class="text-[10px] text-slate-400">${m.time || ''}</span>`;
+            qDrawerBody.appendChild(div);
+          });
+        } else if (mode === 'tasks') {
+          qDrawerTitle.textContent = '✓ Chat Tasks & Takeaways';
+          const list = (typeof notes !== 'undefined' ? notes : []).slice(0, 5);
+          if (!list.length) { qDrawerBody.innerHTML = '<p class="text-slate-400">No tasks yet. Tap ☑️ on any message to add one.</p>'; return; }
+          list.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700';
+            div.innerHTML = `<p class="font-bold text-slate-800 dark:text-white truncate">${n.title}</p><p class="text-[10px] text-slate-500 truncate">${n.body || ''}</p>`;
+            qDrawerBody.appendChild(div);
+          });
+        } else if (mode === 'pinned') {
+          qDrawerTitle.textContent = '📌 Pinned Messages';
+          const pm = room.pinnedMessageId ? room.messages.find(m => m.id === room.pinnedMessageId) : null;
+          if (!pm) { qDrawerBody.innerHTML = '<p class="text-slate-400">No pinned message. Tap 📌 on any message to pin it.</p>'; return; }
+          qDrawerBody.innerHTML = `<div class="px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 font-bold text-amber-900 dark:text-amber-200">${pm.sender}: ${pm.text || ''}</div>`;
+        }
+      }
+      document.getElementById('qbar-files-btn')?.addEventListener('click', () => openQuickDrawer('files'));
+      document.getElementById('qbar-tasks-btn')?.addEventListener('click', () => openQuickDrawer('tasks'));
+      document.getElementById('qbar-pinned-btn')?.addEventListener('click', () => openQuickDrawer('pinned'));
+
+      // Feature #4: Rich Text Formatting (A), Emoji & GIF Pickers
+      const fmtToolbar = document.getElementById('format-toolbar');
+      const egPopover = document.getElementById('emoji-gif-popover');
+      const egEmojiGrid = document.getElementById('eg-emoji-grid');
+      const egGifGrid = document.getElementById('eg-gif-grid');
+      const egTabEmoji = document.getElementById('eg-tab-emoji');
+      const egTabGif = document.getElementById('eg-tab-gif');
+      // Auto-close parent popovers cleanly when picking Voice/Effects/Whisper/Walkie/Like
+      ['voice-note-btn', 'effects-btn'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', () => {
+          document.getElementById('attach-menu')?.classList.add('hidden');
+        });
+      });
+      ['silent-send-btn', 'walkie-talkie-btn', 'quick-like-btn'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', () => {
+          document.getElementById('effects-menu')?.classList.add('hidden');
+        });
+      });
+      document.getElementById('format-toggle-btn')?.addEventListener('click', () => {
+        document.getElementById('attach-menu')?.classList.add('hidden');
+        fmtToolbar?.classList.toggle('hidden');
+      });
+      document.querySelectorAll('#format-toolbar [data-fmt]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const inp = document.getElementById('message-input');
+          if (!inp) return;
+          const kind = btn.dataset.fmt;
+          const inserts = { bold: '**Bold text** ', accent: '[red]Highlight[/red] ', bullet: '\n• ', mention: '@', filechip: '[[file:Project_Checklist.pdf]] ' };
+          inp.value += inserts[kind] || '';
+          inp.dispatchEvent(new Event('input'));
+          inp.focus();
+        });
+      });
+      function openEgPopover(tab) {
+        egPopover?.classList.remove('hidden');
+        const isGif = tab === 'gif';
+        egEmojiGrid?.classList.toggle('hidden', isGif);
+        egGifGrid?.classList.toggle('hidden', !isGif);
+        if (egTabEmoji && egTabGif) {
+          egTabEmoji.className = !isGif ? 'px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold cursor-pointer' : 'px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold cursor-pointer';
+          egTabGif.className = isGif ? 'px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold cursor-pointer' : 'px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold cursor-pointer';
+        }
+      }
+      document.getElementById('emoji-open-btn')?.addEventListener('click', (e) => { e.stopPropagation(); openEgPopover('emoji'); });
+      document.getElementById('gif-open-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('attach-menu')?.classList.add('hidden');
+        openEgPopover('gif');
+      });
+      egTabEmoji?.addEventListener('click', () => openEgPopover('emoji'));
+      egTabGif?.addEventListener('click', () => openEgPopover('gif'));
+      document.getElementById('eg-close-btn')?.addEventListener('click', () => egPopover?.classList.add('hidden'));
+      document.querySelectorAll('.eg-pick').forEach(b => b.addEventListener('click', () => {
+        const inp = document.getElementById('message-input');
+        if (inp) { inp.value += b.textContent; inp.focus(); }
+      }));
+      document.querySelectorAll('.gif-pick').forEach(b => b.addEventListener('click', () => {
+        const inp = document.getElementById('message-input');
+        if (inp) { inp.value = b.dataset.gif; egPopover?.classList.add('hidden'); document.getElementById('chat-form')?.requestSubmit(); }
+      }));
+
+      // Feature #5: Smart Reply Quick Chips + Feature #7 File Count refresh hook
+      const origRenderMessages = window.renderMessages || (typeof renderMessages === 'function' ? renderMessages : null);
+      function refreshSmartRepliesAndCounts() {
+        const room = typeof getActiveRoom === 'function' ? getActiveRoom() : null;
+        const bar = document.getElementById('smart-reply-bar');
+        const cntEl = document.getElementById('qbar-files-cnt');
+        if (!room) return;
+        const fCount = (room.messages || []).filter(m => m.attachment || (m.text && m.text.includes('[[file:'))).length;
+        if (cntEl) cntEl.textContent = String(fCount);
+        if (!bar) return;
+        const last = room.messages && room.messages.length ? room.messages[room.messages.length - 1] : null;
+        let chips = ["Sounds good.", "Definitely. 🙂", "Can't wait!"];
+        if (last && last.text) {
+          const lt = last.text.toLowerCase();
+          if (lt.includes('huddle') || lt.includes('call') || lt.includes('free')) chips = ["Joining now! 🎧", "Give me 5 mins", "Sounds good."];
+          else if (lt.includes('review') || lt.includes('checklist') || lt.includes('file')) chips = ["Looks great! 👍", "Checking it now", "Will review shortly"];
+          else if (lt.includes('?')) chips = ["Yes, definitely! 🙂", "Sounds good.", "Let me check"];
+        }
+        bar.innerHTML = '';
+        chips.forEach(txt => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold shrink-0 cursor-pointer transition active:scale-95';
+          btn.textContent = txt;
+          btn.addEventListener('click', () => {
+            const inp = document.getElementById('message-input');
+            if (inp) {
+              inp.value = txt;
+              document.getElementById('chat-form')?.requestSubmit();
+            }
+          });
+          bar.appendChild(btn);
+        });
+        bar.classList.remove('hidden');
+      }
+      const msgObserver = new MutationObserver(() => refreshSmartRepliesAndCounts());
+      const msgNode = document.getElementById('messages');
+      if (msgNode) msgObserver.observe(msgNode, { childList: true });
+      setTimeout(refreshSmartRepliesAndCounts, 300);
     })();
   </script>
 </body>
